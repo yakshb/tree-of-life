@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import Tree from "react-d3-tree";
-import { AnimatePresence } from "framer-motion";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { treeData } from "../../data/treeData";
 import styles from "@/styles/TreeStyles.module.css";
@@ -19,6 +18,7 @@ import {
 } from "../ui/resizable";
 
 interface TreeNodeData extends TreeNodeDatum {
+  children: TreeNodeData[];
   attributes?: {
     description?: string;
   };
@@ -26,12 +26,11 @@ interface TreeNodeData extends TreeNodeDatum {
 
 const VisualTreeOfLife: React.FC = () => {
   const [aiResponse, setAIResponse] = useState("");
-  const [explorationPath, setExplorationPath] = useState<ExplorationPathItem[]>(
-    []
-  );
+  const [explorationPath, setExplorationPath] = useState<ExplorationPathItem[]>([]);
   const [selectedNode, setSelectedNode] = useState<TreeNodeData | null>(null);
 
   const handleNodeClick = useCallback((nodeData: TreeNodeData) => {
+    console.log("Node clicked:", nodeData);  // Debug log
     setSelectedNode(nodeData);
     setExplorationPath((prevPath) => {
       const newPath = [...prevPath];
@@ -51,6 +50,10 @@ const VisualTreeOfLife: React.FC = () => {
       }
     });
   }, []);
+
+  useEffect(() => {
+    console.log("Selected node updated:", selectedNode);  // Debug log
+  }, [selectedNode]);
 
   const handlePathNavigate = useCallback((index: number) => {
     setExplorationPath((prevPath) => prevPath.slice(0, index + 1));
@@ -88,15 +91,15 @@ const VisualTreeOfLife: React.FC = () => {
                 data={treeData}
                 orientation="vertical"
                 pathFunc="step"
-                onNodeClick={handleNodeClick}
                 renderCustomNodeElement={(rd3tProps) => (
                   <CustomNodeRenderer
                     nodeDatum={rd3tProps.nodeDatum as TreeNodeData}
                     toggleNode={rd3tProps.toggleNode}
+                    onNodeClick={handleNodeClick}
                   />
                 )}
                 separation={{ siblings: 1, nonSiblings: 1.5 }}
-                transitionDuration={600}
+                transitionDuration={500}
                 zoomable={true}
                 collapsible={true}
                 translate={{ x: 400, y: 50 }}
@@ -105,16 +108,8 @@ const VisualTreeOfLife: React.FC = () => {
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel defaultSize={33}>
-            <div className="flex h-[200px] items-center justify-center p-6">
-              <span className="font-semibold">One</span>
-              <AnimatePresence>
-                {selectedNode && (
-                  <InfoPanel
-                    node={selectedNode}
-                    onClose={() => setSelectedNode(null)}
-                  />
-                )}
-              </AnimatePresence>
+            <div className="h-full p-4">
+              <InfoPanel node={selectedNode} />
             </div>
           </ResizablePanel>
         </ResizablePanelGroup>
