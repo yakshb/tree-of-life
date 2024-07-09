@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useCallback } from "react";
 import Tree from "react-d3-tree";
@@ -10,11 +10,25 @@ import AIAssistant from "./AIAssistant";
 import InfoPanel from "./InfoPanel";
 import ExplorationPath from "./ExplorationPath";
 import CustomNodeRenderer from "./CustomNodeRenderer";
-import { TreeNodeData, ExplorationPathItem } from "@/types/treeTypes";
+import { TreeNodeDatum } from "react-d3-tree";
+import { ExplorationPathItem } from "@/types/treeTypes";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "../ui/resizable";
+
+interface TreeNodeData extends TreeNodeDatum {
+  attributes?: {
+    description?: string;
+  };
+}
 
 const VisualTreeOfLife: React.FC = () => {
   const [aiResponse, setAIResponse] = useState("");
-  const [explorationPath, setExplorationPath] = useState<ExplorationPathItem[]>([]);
+  const [explorationPath, setExplorationPath] = useState<ExplorationPathItem[]>(
+    []
+  );
   const [selectedNode, setSelectedNode] = useState<TreeNodeData | null>(null);
 
   const handleNodeClick = useCallback((nodeData: TreeNodeData) => {
@@ -58,37 +72,53 @@ const VisualTreeOfLife: React.FC = () => {
             <p>{aiResponse}</p>
           </div>
         )}
-        <ExplorationPath path={explorationPath} onNavigate={handlePathNavigate} />
-        <div
-          className={`${styles.treeContainer} bg-gray-50 rounded-lg overflow-hidden`}
+        <ExplorationPath
+          path={explorationPath}
+          onNavigate={handlePathNavigate}
+        />
+        <ResizablePanelGroup
+          direction="horizontal"
+          className="rounded-lg border"
         >
-          <Tree
-            data={treeData}
-            orientation="vertical"
-            pathFunc="step"
-            onNodeClick={handleNodeClick}
-            renderCustomNodeElement={(rd3tProps) => (
-              <CustomNodeRenderer
-                nodeDatum={rd3tProps.nodeDatum}
-                toggleNode={rd3tProps.toggleNode}
+          <ResizablePanel defaultSize={66}>
+            <div
+              className={`${styles.treeContainer} bg-gray-50 rounded-lg overflow-hidden`}
+            >
+              <Tree
+                data={treeData}
+                orientation="vertical"
+                pathFunc="step"
+                onNodeClick={handleNodeClick}
+                renderCustomNodeElement={(rd3tProps) => (
+                  <CustomNodeRenderer
+                    nodeDatum={rd3tProps.nodeDatum as TreeNodeData}
+                    toggleNode={rd3tProps.toggleNode}
+                  />
+                )}
+                separation={{ siblings: 1, nonSiblings: 1.5 }}
+                transitionDuration={600}
+                zoomable={true}
+                collapsible={true}
+                translate={{ x: 400, y: 50 }}
               />
-            )}
-            separation={{ siblings: 1, nonSiblings: 1.5 }}
-            transitionDuration={500}
-            zoomable={true}
-            collapsible={true}
-            translate={{ x: 400, y: 50 }}
-          />
-        </div>
+            </div>
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel defaultSize={33}>
+            <div className="flex h-[200px] items-center justify-center p-6">
+              <span className="font-semibold">One</span>
+              <AnimatePresence>
+                {selectedNode && (
+                  <InfoPanel
+                    node={selectedNode}
+                    onClose={() => setSelectedNode(null)}
+                  />
+                )}
+              </AnimatePresence>
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </CardContent>
-      <AnimatePresence>
-        {selectedNode && (
-          <InfoPanel
-            node={selectedNode}
-            onClose={() => setSelectedNode(null)}
-          />
-        )}
-      </AnimatePresence>
     </Card>
   );
 };
