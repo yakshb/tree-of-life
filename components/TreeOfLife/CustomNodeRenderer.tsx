@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { TreeNodeDatum } from 'react-d3-tree';
@@ -6,6 +6,7 @@ import { TreeNodeDatum } from 'react-d3-tree';
 interface TreeNodeData extends TreeNodeDatum {
   attributes?: {
     description?: string;
+    status?: 'Living' | 'Extinct' | 'Living and Extinct' | 'Developing';
   };
 }
 
@@ -16,11 +17,32 @@ interface CustomNodeProps {
 }
 
 const CustomNodeRenderer: React.FC<CustomNodeProps> = ({ nodeDatum, toggleNode, onNodeClick }) => {
-  const handleClick = (e: React.MouseEvent) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
+
+  const handleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     toggleNode();
     onNodeClick(nodeDatum);
-  };
+    setIsClicked(prevState => !prevState);
+  }, [toggleNode, onNodeClick, nodeDatum]);
+
+  const getNodeColor = useCallback(() => {
+    if (isClicked) {
+      return "#FFA500"; // Orange color for clicked nodes
+    }
+    switch (nodeDatum.attributes?.status) {
+      case 'Living':
+      case 'Living and Extinct':
+        return "#48bb78"; // Green
+      case 'Extinct':
+        return "#DC2626"; // Red (changed from #7C0A02 for better visibility)
+      case 'Developing':
+        return "#3B82F6"; // Blue
+      default:
+        return "#9CA3AF"; // Gray for unknown status
+    }
+  }, [isClicked, nodeDatum.attributes?.status]);
 
   return (
     <TooltipProvider>
@@ -32,18 +54,32 @@ const CustomNodeRenderer: React.FC<CustomNodeProps> = ({ nodeDatum, toggleNode, 
             exit={{ opacity: 0, scale: 0.5 }}
             transition={{ duration: 0.3 }}
             onClick={handleClick}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            style={{ cursor: 'pointer' }}
           >
-            <circle
-              r={10}
-              fill={nodeDatum.children ? "#4299e1" : "#48bb78"}
+            <motion.circle
+              r={20}
+              fill={getNodeColor()}
+              stroke={isHovered ? "#ffffff" : "transparent"}
+              strokeWidth={1}
+              initial={{ scale: 1 }}
+              whileHover={{ scale: 1.1 }}
             />
-            <text dy="0.35em" x={16} textAnchor="start" fontSize={12} fill="#333">
+            <motion.text
+              dy="0.35em"
+              x={30}
+              textAnchor="start"
+              fontSize={12}
+              fill="#333"
+              fontWeight={500}
+            >
               {nodeDatum.name}
-            </text>
+            </motion.text>
           </motion.g>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{nodeDatum.attributes?.description || "No description available"}</p>
+          <p className="text-sm">{nodeDatum.attributes?.description || "No description available"}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
