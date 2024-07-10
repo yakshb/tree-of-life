@@ -17,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} bg-gray-50 flex flex-col min-h-screen`}>
-        <header className="fixed w-full bg-white shadow-sm">
+        <header className="z-50 fixed w-full bg-white shadow-sm">
           <div className="mx-auto py-6 px-8 sm:px-6 lg:px-8">
             <h1 className="text-2xl font-bold text-gray-900">Tree of Life Explorer</h1>
           </div>

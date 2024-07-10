@@ -72,7 +72,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="h-full flex flex-col items-center justify-center text-gray-500 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-6"
+        className="h-[750px] flex flex-col items-center justify-center text-gray-500 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-6"
       >
         <Info className="w-16 h-16 mb-4 text-indigo-400" />
         <p className="text-lg font-semibold text-center">
@@ -134,7 +134,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="h-full overflow-auto bg-gradient-to-br from-indigo-50 to-purple-50 shadow-lg">
+      <Card className="h-[750px] overflow-auto bg-gradient-to-br from-indigo-50 to-purple-50 shadow-lg">
         <CardContent className="p-6">
           <motion.h2
             initial={{ opacity: 0, x: -20 }}
