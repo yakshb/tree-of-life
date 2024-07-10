@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { TreeNodeDatum } from "react-d3-tree";
@@ -35,20 +36,37 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onResponse, node }) => {
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [chatHistory, setChatHistory] = useState<{ type: 'user' | 'ai', message: string }[]>([]);
+  const [suggestedPrompts, setSuggestedPrompts] = useState<string[]>([]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!query.trim()) return;
+  useEffect(() => {
+    if (node) {
+      const prompts = [
+        `Tell me more about ${node.name}`,
+        `What is the evolutionary history of ${node.name}?`,
+        `How much DNA do humans share with ${node.name}?`,
+        `What are the key characteristics of ${node.name}?`,
+        `Show me a realistic depiction of ${node.name}`,
+      ];
+      setSuggestedPrompts(prompts);
+    }
+  }, [node]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement> | string) => {
+    if (typeof e !== 'string') {
+      e.preventDefault();
+    }
+    
+    const questionToAsk = typeof e === 'string' ? e : query;
+    if (!questionToAsk.trim()) return;
 
     setIsLoading(true);
-    setChatHistory(prev => [...prev, { type: 'user', message: query }]);
+    setChatHistory(prev => [...prev, { type: 'user', message: questionToAsk }]);
 
     try {
-      // Replace this with your actual API call
       const response = await fetch("/api/ai-assistant", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query, node }),
+        body: JSON.stringify({ query: questionToAsk, node }),
       });
       const data = await response.json();
       onResponse(data.response);
@@ -62,6 +80,10 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onResponse, node }) => {
       setIsLoading(false);
       setQuery("");
     }
+  };
+
+  const handlePromptClick = (prompt: string) => {
+    handleSubmit(prompt);
   };
 
   if (!node) {
@@ -121,8 +143,20 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onResponse, node }) => {
                 </div>
               ))}
             </div>
-            <form onSubmit={handleSubmit} className="p-4 border-t">
-              <div className="flex items-center space-x-2">
+            <div className="p-4 border-t space-y-4">
+              <div className="flex flex-wrap gap-2">
+                {suggestedPrompts.map((prompt, index) => (
+                  <Badge
+                    key={index}
+                    variant="secondary"
+                    className="cursor-pointer hover:bg-indigo-100"
+                    onClick={() => handlePromptClick(prompt)}
+                  >
+                    {prompt}
+                  </Badge>
+                ))}
+              </div>
+              <form onSubmit={handleSubmit} className="flex items-center space-x-2">
                 <Input
                   type="text"
                   placeholder="Ask about this life form..."
@@ -142,8 +176,8 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onResponse, node }) => {
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </CardContent>
       </Card>

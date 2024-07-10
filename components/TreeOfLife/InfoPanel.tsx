@@ -100,7 +100,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
   
     const [startPeriod, endPeriod] = age.split(" to ").map(p => p.trim());
     
-    const getAge = (period) => {
+    const getAge = (period: string) => {
       if (!period) return 4600; // Default to Earth's age if period is undefined
       if (period === "present") return 0;
       const exactMatch = geologicalPeriods[period];

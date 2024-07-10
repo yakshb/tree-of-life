@@ -163,7 +163,7 @@ const VisualTreeOfLife: React.FC = () => {
                 collapsible={true}
                 translate={translate}
                 dimensions={dimensions}
-                nodeSize={{ x: 180, y: 100 }}
+                nodeSize={{ x: 180, y: 150 }}
                 zoom={zoom}
                 onUpdate={(updateArgs) => {
                   console.log("Tree updated:", updateArgs);
@@ -184,12 +184,12 @@ const VisualTreeOfLife: React.FC = () => {
                 </TabsContent>
                 <TabsContent value="ai">
                   <AIAssistant onResponse={setAIResponse} node={selectedNode} />
-                  {aiResponse && (
+                  {/* {aiResponse && (
                     <div className="mb-4 p-3 bg-blue-50 rounded">
                       <h3 className="font-semibold">AI Response:</h3>
                       <p>{aiResponse}</p>
                     </div>
-                  )}
+                  )} */}
                 </TabsContent>
               </Tabs>
             </div>
