@@ -58,3 +58,16 @@
   overflow-y: auto;
   z-index: 1000;
 }
+
+.tree-link {
+  stroke: white; /* Default color for light mode */
+  stroke-width: 2px;
+}
+
+:global(:root.dark) .tree-link {
+  stroke: hsl(var(--muted-foreground) / 0.8);
+}
+
+.tree-link:hover {
+  stroke: hsl(var(--primary));
+}

@@ -10,7 +10,11 @@ import ExplorationPath from "./ExplorationPath";
 import CustomNodeRenderer from "./CustomNodeRenderer";
 import { TreeNodeDatum, Point } from "react-d3-tree";
 import { ExplorationPathItem } from "@/types/treeTypes";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../ui/resizable";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "../ui/resizable";
 import dynamic from "next/dynamic";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -28,7 +32,9 @@ interface TreeNodeData extends TreeNodeDatum {
 
 const VisualTreeOfLife: React.FC = () => {
   const [aiResponse, setAIResponse] = useState("");
-  const [explorationPath, setExplorationPath] = useState<ExplorationPathItem[]>([]);
+  const [explorationPath, setExplorationPath] = useState<ExplorationPathItem[]>(
+    []
+  );
   const [selectedNode, setSelectedNode] = useState<TreeNodeData | null>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [translate, setTranslate] = useState<Point>({ x: 0, y: 0 });
@@ -40,7 +46,9 @@ const VisualTreeOfLife: React.FC = () => {
     setSelectedNode(nodeData);
     setExplorationPath((prevPath) => {
       const newPath = [...prevPath];
-      const existingIndex = newPath.findIndex((item) => item.name === nodeData.name);
+      const existingIndex = newPath.findIndex(
+        (item) => item.name === nodeData.name
+      );
       if (existingIndex !== -1) {
         return newPath.slice(0, existingIndex + 1);
       } else {
@@ -62,7 +70,8 @@ const VisualTreeOfLife: React.FC = () => {
   useEffect(() => {
     const updateDimensions = () => {
       if (treeContainerRef.current) {
-        const { width, height } = treeContainerRef.current.getBoundingClientRect();
+        const { width, height } =
+          treeContainerRef.current.getBoundingClientRect();
         setDimensions({ width, height });
         setTranslate({ x: width / 2, y: height / 10 });
       }
@@ -112,27 +121,49 @@ const VisualTreeOfLife: React.FC = () => {
   }, []);
 
   return (
-    <Card className="w-full mx-auto p-4">
+    <Card className="w-full mx-auto p-4 bg-card">
       <CardHeader>
-        <p className="text-center text-gray-600 mb-6">
-          Explore the diversity of life with AI assistance. Click on branches to learn more.
+        <p className="text-center text-muted-foreground mb-6">
+          Explore the diversity of life with AI assistance. Click on branches to
+          learn more.
         </p>
       </CardHeader>
       <CardContent>
-        <ExplorationPath path={explorationPath} onNavigate={handlePathNavigate} />
-        <ResizablePanelGroup direction="horizontal" className="rounded-lg border">
+        <ExplorationPath
+          path={explorationPath}
+          onNavigate={handlePathNavigate}
+        />
+        <ResizablePanelGroup
+          direction="horizontal"
+          className="rounded-lg border border-border"
+        >
           <ResizablePanel defaultSize={70}>
-            <div className="p-2 flex justify-between bg-gray-100 rounded-t-lg">
+            <div className="p-2 flex justify-between bg-secondary rounded-t-lg">
               <div>
-                <Button onClick={() => handleZoom(true)} variant="outline" size="sm" className="mr-2">
+                <Button
+                  onClick={() => handleZoom(true)}
+                  variant="outline"
+                  size="sm"
+                  className="mr-2"
+                >
                   <ZoomIn size={18} />
                 </Button>
-                <Button onClick={() => handleZoom(false)} variant="outline" size="sm" className="mr-2">
+                <Button
+                  onClick={() => handleZoom(false)}
+                  variant="outline"
+                  size="sm"
+                  className="mr-2"
+                >
                   <ZoomOut size={18} />
                 </Button>
               </div>
               <div>
-                <Button onClick={expandAllNodes} variant="outline" size="sm" className="mr-2">
+                <Button
+                  onClick={expandAllNodes}
+                  variant="outline"
+                  size="sm"
+                  className="mr-2"
+                >
                   <Maximize size={18} />
                 </Button>
                 <Button onClick={resetChart} variant="outline" size="sm">
@@ -142,7 +173,7 @@ const VisualTreeOfLife: React.FC = () => {
             </div>
             <div
               ref={treeContainerRef}
-              className={`${styles.treeContainer} bg-gray-50 rounded-b-lg overflow-hidden`}
+              className={`${styles.treeContainer} bg-background dark:bg-gray-900 rounded-b-lg overflow-hidden`}
               style={{ height: "calc(100% - 40px)" }}
             >
               <DynamicTree
@@ -165,6 +196,7 @@ const VisualTreeOfLife: React.FC = () => {
                 dimensions={dimensions}
                 nodeSize={{ x: 180, y: 150 }}
                 zoom={zoom}
+                pathClassFunc={() => "tree-link"}
                 onUpdate={(updateArgs) => {
                   console.log("Tree updated:", updateArgs);
                 }}
@@ -175,21 +207,25 @@ const VisualTreeOfLife: React.FC = () => {
           <ResizablePanel defaultSize={30} minSize={30}>
             <div className="h-full p-4">
               <Tabs defaultValue="summary" className="">
-                <TabsList>
-                  <TabsTrigger value="summary">Summary</TabsTrigger>
-                  <TabsTrigger value="ai">AI Insights</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger
+                    className="font-semibold tracking-tight"
+                    value="summary"
+                  >
+                    Summary
+                  </TabsTrigger>
+                  <TabsTrigger
+                    className="font-semibold tracking-tight"
+                    value="ai"
+                  >
+                    AI Insights
+                  </TabsTrigger>
                 </TabsList>
                 <TabsContent value="summary">
                   <InfoPanel node={selectedNode} />
                 </TabsContent>
                 <TabsContent value="ai">
                   <AIAssistant onResponse={setAIResponse} node={selectedNode} />
-                  {/* {aiResponse && (
-                    <div className="mb-4 p-3 bg-blue-50 rounded">
-                      <h3 className="font-semibold">AI Response:</h3>
-                      <p>{aiResponse}</p>
-                    </div>
-                  )} */}
                 </TabsContent>
               </Tabs>
             </div>

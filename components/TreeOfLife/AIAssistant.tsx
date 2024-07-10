@@ -92,7 +92,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onResponse, node }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="h-[750px] flex flex-col items-center justify-center text-gray-500 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-6"
+        className="h-[850px] flex flex-col items-center justify-center text-gray-500 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-6"
       >
         <Info className="w-16 h-16 mb-4 text-indigo-400" />
         <p className="text-lg font-semibold text-center">
@@ -108,7 +108,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onResponse, node }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="h-[750px] overflow-hidden bg-gradient-to-br from-indigo-50 to-purple-50 shadow-lg">
+      <Card className="h-[850px] overflow-hidden bg-gradient-to-br from-indigo-50 to-purple-50 shadow-lg">
         <CardContent className="p-6 flex flex-col h-full">
           <motion.h2
             initial={{ opacity: 0, x: -20 }}
@@ -116,11 +116,11 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onResponse, node }) => {
             transition={{ delay: 0.2, duration: 0.5 }}
             className="text-2xl font-bold mb-4 text-indigo-700"
           >
-            {node.name}
+            Ask Your AI Assistant
           </motion.h2>
-          <div className="flex flex-col flex-grow w-full bg-white border rounded-md shadow-md overflow-hidden">
+          <div className="flex flex-col flex-grow w-full bg-white/50 border rounded-md shadow-md overflow-hidden">
             <div className="flex items-center justify-between p-4 border-b">
-              <h2 className="text-lg font-semibold">AI Chat</h2>
+              <h2 className="text-lg font-semibold">Learn more about {node.name}</h2>
             </div>
             <div className="flex-grow overflow-y-auto p-4 space-y-4">
               {chatHistory.map((chat, index) => (
@@ -132,14 +132,14 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onResponse, node }) => {
                     </Avatar>
                   )}
                   <div className={`p-2 rounded-md ${chat.type === 'ai' ? 'bg-blue-100' : 'bg-gray-100'}`}>
-                    <p className="text-sm">{chat.message}</p>
+                    <p className="text-md">{chat.message}</p>
                   </div>
-                  {chat.type === 'user' && (
+                  {/* {chat.type === 'user' && (
                     <Avatar>
                       <AvatarImage src="/user-avatar.png" />
                       <AvatarFallback>U</AvatarFallback>
                     </Avatar>
-                  )}
+                  )} */}
                 </div>
               ))}
             </div>
@@ -149,7 +149,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onResponse, node }) => {
                   <Badge
                     key={index}
                     variant="secondary"
-                    className="cursor-pointer hover:bg-indigo-100"
+                    className="text-md cursor-pointer hover:bg-indigo-100"
                     onClick={() => handlePromptClick(prompt)}
                   >
                     {prompt}
@@ -162,7 +162,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onResponse, node }) => {
                   placeholder="Ask about this life form..."
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  className="flex-grow"
+                  className="flex-grow text-md"
                 />
                 <TooltipProvider>
                   <Tooltip>

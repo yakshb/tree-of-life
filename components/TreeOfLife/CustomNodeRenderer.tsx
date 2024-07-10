@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { TreeNodeDatum } from 'react-d3-tree';
+import { useTheme } from 'next-themes';
 
 interface TreeNodeData extends TreeNodeDatum {
   attributes?: {
@@ -19,6 +20,7 @@ interface CustomNodeProps {
 
 const CustomNodeRenderer: React.FC<CustomNodeProps> = ({ nodeDatum, toggleNode, onNodeClick }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const { theme } = useTheme();
 
   const handleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -27,18 +29,24 @@ const CustomNodeRenderer: React.FC<CustomNodeProps> = ({ nodeDatum, toggleNode, 
   }, [toggleNode, onNodeClick, nodeDatum]);
 
   const getNodeColor = useCallback(() => {
-    switch (nodeDatum.attributes?.status) {
-      case 'Living':
-      case 'Living and Extinct':
-        return "#48bb78"; // Green
-      case 'Extinct':
-        return "#DC2626"; // Red
-      case 'Developing':
-        return "#3B82F6"; // Blue
-      default:
-        return "#9CA3AF"; // Gray for unknown status
-    }
-  }, [nodeDatum.attributes?.status]);
+    const baseColors = {
+      Living: { light: "hsl(142.1 76.2% 36.3%)", dark: "hsl(142.1 70.6% 45.3%)" },
+      Extinct: { light: "hsl(0 84.2% 60.2%)", dark: "hsl(0 62.8% 30.6%)" },
+      Developing: { light: "hsl(217.2 91.2% 59.8%)", dark: "hsl(217.2 91.2% 59.8%)" },
+      Default: { light: "hsl(240 3.8% 46.1%)", dark: "hsl(240 5% 64.9%)" }
+    };
+
+    const colorSet = baseColors[nodeDatum.attributes?.status as keyof typeof baseColors] || baseColors.Default;
+    return theme === 'dark' ? colorSet.dark : colorSet.light;
+  }, [nodeDatum.attributes?.status, theme]);
+
+  const getTextColor = useCallback(() => {
+    return theme === 'dark' ? "hsl(0 0% 95%)" : "hsl(240 10% 3.9%)";
+  }, [theme]);
+
+  const getHoverColor = useCallback(() => {
+    return theme === 'dark' ? "hsl(0 0% 100%)" : "hsl(0 0% 0%)";
+  }, [theme]);
 
   return (
     <TooltipProvider>
@@ -53,7 +61,7 @@ const CustomNodeRenderer: React.FC<CustomNodeProps> = ({ nodeDatum, toggleNode, 
             <motion.circle
               r={15}
               fill={getNodeColor()}
-              stroke={isHovered ? "#ffffff" : "transparent"}
+              stroke={isHovered ? getHoverColor() : "transparent"}
               strokeWidth={2}
               initial={{ scale: 1 }}
               whileHover={{ scale: 1.1 }}
@@ -63,7 +71,7 @@ const CustomNodeRenderer: React.FC<CustomNodeProps> = ({ nodeDatum, toggleNode, 
               x={20}
               textAnchor="start"
               fontSize={20}
-              fill="#333"
+              fill={getTextColor()}
               fontWeight={isHovered ? 600 : 500}
               initial={{ opacity: 0.7 }}
               animate={{ opacity: isHovered ? 1 : 0.7 }}

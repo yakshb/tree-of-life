@@ -72,9 +72,9 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="h-[750px] flex flex-col items-center justify-center text-gray-500 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-6"
+        className="h-[850px] flex flex-col items-center justify-center text-muted-foreground bg-card rounded-lg p-6"
       >
-        <Info className="w-16 h-16 mb-4 text-indigo-400" />
+        <Info className="w-16 h-16 mb-4 text-primary" />
         <p className="text-lg font-semibold text-center">
           Select a node to view details
         </p>
@@ -134,13 +134,13 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="h-[750px] overflow-auto bg-gradient-to-br from-indigo-50 to-purple-50 shadow-lg">
+      <Card className="h-[850px] overflow-auto bg-card shadow-lg">
         <CardContent className="p-6">
           <motion.h2
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="text-3xl font-bold mb-2 text-indigo-700"
+            className="text-3xl font-bold mb-2 text-primary"
           >
             {node.name}
           </motion.h2>
@@ -149,7 +149,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="text-xl italic text-indigo-600 mb-6"
+              className="text-xl italic text-foreground mb-6"
             >
               {node.attributes.scientificName}
             </motion.p>
@@ -157,14 +157,14 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
 
           <div className="space-y-6">
             <InfoItem
-              icon={<NotebookPen className="text-indigo-500" />}
+              icon={<NotebookPen className="text-primary" />}
               title="Description"
               content={
                 node.attributes?.description || "No description available"
               }
             />
             <InfoElement
-              icon={<GitBranch className="text-indigo-500" />}
+              icon={<GitBranch className="text-primary" />}
               title="Taxonomy"
               element={
                 <div className="flex flex-wrap gap-2">
@@ -174,7 +174,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
                       node.attributes[level] !== "N/A" && (
                         <span
                           key={level}
-                          className="px-2 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm"
+                          className="px-2 py-1 bg-secondary text-secondary-foreground rounded-full text-sm"
                         >
                           {level}: {node.attributes[level]}
                         </span>
@@ -184,14 +184,14 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
               }
             />
             <InfoElement
-              icon={<Globe className="text-indigo-500" />}
+              icon={<Globe className="text-primary" />}
               title={
                 <div className="flex items-center">
                   Geological Timeline
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
-                        <HelpCircle className="w-4 h-4 ml-2 text-indigo-400" />
+                        <HelpCircle className="w-4 h-4 ml-2 text-muted-foreground" />
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>The color gradient represents the geological age:</p>
@@ -204,7 +204,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
               }
               element={
                 geologicalAge && (
-                  <div className="bg-white bg-opacity-50 rounded-lg p-4 shadow-sm">
+                  <div className="bg-card/50 rounded-lg p-4 shadow-sm">
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger className="w-full">
@@ -232,7 +232,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
-                    <div className="flex justify-between mt-2 text-sm text-gray-600">
+                    <div className="flex justify-between mt-2 text-sm text-muted-foreground">
                       <span>{geologicalAge.startPeriod}</span>
                       <span>{geologicalAge.endPeriod}</span>
                     </div>
@@ -243,7 +243,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InfoItem
-                icon={<Calendar className="text-indigo-500" />}
+                icon={<Calendar className="text-primary" />}
                 title="Age"
                 content={node.attributes?.age || "Age not specified"}
               />
@@ -271,12 +271,12 @@ const InfoItem: React.FC<{
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.3, duration: 0.5 }}
-    className="flex items-start bg-white bg-opacity-50 rounded-lg p-4 shadow-sm"
+    className="flex items-start bg-card/50 rounded-lg p-4 shadow-sm"
   >
     <div className="mr-4 mt-1">{icon}</div>
     <div>
-      <h3 className="text-lg font-semibold text-indigo-600 mb-2">{title}</h3>
-      <p className="text-gray-700">{content}</p>
+      <h3 className="text-lg font-semibold text-primary mb-2">{title}</h3>
+      <p className="text-foreground">{content}</p>
     </div>
   </motion.div>
 );
@@ -290,11 +290,11 @@ const InfoElement: React.FC<{
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.3, duration: 0.5 }}
-    className="flex bg-white bg-opacity-50 rounded-lg p-4 shadow-sm"
+    className="flex bg-card/50 rounded-lg p-4 shadow-sm"
   >
     <div className="mr-4 mt-1">{icon}</div>
     <div className="w-full">
-      <h3 className="text-lg font-semibold text-indigo-600 mb-2">{title}</h3>
+      <h3 className="text-lg font-semibold text-primary mb-2">{title}</h3>
       {element}
     </div>
   </motion.div>
