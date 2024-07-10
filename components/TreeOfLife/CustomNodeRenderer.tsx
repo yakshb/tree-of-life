@@ -8,6 +8,7 @@ interface TreeNodeData extends TreeNodeDatum {
     description?: string;
     status?: 'Living' | 'Extinct' | 'Living and Extinct' | 'Developing';
   };
+  dynamicWidth?: number;
 }
 
 interface CustomNodeProps {
@@ -18,61 +19,54 @@ interface CustomNodeProps {
 
 const CustomNodeRenderer: React.FC<CustomNodeProps> = ({ nodeDatum, toggleNode, onNodeClick }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [isClicked, setIsClicked] = useState(false);
 
   const handleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     toggleNode();
     onNodeClick(nodeDatum);
-    setIsClicked(prevState => !prevState);
   }, [toggleNode, onNodeClick, nodeDatum]);
 
   const getNodeColor = useCallback(() => {
-    if (isClicked) {
-      return "#FFA500"; // Orange color for clicked nodes
-    }
     switch (nodeDatum.attributes?.status) {
       case 'Living':
       case 'Living and Extinct':
         return "#48bb78"; // Green
       case 'Extinct':
-        return "#DC2626"; // Red (changed from #7C0A02 for better visibility)
+        return "#DC2626"; // Red
       case 'Developing':
         return "#3B82F6"; // Blue
       default:
         return "#9CA3AF"; // Gray for unknown status
     }
-  }, [isClicked, nodeDatum.attributes?.status]);
+  }, [nodeDatum.attributes?.status]);
 
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
           <motion.g
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.5 }}
-            transition={{ duration: 0.3 }}
             onClick={handleClick}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             style={{ cursor: 'pointer' }}
           >
             <motion.circle
-              r={20}
+              r={15}
               fill={getNodeColor()}
               stroke={isHovered ? "#ffffff" : "transparent"}
-              strokeWidth={1}
+              strokeWidth={2}
               initial={{ scale: 1 }}
               whileHover={{ scale: 1.1 }}
             />
             <motion.text
               dy="0.35em"
-              x={30}
+              x={20}
               textAnchor="start"
-              fontSize={12}
+              fontSize={20}
               fill="#333"
-              fontWeight={500}
+              fontWeight={isHovered ? 600 : 500}
+              initial={{ opacity: 0.7 }}
+              animate={{ opacity: isHovered ? 1 : 0.7 }}
             >
               {nodeDatum.name}
             </motion.text>
