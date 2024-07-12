@@ -72,7 +72,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="h-[850px] flex flex-col items-center justify-center text-muted-foreground bg-card rounded-lg p-6"
+        className="h-[750px] flex flex-col items-center justify-center text-muted-foreground bg-card rounded-lg p-6"
       >
         <Info className="w-16 h-16 mb-4 text-primary" />
         <p className="text-lg font-semibold text-center">
@@ -134,7 +134,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="h-[850px] overflow-auto bg-card shadow-lg">
+      <Card className="h-[750px] overflow-auto bg-card shadow-lg">
         <CardContent className="p-6">
           <motion.h2
             initial={{ opacity: 0, x: -20 }}
@@ -271,7 +271,7 @@ const InfoItem: React.FC<{
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.3, duration: 0.5 }}
-    className="flex items-start bg-card/50 rounded-lg p-4 shadow-sm"
+    className="flex items-start bg-card/50 rounded-lg p-4 shadow-md"
   >
     <div className="mr-4 mt-1">{icon}</div>
     <div>
@@ -290,7 +290,7 @@ const InfoElement: React.FC<{
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.3, duration: 0.5 }}
-    className="flex bg-card/50 rounded-lg p-4 shadow-sm"
+    className="flex bg-card/50 rounded-lg p-4 shadow-md"
   >
     <div className="mr-4 mt-1">{icon}</div>
     <div className="w-full">

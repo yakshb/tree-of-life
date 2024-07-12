@@ -26,7 +26,7 @@ const ExplorationPath: React.FC<ExplorationPathProps> = ({ path, onNavigate }) =
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="text-blue-600 hover:underline cursor-pointer"
+            className="text-green-800 dark:text-green-200 hover:underline cursor-pointer"
             onClick={() => onNavigate(index)}
           >
             {item.name}
