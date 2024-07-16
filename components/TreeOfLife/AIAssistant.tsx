@@ -87,11 +87,11 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
     [handleInputChange]
   );
 
-  useEffect(() => {
-    if (input.trim() !== "") {
-      handleSubmit(new Event("submit") as any);
-    }
-  }, [input, handleSubmit]);
+  // useEffect(() => {
+  //   if (input.trim() !== "") {
+  //     handleSubmit(new Event("submit") as any);
+  //   }
+  // }, [input, handleSubmit]);
 
   if (!node) {
     return (

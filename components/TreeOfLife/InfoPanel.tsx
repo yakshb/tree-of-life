@@ -32,6 +32,7 @@ interface TreeNodeData extends TreeNodeDatum {
     genus?: string;
     species?: string;
     geologicalAge?: string;
+    [key: string]: string | undefined;  // Add index signature
   };
 }
 
@@ -39,7 +40,7 @@ interface InfoPanelProps {
   node: TreeNodeData | null;
 }
 
-const geologicalPeriods = {
+const geologicalPeriods: { [key: string]: number } = {
   Hadean: 4600,
   Archean: 4000,
   Proterozoic: 2500,
