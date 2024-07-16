@@ -134,7 +134,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="h-[750px] overflow-auto bg-card shadow-lg">
+      <Card className="h-[750px] overflow-auto bg-gradient-to-br from-background to-emerald-50 shadow-lg">
         <CardContent className="p-6">
           <motion.h2
             initial={{ opacity: 0, x: -20 }}

@@ -19,6 +19,8 @@ import dynamic from "next/dynamic";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ZoomIn, ZoomOut, Maximize, RotateCcw } from "lucide-react";
+import NodeLegend from "./NodeLegend";
+import AIChatTest from "../ai-interface/AIChatTest";
 
 const DynamicTree = dynamic(() => import("react-d3-tree"), { ssr: false });
 
@@ -173,7 +175,7 @@ const VisualTreeOfLife: React.FC = () => {
             </div>
             <div
               ref={treeContainerRef}
-              className={`${styles.treeContainer} bg-background dark:bg-gray-900 rounded-b-lg overflow-hidden`}
+              className={`${styles.treeContainer} bg-background dark:bg-gray-900 rounded-b-lg overflow-hidden relative`}
               style={{ height: "calc(100% - 40px)" }}
             >
               <DynamicTree
@@ -201,13 +203,16 @@ const VisualTreeOfLife: React.FC = () => {
                   console.log("Tree updated:", updateArgs);
                 }}
               />
+              <div className="absolute bottom-4 left-4">
+                <NodeLegend />
+              </div>
             </div>
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={30} minSize={30}>
             <div className="h-full p-4">
               <Tabs defaultValue="summary" className="">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger
                     className="font-semibold tracking-tight"
                     value="summary"
@@ -220,12 +225,23 @@ const VisualTreeOfLife: React.FC = () => {
                   >
                     AI Insights
                   </TabsTrigger>
+                  <TabsTrigger
+                    className="font-semibold tracking-tight"
+                    value="testarea"
+                  >
+                    Test Area
+                  </TabsTrigger>
                 </TabsList>
                 <TabsContent value="summary">
                   <InfoPanel node={selectedNode} />
                 </TabsContent>
                 <TabsContent value="ai">
+                  {/* <AIAssistant onResponse={setAIResponse} node={selectedNode} /> */}
+                  <AIChatTest />
+                </TabsContent>
+                <TabsContent value="testarea">
                   <AIAssistant onResponse={setAIResponse} node={selectedNode} />
+                  {/* <AIChatTest /> */}
                 </TabsContent>
               </Tabs>
             </div>

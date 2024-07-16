@@ -20,8 +20,7 @@ export const treeData = {
       name: "Prokaryotes",
       attributes: {
         scientificName: "Prokaryota",
-        description:
-          "Single-celled organisms without a nucleus, the first form of life on Earth. Characterized by simple cellular structure and circular DNA.",
+        description: "Single-celled organisms without a nucleus, the first form of life on Earth. Characterized by simple cellular structure and circular DNA.",
         age: "~3.8 billion years ago",
         status: "Living",
         domain: "Bacteria and Archaea",
@@ -38,8 +37,7 @@ export const treeData = {
           name: "Bacteria",
           attributes: {
             scientificName: "Bacteria",
-            description:
-              "Diverse group of prokaryotic microorganisms, found in every habitat on Earth. They play crucial roles in nutrient cycling and many form symbiotic relationships with other organisms.",
+            description: "Diverse group of prokaryotic microorganisms, found in every habitat on Earth. They play crucial roles in nutrient cycling and many form symbiotic relationships with other organisms.",
             age: "~3.5 billion years ago",
             status: "Living",
             domain: "Bacteria",
@@ -56,8 +54,7 @@ export const treeData = {
               name: "Proteobacteria",
               attributes: {
                 scientificName: "Proteobacteria",
-                description:
-                  "Largest and most diverse group of bacteria, including many pathogens and nitrogen-fixing bacteria. Includes E. coli, Salmonella, and Helicobacter.",
+                description: "Largest and most diverse group of bacteria, including many pathogens and nitrogen-fixing bacteria. Includes E. coli, Salmonella, and Helicobacter.",
                 age: "~2.5 billion years ago",
                 status: "Living",
                 domain: "Bacteria",
@@ -69,13 +66,48 @@ export const treeData = {
                 genus: "N/A",
                 geologicalAge: "Proterozoic to present",
               },
+              children: [
+                {
+                  name: "Alphaproteobacteria",
+                  attributes: {
+                    scientificName: "Alphaproteobacteria",
+                    description: "Diverse class including many symbionts of plants and animals. Includes Rhizobium (nitrogen-fixing bacteria) and Rickettsia (intracellular parasites).",
+                    age: "~2.5 billion years ago",
+                    status: "Living",
+                    domain: "Bacteria",
+                    kingdom: "N/A",
+                    phylum: "Proteobacteria",
+                    class: "Alphaproteobacteria",
+                    order: "N/A",
+                    family: "N/A",
+                    genus: "N/A",
+                    geologicalAge: "Proterozoic to present",
+                  },
+                },
+                {
+                  name: "Gammaproteobacteria",
+                  attributes: {
+                    scientificName: "Gammaproteobacteria",
+                    description: "Large class including many human pathogens. Includes Escherichia, Salmonella, and Pseudomonas.",
+                    age: "~2.1 billion years ago",
+                    status: "Living",
+                    domain: "Bacteria",
+                    kingdom: "N/A",
+                    phylum: "Proteobacteria",
+                    class: "Gammaproteobacteria",
+                    order: "N/A",
+                    family: "N/A",
+                    genus: "N/A",
+                    geologicalAge: "Proterozoic to present",
+                  },
+                },
+              ],
             },
             {
               name: "Cyanobacteria",
               attributes: {
                 scientificName: "Cyanobacteria",
-                description:
-                  "Photosynthetic bacteria that played a crucial role in oxygenating Earth's atmosphere. Some can fix nitrogen and form symbiotic relationships with plants.",
+                description: "Photosynthetic bacteria that played a crucial role in oxygenating Earth's atmosphere. Some can fix nitrogen and form symbiotic relationships with plants.",
                 age: "~2.7 billion years ago",
                 status: "Living",
                 domain: "Bacteria",
@@ -87,13 +119,48 @@ export const treeData = {
                 genus: "N/A",
                 geologicalAge: "Archean to present",
               },
+              children: [
+                {
+                  name: "Nostocales",
+                  attributes: {
+                    scientificName: "Nostocales",
+                    description: "Order of filamentous cyanobacteria, many capable of nitrogen fixation. Includes Nostoc and Anabaena.",
+                    age: "~2.1 billion years ago",
+                    status: "Living",
+                    domain: "Bacteria",
+                    kingdom: "N/A",
+                    phylum: "Cyanobacteria",
+                    class: "N/A",
+                    order: "Nostocales",
+                    family: "N/A",
+                    genus: "N/A",
+                    geologicalAge: "Proterozoic to present",
+                  },
+                },
+                {
+                  name: "Chroococcales",
+                  attributes: {
+                    scientificName: "Chroococcales",
+                    description: "Order of coccoid cyanobacteria. Includes Synechococcus, important in marine ecosystems.",
+                    age: "~2.5 billion years ago",
+                    status: "Living",
+                    domain: "Bacteria",
+                    kingdom: "N/A",
+                    phylum: "Cyanobacteria",
+                    class: "N/A",
+                    order: "Chroococcales",
+                    family: "N/A",
+                    genus: "N/A",
+                    geologicalAge: "Proterozoic to present",
+                  },
+                },
+              ],
             },
             {
               name: "Firmicutes",
               attributes: {
                 scientificName: "Firmicutes",
-                description:
-                  "Gram-positive bacteria, including many common soil bacteria and some pathogens. Includes Bacillus, Staphylococcus, and Clostridium species.",
+                description: "Gram-positive bacteria, including many common soil bacteria and some pathogens. Includes Bacillus, Staphylococcus, and Clostridium species.",
                 age: "~3 billion years ago",
                 status: "Living",
                 domain: "Bacteria",
@@ -105,6 +172,78 @@ export const treeData = {
                 genus: "N/A",
                 geologicalAge: "Archean to present",
               },
+              children: [
+                {
+                  name: "Bacilli",
+                  attributes: {
+                    scientificName: "Bacilli",
+                    description: "Class including many aerobic or facultatively anaerobic bacteria. Includes Bacillus and Staphylococcus.",
+                    age: "~2.7 billion years ago",
+                    status: "Living",
+                    domain: "Bacteria",
+                    kingdom: "N/A",
+                    phylum: "Firmicutes",
+                    class: "Bacilli",
+                    order: "N/A",
+                    family: "N/A",
+                    genus: "N/A",
+                    geologicalAge: "Archean to present",
+                  },
+                },
+                {
+                  name: "Clostridia",
+                  attributes: {
+                    scientificName: "Clostridia",
+                    description: "Class of anaerobic bacteria, including some pathogens and many important in fermentation. Includes Clostridium.",
+                    age: "~2.9 billion years ago",
+                    status: "Living",
+                    domain: "Bacteria",
+                    kingdom: "N/A",
+                    phylum: "Firmicutes",
+                    class: "Clostridia",
+                    order: "N/A",
+                    family: "N/A",
+                    genus: "N/A",
+                    geologicalAge: "Archean to present",
+                  },
+                },
+              ],
+            },
+            {
+              name: "Actinobacteria",
+              attributes: {
+                scientificName: "Actinobacteria",
+                description: "Phylum of mostly Gram-positive bacteria with high GC content. Includes soil bacteria, pathogens, and producers of antibiotics.",
+                age: "~2.7 billion years ago",
+                status: "Living",
+                domain: "Bacteria",
+                kingdom: "N/A",
+                phylum: "Actinobacteria",
+                class: "N/A",
+                order: "N/A",
+                family: "N/A",
+                genus: "N/A",
+                geologicalAge: "Proterozoic to present",
+              },
+              children: [
+                {
+                  name: "Streptomycetales",
+                  attributes: {
+                    scientificName: "Streptomycetales",
+                    description: "Order including Streptomyces, known for producing many antibiotics.",
+                    age: "~450 million years ago",
+                    status: "Living",
+                    domain: "Bacteria",
+                    kingdom: "N/A",
+                    phylum: "Actinobacteria",
+                    class: "Actinobacteria",
+                    order: "Streptomycetales",
+                    family: "N/A",
+                    genus: "N/A",
+                    geologicalAge: "Ordovician to present",
+                  },
+                },
+              ],
             },
           ],
         },
@@ -112,8 +251,7 @@ export const treeData = {
           name: "Archaea",
           attributes: {
             scientificName: "Archaea",
-            description:
-              "Ancient prokaryotes, often found in extreme environments but also widespread in moderate ones. They have unique cell membrane lipids and many have metabolic pathways distinct from bacteria.",
+            description: "Ancient prokaryotes, often found in extreme environments but also widespread in moderate ones. They have unique cell membrane lipids and many have metabolic pathways distinct from bacteria.",
             age: "~3.8 billion years ago",
             status: "Living",
             domain: "Archaea",
@@ -130,8 +268,7 @@ export const treeData = {
               name: "Euryarchaeota",
               attributes: {
                 scientificName: "Euryarchaeota",
-                description:
-                  "Diverse group including methanogens and extreme halophiles. Methanogens play a crucial role in carbon cycling and are important in anaerobic environments.",
+                description: "Diverse group including methanogens and extreme halophiles. Methanogens play a crucial role in carbon cycling and are important in anaerobic environments.",
                 age: "~3.5 billion years ago",
                 status: "Living",
                 domain: "Archaea",
@@ -143,13 +280,48 @@ export const treeData = {
                 genus: "N/A",
                 geologicalAge: "Archean to present",
               },
+              children: [
+                {
+                  name: "Methanobacteria",
+                  attributes: {
+                    scientificName: "Methanobacteria",
+                    description: "Class of methane-producing archaea, important in anaerobic environments and biogas production.",
+                    age: "~3.5 billion years ago",
+                    status: "Living",
+                    domain: "Archaea",
+                    kingdom: "N/A",
+                    phylum: "Euryarchaeota",
+                    class: "Methanobacteria",
+                    order: "N/A",
+                    family: "N/A",
+                    genus: "N/A",
+                    geologicalAge: "Archean to present",
+                  },
+                },
+                {
+                  name: "Halobacteria",
+                  attributes: {
+                    scientificName: "Halobacteria",
+                    description: "Extreme halophiles, thriving in high salt concentrations. Often found in salt lakes and solar salterns.",
+                    age: "~1.5 billion years ago",
+                    status: "Living",
+                    domain: "Archaea",
+                    kingdom: "N/A",
+                    phylum: "Euryarchaeota",
+                    class: "Halobacteria",
+                    order: "N/A",
+                    family: "N/A",
+                    genus: "N/A",
+                    geologicalAge: "Proterozoic to present",
+                  },
+                },
+              ],
             },
             {
               name: "Crenarchaeota",
               attributes: {
                 scientificName: "Crenarchaeota",
-                description:
-                  "Mostly thermophilic organisms, often found in hot springs and hydrothermal vents. Some species can oxidize ammonia and are important in marine ecosystems.",
+                description: "Mostly thermophilic organisms, often found in hot springs and hydrothermal vents. Some species can oxidize ammonia and are important in marine ecosystems.",
                 age: "~3.5 billion years ago",
                 status: "Living",
                 domain: "Archaea",
@@ -161,13 +333,31 @@ export const treeData = {
                 genus: "N/A",
                 geologicalAge: "Archean to present",
               },
+              children: [
+                {
+                  name: "Thermoprotei",
+                  attributes: {
+                    scientificName: "Thermoprotei",
+                    description: "Class of thermophilic archaea, including sulfur-metabolizing organisms found in hot springs and hydrothermal vents.",
+                    age: "~3.4 billion years ago",
+                    status: "Living",
+                    domain: "Archaea",
+                    kingdom: "N/A",
+                    phylum: "Crenarchaeota",
+                    class: "Thermoprotei",
+                    order: "N/A",
+                    family: "N/A",
+                    genus: "N/A",
+                    geologicalAge: "Archean to present",
+                  },
+                },
+              ],
             },
             {
               name: "Thaumarchaeota",
               attributes: {
                 scientificName: "Thaumarchaeota",
-                description:
-                  "Ammonia-oxidizing archaea, important in global nitrogen and carbon cycles. They are among the most abundant microorganisms in marine environments.",
+                description: "Ammonia-oxidizing archaea, important in global nitrogen and carbon cycles. They are among the most abundant microorganisms in marine environments.",
                 age: "~2.7 billion years ago",
                 status: "Living",
                 domain: "Archaea",
@@ -178,6 +368,42 @@ export const treeData = {
                 family: "N/A",
                 genus: "N/A",
                 geologicalAge: "Proterozoic to present",
+              },
+              children: [
+                {
+                  name: "Nitrosopumilales",
+                  attributes: {
+                    scientificName: "Nitrosopumilales",
+                    description: "Order including important marine ammonia-oxidizing archaea, such as Nitrosopumilus.",
+                    age: "~2.5 billion years ago",
+                    status: "Living",
+                    domain: "Archaea",
+                    kingdom: "N/A",
+                    phylum: "Thaumarchaeota",
+                    class: "Nitrososphaeria",
+                    order: "Nitrosopumilales",
+                    family: "N/A",
+                    genus: "N/A",
+                    geologicalAge: "Proterozoic to present",
+                  },
+                },
+              ],
+            },
+            {
+              name: "Nanoarchaeota",
+              attributes: {
+                scientificName: "Nanoarchaeota",
+                description: "Phylum of symbiotic archaea with extremely small cells and genomes. Known for their unique parasitic or symbiotic lifestyles.",
+                age: "Unknown, but likely ancient",
+                status: "Living",
+                domain: "Archaea",
+                kingdom: "N/A",
+                phylum: "Nanoarchaeota",
+                class: "N/A",
+                order: "N/A",
+                family: "N/A",
+                genus: "N/A",
+                geologicalAge: "Unknown to present",
               },
             },
           ],
@@ -1615,274 +1841,6 @@ export const treeData = {
                           },
                           children: [
                             {
-                              name: "Primates",
-                              attributes: {
-                                scientificName: "Primates",
-                                description:
-                                  "Mammals including lemurs, monkeys, apes, and humans. They are characterized by large brains, stereoscopic vision, and grasping hands and feet.",
-                                age: "~65 million years ago",
-                                status: "Living and Extinct",
-                                domain: "Eukarya",
-                                kingdom: "Animalia",
-                                phylum: "Chordata",
-                                subphylum: "Vertebrata",
-                                class: "Mammalia",
-                                order: "Primates",
-                                family: "N/A",
-                                genus: "N/A",
-                                geologicalAge: "Paleocene to present",
-                              },
-                              children: [
-                                {
-                                  name: "Hominidae",
-                                  attributes: {
-                                    scientificName: "Hominidae",
-                                    description:
-                                      "Great apes, including humans, chimpanzees, gorillas, and orangutans. They are the most intelligent primates, with complex social structures and tool use.",
-                                    age: "~20 million years ago",
-                                    status: "Living and Extinct",
-                                    domain: "Eukarya",
-                                    kingdom: "Animalia",
-                                    phylum: "Chordata",
-                                    subphylum: "Vertebrata",
-                                    class: "Mammalia",
-                                    order: "Primates",
-                                    family: "Hominidae",
-                                    genus: "N/A",
-                                    geologicalAge: "Miocene to present",
-                                  },
-                                  children: [
-                                    {
-                                      name: "Homo",
-                                      attributes: {
-                                        scientificName: "Homo",
-                                        description:
-                                          "The genus that includes modern humans and extinct human species. Characterized by bipedalism, large brains, and complex culture.",
-                                        age: "~2.5 million years ago",
-                                        status: "Living and Extinct",
-                                        domain: "Eukarya",
-                                        kingdom: "Animalia",
-                                        phylum: "Chordata",
-                                        subphylum: "Vertebrata",
-                                        class: "Mammalia",
-                                        order: "Primates",
-                                        family: "Hominidae",
-                                        genus: "Homo",
-                                        geologicalAge: "Pleistocene to present",
-                                      },
-                                      children: [
-                                        {
-                                          name: "Homo habilis",
-                                          attributes: {
-                                            scientificName: "Homo habilis",
-                                            description:
-                                              "One of the earliest species in the genus Homo. Known for making simple stone tools.",
-                                            age: "~2.3 to 1.5 million years ago",
-                                            status: "Extinct",
-                                            domain: "Eukarya",
-                                            kingdom: "Animalia",
-                                            phylum: "Chordata",
-                                            subphylum: "Vertebrata",
-                                            class: "Mammalia",
-                                            order: "Primates",
-                                            family: "Hominidae",
-                                            genus: "Homo",
-                                            species: "habilis",
-                                            geologicalAge: "Pleistocene",
-                                          },
-                                        },
-                                        {
-                                          name: "Homo erectus",
-                                          attributes: {
-                                            scientificName: "Homo erectus",
-                                            description:
-                                              "The first human species to spread out of Africa. Known for advanced tool use and possibly the control of fire.",
-                                            age: "~2 million to 100,000 years ago",
-                                            status: "Extinct",
-                                            domain: "Eukarya",
-                                            kingdom: "Animalia",
-                                            phylum: "Chordata",
-                                            subphylum: "Vertebrata",
-                                            class: "Mammalia",
-                                            order: "Primates",
-                                            family: "Hominidae",
-                                            genus: "Homo",
-                                            species: "erectus",
-                                            geologicalAge: "Pleistocene",
-                                          },
-                                        },
-                                        {
-                                          name: "Homo neanderthalensis",
-                                          attributes: {
-                                            scientificName:
-                                              "Homo neanderthalensis",
-                                            description:
-                                              "Closely related to modern humans, lived in Europe and parts of Asia. Known for advanced tools, possible symbolic thought, and interbreeding with Homo sapiens.",
-                                            age: "~400,000 to 40,000 years ago",
-                                            status: "Extinct",
-                                            domain: "Eukarya",
-                                            kingdom: "Animalia",
-                                            phylum: "Chordata",
-                                            subphylum: "Vertebrata",
-                                            class: "Mammalia",
-                                            order: "Primates",
-                                            family: "Hominidae",
-                                            genus: "Homo",
-                                            species: "neanderthalensis",
-                                            geologicalAge: "Pleistocene",
-                                          },
-                                        },
-                                        {
-                                          name: "Homo floresiensis",
-                                          attributes: {
-                                            scientificName: "Homo floresiensis",
-                                            description:
-                                              "A small-bodied species found on the island of Flores, Indonesia. Nicknamed 'hobbit' due to its small size.",
-                                            age: "~100,000 to 50,000 years ago",
-                                            status: "Extinct",
-                                            domain: "Eukarya",
-                                            kingdom: "Animalia",
-                                            phylum: "Chordata",
-                                            subphylum: "Vertebrata",
-                                            class: "Mammalia",
-                                            order: "Primates",
-                                            family: "Hominidae",
-                                            genus: "Homo",
-                                            species: "floresiensis",
-                                            geologicalAge: "Pleistocene",
-                                          },
-                                        },
-                                        {
-                                          name: "Homo denisova",
-                                          attributes: {
-                                            scientificName: "Homo denisova",
-                                            description:
-                                              "Known mostly from DNA evidence. Interbred with both Neanderthals and modern humans.",
-                                            age: "~300,000 to 40,000 years ago",
-                                            status: "Extinct",
-                                            domain: "Eukarya",
-                                            kingdom: "Animalia",
-                                            phylum: "Chordata",
-                                            subphylum: "Vertebrata",
-                                            class: "Mammalia",
-                                            order: "Primates",
-                                            family: "Hominidae",
-                                            genus: "Homo",
-                                            species: "denisova",
-                                            geologicalAge: "Pleistocene",
-                                          },
-                                        },
-                                        {
-                                          name: "Homo sapiens",
-                                          attributes: {
-                                            scientificName: "Homo sapiens",
-                                            description:
-                                              "Modern humans, characterized by complex cognitive abilities and cultural development. The only extant species in the genus Homo.",
-                                            age: "~300,000 years ago",
-                                            status: "Living",
-                                            domain: "Eukarya",
-                                            kingdom: "Animalia",
-                                            phylum: "Chordata",
-                                            subphylum: "Vertebrata",
-                                            class: "Mammalia",
-                                            order: "Primates",
-                                            family: "Hominidae",
-                                            genus: "Homo",
-                                            species: "sapiens",
-                                            geologicalAge:
-                                              "Pleistocene to present",
-                                          },
-                                          children: [
-                                            {
-                                              name: "Digital Entities",
-                                              attributes: {
-                                                scientificName: "N/A",
-                                                description:
-                                                  "Non-biological systems created by humans that exhibit some characteristics of life. While not biological, they represent a significant human creation.",
-                                                age: "~70 years ago (considering the advent of modern computing)",
-                                                status: "Non-biological",
-                                                domain: "Digital",
-                                                kingdom: "N/A",
-                                                phylum: "N/A",
-                                                class: "N/A",
-                                                order: "N/A",
-                                                family: "N/A",
-                                                genus: "N/A",
-                                                species: "N/A",
-                                                geologicalAge: "Anthropocene",
-                                              },
-                                              children: [
-                                                {
-                                                  name: "Artificial Intelligence",
-                                                  attributes: {
-                                                    scientificName: "N/A",
-                                                    description:
-                                                      "Systems capable of performing tasks that typically require human intelligence. Includes machine learning, neural networks, and expert systems.",
-                                                    age: "~70 years ago (considering early AI research in the 1950s)",
-                                                    status: "Non-biological",
-                                                    domain: "Digital",
-                                                    kingdom: "N/A",
-                                                    phylum: "N/A",
-                                                    class: "N/A",
-                                                    order: "N/A",
-                                                    family: "N/A",
-                                                    genus: "N/A",
-                                                    species: "N/A",
-                                                    geologicalAge:
-                                                      "Anthropocene",
-                                                  },
-                                                },
-                                                {
-                                                  name: "Virtual Life Forms",
-                                                  attributes: {
-                                                    scientificName: "N/A",
-                                                    description:
-                                                      "Digital creatures that simulate aspects of biological life. Includes cellular automata, artificial life simulations, and digital ecosystems.",
-                                                    age: "~40 years ago (considering early artificial life simulations in the 1980s)",
-                                                    status: "Non-biological",
-                                                    domain: "Digital",
-                                                    kingdom: "N/A",
-                                                    phylum: "N/A",
-                                                    class: "N/A",
-                                                    order: "N/A",
-                                                    family: "N/A",
-                                                    genus: "N/A",
-                                                    species: "N/A",
-                                                    geologicalAge:
-                                                      "Anthropocene",
-                                                  },
-                                                },
-                                                {
-                                                  name: "Distributed Systems",
-                                                  attributes: {
-                                                    scientificName: "N/A",
-                                                    description:
-                                                      "Networks of interconnected digital entities that can exhibit emergent behaviors. Includes the internet, blockchain systems, and peer-to-peer networks.",
-                                                    age: "~50 years ago (considering the early development of ARPANET in the late 1960s)",
-                                                    status: "Non-biological",
-                                                    domain: "Digital",
-                                                    kingdom: "N/A",
-                                                    phylum: "N/A",
-                                                    class: "N/A",
-                                                    order: "N/A",
-                                                    family: "N/A",
-                                                    genus: "N/A",
-                                                    species: "N/A",
-                                                    geologicalAge:
-                                                      "Anthropocene",
-                                                  },
-                                                },
-                                              ],
-                                            },
-                                          ],
-                                        },
-                                      ],
-                                    },
-                                  ],
-                                },
-                              ],
-                            },
-                            {
                               name: "Rodentia",
                               attributes: {
                                 scientificName: "Rodentia",
@@ -1942,6 +1900,733 @@ export const treeData = {
                                 geologicalAge: "Eocene to present",
                               },
                             },
+                            {
+                              name: "Primates",
+                              attributes: {
+                                scientificName: "Primates",
+                                description:
+                                  "Mammals including lemurs, lorises, monkeys, apes, and humans. Characterized by large brains, stereoscopic vision, and grasping hands and feet.",
+                                age: "~65-85 million years ago",
+                                status: "Living and Extinct",
+                                domain: "Eukarya",
+                                kingdom: "Animalia",
+                                phylum: "Chordata",
+                                subphylum: "Vertebrata",
+                                class: "Mammalia",
+                                order: "Primates",
+                                family: "N/A",
+                                genus: "N/A",
+                                geologicalAge: "Late Cretaceous to present",
+                              },
+                              children: [
+                                {
+                                  name: "Strepsirrhini",
+                                  attributes: {
+                                    scientificName: "Strepsirrhini",
+                                    description:
+                                      "'Wet-nosed' primates including lemurs, lorises, and galagos. Generally retain more primitive features than haplorrhines.",
+                                    age: "~60 million years ago",
+                                    status: "Living",
+                                    suborder: "Strepsirrhini",
+                                    geologicalAge: "Paleocene to present",
+                                  },
+                                  children: [
+                                    {
+                                      name: "Lemuriformes",
+                                      attributes: {
+                                        scientificName: "Lemuriformes",
+                                        description:
+                                          "Lemurs and related species, found primarily in Madagascar. Known for their varied adaptations and unique evolutionary history.",
+                                        age: "~50 million years ago",
+                                        status: "Living",
+                                        infraorder: "Lemuriformes",
+                                        geologicalAge: "Eocene to present",
+                                      },
+                                      children: [
+                                        {
+                                          name: "Lemuridae",
+                                          attributes: {
+                                            scientificName: "Lemuridae",
+                                            description:
+                                              "True lemurs, including ring-tailed lemurs and ruffed lemurs. Highly social with distinctive vocalizations.",
+                                            age: "~40 million years ago",
+                                            status: "Living",
+                                            family: "Lemuridae",
+                                            geologicalAge: "Eocene to present",
+                                          },
+                                        },
+                                        {
+                                          name: "Indriidae",
+                                          attributes: {
+                                            scientificName: "Indriidae",
+                                            description:
+                                              "Woolly lemurs and sifakas. Largest living lemurs, known for their distinctive vertical clinging and leaping locomotion.",
+                                            age: "~35 million years ago",
+                                            status: "Living",
+                                            family: "Indriidae",
+                                            geologicalAge:
+                                              "Oligocene to present",
+                                          },
+                                        },
+                                      ],
+                                    },
+                                    {
+                                      name: "Lorisiformes",
+                                      attributes: {
+                                        scientificName: "Lorisiformes",
+                                        description:
+                                          "Lorises, pottos, and galagos, found in Africa and Asia. Typically nocturnal with large eyes.",
+                                        age: "~40 million years ago",
+                                        status: "Living",
+                                        infraorder: "Lorisiformes",
+                                        geologicalAge: "Eocene to present",
+                                      },
+                                      children: [
+                                        {
+                                          name: "Lorisidae",
+                                          attributes: {
+                                            scientificName: "Lorisidae",
+                                            description:
+                                              "Slow lorises and slender lorises. Known for their slow, deliberate movements and venomous bite.",
+                                            age: "~35 million years ago",
+                                            status: "Living",
+                                            family: "Lorisidae",
+                                            geologicalAge:
+                                              "Oligocene to present",
+                                          },
+                                        },
+                                        {
+                                          name: "Galagidae",
+                                          attributes: {
+                                            scientificName: "Galagidae",
+                                            description:
+                                              "Bushbabies or galagos. Small, nocturnal primates known for their large eyes and powerful jumping abilities.",
+                                            age: "~30 million years ago",
+                                            status: "Living",
+                                            family: "Galagidae",
+                                            geologicalAge:
+                                              "Oligocene to present",
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  ],
+                                },
+                                {
+                                  name: "Haplorrhini",
+                                  attributes: {
+                                    scientificName: "Haplorrhini",
+                                    description:
+                                      "'Dry-nosed' primates including tarsiers, monkeys, and apes.",
+                                    age: "~63 million years ago",
+                                    status: "Living",
+                                    suborder: "Haplorrhini",
+                                    geologicalAge: "Paleocene to present",
+                                  },
+                                  children: [
+                                    {
+                                      name: "Tarsiiformes",
+                                      attributes: {
+                                        scientificName: "Tarsiiformes",
+                                        description:
+                                          "Tarsiers, small nocturnal primates native to Southeast Asian islands. Known for their enormous eyes and ability to rotate their heads 180 degrees.",
+                                        age: "~55 million years ago",
+                                        status: "Living",
+                                        infraorder: "Tarsiiformes",
+                                        geologicalAge: "Eocene to present",
+                                      },
+                                    },
+                                    {
+                                      name: "Simiiformes",
+                                      attributes: {
+                                        scientificName: "Simiiformes",
+                                        description:
+                                          "Monkeys, apes, and humans, also known as anthropoids. Characterized by complex social behaviors and advanced cognitive abilities.",
+                                        age: "~40 million years ago",
+                                        status: "Living",
+                                        infraorder: "Simiiformes",
+                                        geologicalAge: "Eocene to present",
+                                      },
+                                      children: [
+                                        {
+                                          name: "Platyrrhini",
+                                          attributes: {
+                                            scientificName: "Platyrrhini",
+                                            description:
+                                              "New World monkeys, found in Central and South America. Characterized by flat noses with outward-facing nostrils.",
+                                            age: "~35 million years ago",
+                                            status: "Living",
+                                            parvorder: "Platyrrhini",
+                                            geologicalAge:
+                                              "Oligocene to present",
+                                          },
+                                          children: [
+                                            {
+                                              name: "Cebidae",
+                                              attributes: {
+                                                scientificName: "Cebidae",
+                                                description:
+                                                  "Capuchin and squirrel monkeys. Known for their intelligence and dexterity.",
+                                                age: "~20 million years ago",
+                                                status: "Living",
+                                                family: "Cebidae",
+                                                geologicalAge:
+                                                  "Miocene to present",
+                                              },
+                                            },
+                                            {
+                                              name: "Atelidae",
+                                              attributes: {
+                                                scientificName: "Atelidae",
+                                                description:
+                                                  "Howler and spider monkeys. Largest New World monkeys, known for their prehensile tails.",
+                                                age: "~15 million years ago",
+                                                status: "Living",
+                                                family: "Atelidae",
+                                                geologicalAge:
+                                                  "Miocene to present",
+                                              },
+                                            },
+                                          ],
+                                        },
+                                        {
+                                          name: "Catarrhini",
+                                          attributes: {
+                                            scientificName: "Catarrhini",
+                                            description:
+                                              "Old World monkeys, apes, and humans. Characterized by downward-facing nostrils and more complex social structures.",
+                                            age: "~25-30 million years ago",
+                                            status: "Living",
+                                            parvorder: "Catarrhini",
+                                            geologicalAge:
+                                              "Oligocene to present",
+                                          },
+                                          children: [
+                                            {
+                                              name: "Cercopithecoidea",
+                                              attributes: {
+                                                scientificName:
+                                                  "Cercopithecoidea",
+                                                description:
+                                                  "Old World monkeys, including macaques, baboons, and langurs. Highly adaptable and widely distributed across Africa and Asia.",
+                                                age: "~20 million years ago",
+                                                status: "Living",
+                                                superfamily: "Cercopithecoidea",
+                                                geologicalAge:
+                                                  "Miocene to present",
+                                              },
+                                              children: [
+                                                {
+                                                  name: "Cercopithecinae",
+                                                  attributes: {
+                                                    scientificName:
+                                                      "Cercopithecinae",
+                                                    description:
+                                                      "Baboons, macaques, and guenons. Often terrestrial and known for cheek pouches used for temporary food storage.",
+                                                    age: "~15 million years ago",
+                                                    status: "Living",
+                                                    subfamily:
+                                                      "Cercopithecinae",
+                                                    geologicalAge:
+                                                      "Miocene to present",
+                                                  },
+                                                },
+                                                {
+                                                  name: "Colobinae",
+                                                  attributes: {
+                                                    scientificName: "Colobinae",
+                                                    description:
+                                                      "Langurs, proboscis monkeys, and colobus monkeys. Primarily leaf-eating monkeys with complex stomachs for digesting plant matter.",
+                                                    age: "~15 million years ago",
+                                                    status: "Living",
+                                                    subfamily: "Colobinae",
+                                                    geologicalAge:
+                                                      "Miocene to present",
+                                                  },
+                                                },
+                                              ],
+                                            },
+                                            {
+                                              name: "Hominoidea",
+                                              attributes: {
+                                                scientificName: "Hominoidea",
+                                                description:
+                                                  "Apes and humans, characterized by lack of tails and advanced cognitive abilities.",
+                                                age: "~20 million years ago",
+                                                status: "Living",
+                                                superfamily: "Hominoidea",
+                                                geologicalAge:
+                                                  "Miocene to present",
+                                              },
+                                              children: [
+                                                {
+                                                  name: "Hylobatidae",
+                                                  attributes: {
+                                                    scientificName:
+                                                      "Hylobatidae",
+                                                    description:
+                                                      "Lesser apes or gibbons, known for their long arms and tree-dwelling lifestyle. Highly agile and known for their elaborate vocalizations.",
+                                                    age: "~15 million years ago",
+                                                    status: "Living",
+                                                    family: "Hylobatidae",
+                                                    geologicalAge:
+                                                      "Miocene to present",
+                                                  },
+                                                },
+                                                {
+                                                  name: "Hominidae",
+                                                  attributes: {
+                                                    scientificName: "Hominidae",
+                                                    description:
+                                                      "Great apes, including humans, chimpanzees, gorillas, and orangutans. They are the most intelligent primates, with complex social structures and tool use.",
+                                                    age: "~20 million years ago",
+                                                    status:
+                                                      "Living and Extinct",
+                                                    family: "Hominidae",
+                                                    geologicalAge:
+                                                      "Miocene to present",
+                                                  },
+                                                  children: [
+                                                    {
+                                                      name: "Ponginae",
+                                                      attributes: {
+                                                        scientificName:
+                                                          "Ponginae",
+                                                        description:
+                                                          "Orangutans. Arboreal great apes native to Indonesia and Malaysia, known for their intelligence and distinctive red fur.",
+                                                        age: "~12 million years ago",
+                                                        status: "Living",
+                                                        subfamily: "Ponginae",
+                                                        geologicalAge:
+                                                          "Miocene to present",
+                                                      },
+                                                    },
+                                                    {
+                                                      name: "Homininae",
+                                                      attributes: {
+                                                        scientificName:
+                                                          "Homininae",
+                                                        description:
+                                                          "African great apes and humans. Includes gorillas, chimpanzees, bonobos, and humans.",
+                                                        age: "~8 million years ago",
+                                                        status: "Living",
+                                                        subfamily: "Homininae",
+                                                        geologicalAge:
+                                                          "Miocene to present",
+                                                      },
+                                                      children: [
+                                                        {
+                                                          name: "Gorillini",
+                                                          attributes: {
+                                                            scientificName:
+                                                              "Gorillini",
+                                                            description:
+                                                              "Gorillas. Largest living primates, known for their strength and herbivorous diet.",
+                                                            age: "~8 million years ago",
+                                                            status: "Living",
+                                                            tribe: "Gorillini",
+                                                            geologicalAge:
+                                                              "Miocene to present",
+                                                          },
+                                                        },
+                                                        {
+                                                          name: "Hominini",
+                                                          attributes: {
+                                                            scientificName:
+                                                              "Hominini",
+                                                            description:
+                                                              "Humans, chimpanzees, and their extinct relatives. Characterized by bipedalism in humans and high intelligence.",
+                                                            age: "~6 million years ago",
+                                                            status:
+                                                              "Living and Extinct",
+                                                            tribe: "Hominini",
+                                                            geologicalAge:
+                                                              "Miocene to present",
+                                                          },
+                                                          children: [
+                                                            {
+                                                              name: "Pan",
+                                                              attributes: {
+                                                                scientificName:
+                                                                  "Pan",
+                                                                description:
+                                                                  "Chimpanzees and bonobos. Closest living relatives to humans, known for their complex social behaviors and tool use.",
+                                                                age: "~2 million years ago",
+                                                                status:
+                                                                  "Living",
+                                                                genus: "Pan",
+                                                                geologicalAge:
+                                                                  "Pleistocene to present",
+                                                              },
+                                                            },
+                                                            {
+                                                              name: "Homo",
+                                                              attributes: {
+                                                                scientificName:
+                                                                  "Homo",
+                                                                description:
+                                                                  "The genus that includes modern humans and extinct human species. Characterized by bipedalism, large brains, and complex culture.",
+                                                                age: "~2.5 million years ago",
+                                                                status:
+                                                                  "Living and Extinct",
+                                                                domain:
+                                                                  "Eukarya",
+                                                                kingdom:
+                                                                  "Animalia",
+                                                                phylum:
+                                                                  "Chordata",
+                                                                subphylum:
+                                                                  "Vertebrata",
+                                                                class:
+                                                                  "Mammalia",
+                                                                order:
+                                                                  "Primates",
+                                                                family:
+                                                                  "Hominidae",
+                                                                genus: "Homo",
+                                                                geologicalAge:
+                                                                  "Pleistocene to present",
+                                                              },
+                                                              children: [
+                                                                {
+                                                                  name: "Homo habilis",
+                                                                  attributes: {
+                                                                    scientificName:
+                                                                      "Homo habilis",
+                                                                    description:
+                                                                      "One of the earliest species in the genus Homo. Known for making simple stone tools.",
+                                                                    age: "~2.3 to 1.5 million years ago",
+                                                                    status:
+                                                                      "Extinct",
+                                                                    domain:
+                                                                      "Eukarya",
+                                                                    kingdom:
+                                                                      "Animalia",
+                                                                    phylum:
+                                                                      "Chordata",
+                                                                    subphylum:
+                                                                      "Vertebrata",
+                                                                    class:
+                                                                      "Mammalia",
+                                                                    order:
+                                                                      "Primates",
+                                                                    family:
+                                                                      "Hominidae",
+                                                                    genus:
+                                                                      "Homo",
+                                                                    species:
+                                                                      "habilis",
+                                                                    geologicalAge:
+                                                                      "Pleistocene",
+                                                                  },
+                                                                },
+                                                                {
+                                                                  name: "Homo erectus",
+                                                                  attributes: {
+                                                                    scientificName:
+                                                                      "Homo erectus",
+                                                                    description:
+                                                                      "The first human species to spread out of Africa. Known for advanced tool use and possibly the control of fire.",
+                                                                    age: "~2 million to 100,000 years ago",
+                                                                    status:
+                                                                      "Extinct",
+                                                                    domain:
+                                                                      "Eukarya",
+                                                                    kingdom:
+                                                                      "Animalia",
+                                                                    phylum:
+                                                                      "Chordata",
+                                                                    subphylum:
+                                                                      "Vertebrata",
+                                                                    class:
+                                                                      "Mammalia",
+                                                                    order:
+                                                                      "Primates",
+                                                                    family:
+                                                                      "Hominidae",
+                                                                    genus:
+                                                                      "Homo",
+                                                                    species:
+                                                                      "erectus",
+                                                                    geologicalAge:
+                                                                      "Pleistocene",
+                                                                  },
+                                                                },
+                                                                {
+                                                                  name: "Homo neanderthalensis",
+                                                                  attributes: {
+                                                                    scientificName:
+                                                                      "Homo neanderthalensis",
+                                                                    description:
+                                                                      "Closely related to modern humans, lived in Europe and parts of Asia. Known for advanced tools, possible symbolic thought, and interbreeding with Homo sapiens.",
+                                                                    age: "~400,000 to 40,000 years ago",
+                                                                    status:
+                                                                      "Extinct",
+                                                                    domain:
+                                                                      "Eukarya",
+                                                                    kingdom:
+                                                                      "Animalia",
+                                                                    phylum:
+                                                                      "Chordata",
+                                                                    subphylum:
+                                                                      "Vertebrata",
+                                                                    class:
+                                                                      "Mammalia",
+                                                                    order:
+                                                                      "Primates",
+                                                                    family:
+                                                                      "Hominidae",
+                                                                    genus:
+                                                                      "Homo",
+                                                                    species:
+                                                                      "neanderthalensis",
+                                                                    geologicalAge:
+                                                                      "Pleistocene",
+                                                                  },
+                                                                },
+                                                                {
+                                                                  name: "Homo floresiensis",
+                                                                  attributes: {
+                                                                    scientificName:
+                                                                      "Homo floresiensis",
+                                                                    description:
+                                                                      "A small-bodied species found on the island of Flores, Indonesia. Nicknamed 'hobbit' due to its small size.",
+                                                                    age: "~100,000 to 50,000 years ago",
+                                                                    status:
+                                                                      "Extinct",
+                                                                    domain:
+                                                                      "Eukarya",
+                                                                    kingdom:
+                                                                      "Animalia",
+                                                                    phylum:
+                                                                      "Chordata",
+                                                                    subphylum:
+                                                                      "Vertebrata",
+                                                                    class:
+                                                                      "Mammalia",
+                                                                    order:
+                                                                      "Primates",
+                                                                    family:
+                                                                      "Hominidae",
+                                                                    genus:
+                                                                      "Homo",
+                                                                    species:
+                                                                      "floresiensis",
+                                                                    geologicalAge:
+                                                                      "Pleistocene",
+                                                                  },
+                                                                },
+                                                                {
+                                                                  name: "Homo denisova",
+                                                                  attributes: {
+                                                                    scientificName:
+                                                                      "Homo denisova",
+                                                                    description:
+                                                                      "Known mostly from DNA evidence. Interbred with both Neanderthals and modern humans.",
+                                                                    age: "~300,000 to 40,000 years ago",
+                                                                    status:
+                                                                      "Extinct",
+                                                                    domain:
+                                                                      "Eukarya",
+                                                                    kingdom:
+                                                                      "Animalia",
+                                                                    phylum:
+                                                                      "Chordata",
+                                                                    subphylum:
+                                                                      "Vertebrata",
+                                                                    class:
+                                                                      "Mammalia",
+                                                                    order:
+                                                                      "Primates",
+                                                                    family:
+                                                                      "Hominidae",
+                                                                    genus:
+                                                                      "Homo",
+                                                                    species:
+                                                                      "denisova",
+                                                                    geologicalAge:
+                                                                      "Pleistocene",
+                                                                  },
+                                                                },
+                                                                {
+                                                                  name: "Homo sapiens",
+                                                                  attributes: {
+                                                                    scientificName:
+                                                                      "Homo sapiens",
+                                                                    description:
+                                                                      "Modern humans, characterized by complex cognitive abilities and cultural development. The only extant species in the genus Homo.",
+                                                                    age: "~300,000 years ago",
+                                                                    status:
+                                                                      "Living",
+                                                                    domain:
+                                                                      "Eukarya",
+                                                                    kingdom:
+                                                                      "Animalia",
+                                                                    phylum:
+                                                                      "Chordata",
+                                                                    subphylum:
+                                                                      "Vertebrata",
+                                                                    class:
+                                                                      "Mammalia",
+                                                                    order:
+                                                                      "Primates",
+                                                                    family:
+                                                                      "Hominidae",
+                                                                    genus:
+                                                                      "Homo",
+                                                                    species:
+                                                                      "sapiens",
+                                                                    geologicalAge:
+                                                                      "Pleistocene to present",
+                                                                  },
+                                                                  children: [
+                                                                    {
+                                                                      name: "Digital Entities",
+                                                                      attributes:
+                                                                        {
+                                                                          scientificName:
+                                                                            "N/A",
+                                                                          description:
+                                                                            "Non-biological systems created by humans that exhibit some characteristics of life. While not biological, they represent a significant human creation.",
+                                                                          age: "~70 years ago (considering the advent of modern computing)",
+                                                                          status:
+                                                                            "Non-biological",
+                                                                          domain:
+                                                                            "Digital",
+                                                                          kingdom:
+                                                                            "N/A",
+                                                                          phylum:
+                                                                            "N/A",
+                                                                          class:
+                                                                            "N/A",
+                                                                          order:
+                                                                            "N/A",
+                                                                          family:
+                                                                            "N/A",
+                                                                          genus:
+                                                                            "N/A",
+                                                                          species:
+                                                                            "N/A",
+                                                                          geologicalAge:
+                                                                            "Anthropocene",
+                                                                        },
+                                                                      children:
+                                                                        [
+                                                                          {
+                                                                            name: "Artificial Intelligence",
+                                                                            attributes:
+                                                                              {
+                                                                                scientificName:
+                                                                                  "N/A",
+                                                                                description:
+                                                                                  "Systems capable of performing tasks that typically require human intelligence. Includes machine learning, neural networks, and expert systems.",
+                                                                                age: "~70 years ago (considering early AI research in the 1950s)",
+                                                                                status:
+                                                                                  "Non-biological",
+                                                                                domain:
+                                                                                  "Digital",
+                                                                                kingdom:
+                                                                                  "N/A",
+                                                                                phylum:
+                                                                                  "N/A",
+                                                                                class:
+                                                                                  "N/A",
+                                                                                order:
+                                                                                  "N/A",
+                                                                                family:
+                                                                                  "N/A",
+                                                                                genus:
+                                                                                  "N/A",
+                                                                                species:
+                                                                                  "N/A",
+                                                                                geologicalAge:
+                                                                                  "Anthropocene",
+                                                                              },
+                                                                          },
+                                                                          {
+                                                                            name: "Virtual Life Forms",
+                                                                            attributes:
+                                                                              {
+                                                                                scientificName:
+                                                                                  "N/A",
+                                                                                description:
+                                                                                  "Digital creatures that simulate aspects of biological life. Includes cellular automata, artificial life simulations, and digital ecosystems.",
+                                                                                age: "~40 years ago (considering early artificial life simulations in the 1980s)",
+                                                                                status:
+                                                                                  "Non-biological",
+                                                                                domain:
+                                                                                  "Digital",
+                                                                                kingdom:
+                                                                                  "N/A",
+                                                                                phylum:
+                                                                                  "N/A",
+                                                                                class:
+                                                                                  "N/A",
+                                                                                order:
+                                                                                  "N/A",
+                                                                                family:
+                                                                                  "N/A",
+                                                                                genus:
+                                                                                  "N/A",
+                                                                                species:
+                                                                                  "N/A",
+                                                                                geologicalAge:
+                                                                                  "Anthropocene",
+                                                                              },
+                                                                          },
+                                                                          {
+                                                                            name: "Distributed Systems",
+                                                                            attributes:
+                                                                              {
+                                                                                scientificName:
+                                                                                  "N/A",
+                                                                                description:
+                                                                                  "Networks of interconnected digital entities that can exhibit emergent behaviors. Includes the internet, blockchain systems, and peer-to-peer networks.",
+                                                                                age: "~50 years ago (considering the early development of ARPANET in the late 1960s)",
+                                                                                status:
+                                                                                  "Non-biological",
+                                                                                domain:
+                                                                                  "Digital",
+                                                                                kingdom:
+                                                                                  "N/A",
+                                                                                phylum:
+                                                                                  "N/A",
+                                                                                class:
+                                                                                  "N/A",
+                                                                                order:
+                                                                                  "N/A",
+                                                                                family:
+                                                                                  "N/A",
+                                                                                genus:
+                                                                                  "N/A",
+                                                                                species:
+                                                                                  "N/A",
+                                                                                geologicalAge:
+                                                                                  "Anthropocene",
+                                                                              },
+                                                                          },
+                                                                        ],
+                                                                    },
+                                                                  ],
+                                                                },
+                                                              ],
+                                                            },
+                                                          ],
+                                                        },
+                                                      ],
+                                                    },
+                                                  ],
+                                                },
+                                              ],
+                                            },
+                                          ],
+                                        },
+                                      ],
+                                    },
+                                  ],
+                                },
+                              ],
+                            },
                           ],
                         },
                       ],
@@ -1956,3 +2641,4 @@ export const treeData = {
     },
   ],
 };
+
