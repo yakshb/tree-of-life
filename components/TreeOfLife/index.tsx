@@ -212,34 +212,30 @@ const VisualTreeOfLife: React.FC = () => {
           <ResizablePanel defaultSize={30} minSize={30}>
             <div className="h-full p-4">
               <Tabs defaultValue="summary" className="">
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger
                     className="font-semibold tracking-tight"
                     value="summary"
                   >
                     Summary
                   </TabsTrigger>
+                  {/* <TabsTrigger
+                    className="font-semibold tracking-tight"
+                    value="ai"
+                  >
+                    AI Insights
+                  </TabsTrigger> */}
                   <TabsTrigger
                     className="font-semibold tracking-tight"
                     value="ai"
                   >
                     AI Insights
                   </TabsTrigger>
-                  <TabsTrigger
-                    className="font-semibold tracking-tight"
-                    value="testarea"
-                  >
-                    Test Area
-                  </TabsTrigger>
                 </TabsList>
                 <TabsContent value="summary">
                   <InfoPanel node={selectedNode} />
                 </TabsContent>
                 <TabsContent value="ai">
-                  {/* <AIAssistant onResponse={setAIResponse} node={selectedNode} /> */}
-                  <AIChatTest />
-                </TabsContent>
-                <TabsContent value="testarea">
                   <AIAssistant onResponse={setAIResponse} node={selectedNode} />
                   {/* <AIChatTest /> */}
                 </TabsContent>

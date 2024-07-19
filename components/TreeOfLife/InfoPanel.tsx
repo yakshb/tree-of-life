@@ -32,7 +32,7 @@ interface TreeNodeData extends TreeNodeDatum {
     genus?: string;
     species?: string;
     geologicalAge?: string;
-    [key: string]: string | undefined;  // Add index signature
+    // [key: string]: string | undefined;  // Add index signature
   };
 }
 
