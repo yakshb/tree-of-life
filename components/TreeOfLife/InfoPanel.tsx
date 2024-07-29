@@ -1,7 +1,12 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { TreeNodeDatum } from "react-d3-tree";
 import {
   Info,
@@ -98,35 +103,46 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
   const getGeologicalAge = () => {
     const age = node.attributes?.geologicalAge;
     if (!age) return null;
-  
-    const [startPeriod, endPeriod] = age.split(" to ").map(p => p.trim());
-    
+
+    const [startPeriod, endPeriod] = age.split(" to ").map((p) => p.trim());
+
     const getAge = (period: string) => {
       if (!period) return 4600; // Default to Earth's age if period is undefined
       if (period === "present") return 0;
       const exactMatch = geologicalPeriods[period];
       if (exactMatch !== undefined) return exactMatch;
-      
+
       // If no exact match, find the most recent period that matches the start of the string
-      const matchingPeriod = Object.keys(geologicalPeriods).find(key => period.startsWith(key));
+      const matchingPeriod = Object.keys(geologicalPeriods).find((key) =>
+        period.startsWith(key)
+      );
       return matchingPeriod ? geologicalPeriods[matchingPeriod] : 4600; // Default to Earth's age if no match
     };
-  
+
     const startAge = getAge(startPeriod);
     const endAge = getAge(endPeriod);
-  
+
     const progress = ((4600 - startAge) / 4600) * 100;
     const endProgress = ((4600 - endAge) / 4600) * 100;
-  
+
     // Calculate color based on age (red for older, green for younger)
     const startHue = Math.min(120, (progress / 100) * 120);
     const endHue = Math.min(120, (endProgress / 100) * 120);
     const startColor = `hsl(${startHue}, 100%, 50%)`;
     const endColor = `hsl(${endHue}, 100%, 50%)`;
-  
-    return { startPeriod, endPeriod, startAge, endAge, progress, endProgress, startColor, endColor };
+
+    return {
+      startPeriod,
+      endPeriod,
+      startAge,
+      endAge,
+      progress,
+      endProgress,
+      startColor,
+      endColor,
+    };
   };
-  
+
   const geologicalAge = getGeologicalAge();
 
   return (
@@ -135,7 +151,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="h-[750px] overflow-auto bg-gradient-to-br from-background to-emerald-50 shadow-lg">
+      <Card className="h-[750px] overflow-auto bg-gradient-to-br from-background to-emerald-50 dark:bg-gradient-to-br dark:from-background dark:to-emerald-950  shadow-lg">
         <CardContent className="p-6">
           <motion.h2
             initial={{ opacity: 0, x: -20 }}
@@ -195,50 +211,54 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
                         <HelpCircle className="w-4 h-4 ml-2 text-muted-foreground" />
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>The color gradient represents the geological age:</p>
+                      <p>Represents the geological age during which this species originated, based on scientific research</p>
+                        {/* <p>The color gradient represents the geological age:</p>
                         <p>Red: Older periods</p>
-                        <p>Green: Younger periods</p>
+                        <p>Green: Younger periods</p> */}
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </div>
               }
               element={
-                geologicalAge && (
-                  <div className="bg-card/50 rounded-lg p-4 shadow-sm">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger className="w-full">
-                          <div className="mb-2">
-                            <Progress
-                              value={geologicalAge.endProgress}
-                              className="h-2"
-                              style={{
-                                background: `linear-gradient(to right, ${geologicalAge.startColor}, ${geologicalAge.endColor})`,
-                              }}
-                            />
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>
-                            {geologicalAge.startPeriod}:{" "}
-                            {geologicalAge.startAge} mya
-                          </p>
-                          <p>
-                            {geologicalAge.endPeriod}:{" "}
-                            {geologicalAge.endAge === 0
-                              ? "present"
-                              : `${geologicalAge.endAge} mya`}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <div className="flex justify-between mt-2 text-sm text-muted-foreground">
-                      <span>{geologicalAge.startPeriod}</span>
-                      <span>{geologicalAge.endPeriod}</span>
-                    </div>
-                  </div>
-                )
+                <p>
+                  {geologicalAge?.startPeriod}
+                </p>
+                // geologicalAge && (
+                //   <div className="bg-card/50 rounded-lg p-4 shadow-sm">
+                //     <TooltipProvider>
+                //       <Tooltip>
+                //         <TooltipTrigger className="w-full">
+                //           <div className="mb-2">
+                //             <Progress
+                //               value={geologicalAge.endProgress}
+                //               className="h-2"
+                //               style={{
+                //                 background: `linear-gradient(to right, ${geologicalAge.startColor}, ${geologicalAge.endColor})`,
+                //               }}
+                //             />
+                //           </div>
+                //         </TooltipTrigger>
+                //         <TooltipContent>
+                //           <p>
+                //             {geologicalAge.startPeriod}:{" "}
+                //             {geologicalAge.startAge} mya
+                //           </p>
+                //           <p>
+                //             {geologicalAge.endPeriod}:{" "}
+                //             {geologicalAge.endAge === 0
+                //               ? "present"
+                //               : `${geologicalAge.endAge} mya`}
+                //           </p>
+                //         </TooltipContent>
+                //       </Tooltip>
+                //     </TooltipProvider>
+                //     <div className="flex justify-between mt-2 text-sm text-muted-foreground">
+                //       <span>{geologicalAge.startPeriod}</span>
+                //       <span>{geologicalAge.endPeriod}</span>
+                //     </div>
+                //   </div>
+                // )
               }
             />
 

@@ -17,6 +17,8 @@ import { useChat } from "ai/react";
 import { useChat as useChatContext } from "../ai-interface/ChatContext";
 import ReactMarkdown from "react-markdown";
 import Spinner from "../ai-interface/Spinner";
+// import { useSuggestedPrompts } from "../../hooks/useSuggestedPrompts";
+// import SuggestedPrompts from "../ai-interface/SuggestedPrompts";
 
 interface TreeNodeData extends TreeNodeDatum {
   attributes?: {
@@ -60,6 +62,8 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
         }
       },
     });
+
+    // const { suggestedPrompts, isLoading: isLoadingPrompts } = useSuggestedPrompts(node, messages);
 
   useEffect(() => {
     if (chatContainerRef.current) {

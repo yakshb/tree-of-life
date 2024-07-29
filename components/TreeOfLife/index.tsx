@@ -175,7 +175,7 @@ const VisualTreeOfLife: React.FC = () => {
             </div>
             <div
               ref={treeContainerRef}
-              className={`${styles.treeContainer} bg-background dark:bg-gray-900 rounded-b-lg overflow-hidden relative`}
+              className={`${styles.treeContainer} bg-background dark:bg-gray-400 rounded-b-lg overflow-hidden relative`}
               style={{ height: "calc(100% - 40px)" }}
             >
               <DynamicTree

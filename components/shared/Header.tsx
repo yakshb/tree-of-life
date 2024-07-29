@@ -23,7 +23,7 @@ const Header = () => (
       </Link>
 
       <div className="flex items-center space-x-4 md:space-x-6">
-        <ThemeToggleButton />
+        {/* <ThemeToggleButton /> */}
         {/* <div className="md:hidden">
           <Sheet>
             <SheetTrigger asChild>
