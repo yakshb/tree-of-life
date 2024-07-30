@@ -17,6 +17,7 @@ import { useChat } from "ai/react";
 import { useChat as useChatContext } from "../ai-interface/ChatContext";
 import ReactMarkdown from "react-markdown";
 import Spinner from "../ai-interface/Spinner";
+import Image from "next/image";
 // import { useSuggestedPrompts } from "../../hooks/useSuggestedPrompts";
 // import SuggestedPrompts from "../ai-interface/SuggestedPrompts";
 
@@ -78,7 +79,8 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
         `What is the evolutionary history of ${node.name}?`,
         `How much DNA do humans share with ${node.name}?`,
         `What are the key characteristics of ${node.name}?`,
-        `Show me a realistic depiction of ${node.name}`,
+        // Use the below once image generation for the chatbot has been fixed
+        // `Show me a realistic depiction of ${node.name}`,
       ]
     : [];
 
@@ -90,6 +92,28 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
     },
     [handleInputChange]
   );
+
+  const renderMessage = (message: any) => {
+    if (message.isImage) {
+      return (
+        <div>
+          <p>Here's the image you requested:</p>
+          <Image 
+            src={message.imageUrl} 
+            alt="Generated image" 
+            width={512} 
+            height={512} 
+            className="mt-2 rounded-md"
+          />
+        </div>
+      );
+    }
+    return (
+      <ReactMarkdown className="text-md prose">
+        {message.content}
+      </ReactMarkdown>
+    );
+  };
 
   // useEffect(() => {
   //   if (input.trim() !== "") {
@@ -150,7 +174,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
                 >
                   {message.role === "assistant" && (
                     <Avatar>
-                      <AvatarImage src="/ai-avatar.png" />
+                      {/* <AvatarImage src="/ai-avatar.png" /> */}
                       <AvatarFallback>AI</AvatarFallback>
                     </Avatar>
                   )}
@@ -161,9 +185,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
                         : "bg-gray-100"
                     }`}
                   >
-                    <ReactMarkdown className="text-md prose">
-                      {message.content}
-                    </ReactMarkdown>
+                    {renderMessage(message)}
                   </div>
                 </div>
               ))}

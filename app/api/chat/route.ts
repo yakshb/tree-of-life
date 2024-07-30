@@ -1,12 +1,45 @@
 import { openai } from '@ai-sdk/openai';
 import { streamText } from 'ai';
+import OpenAI from 'openai';
 
 // Allow streaming responses up to 30 seconds
-export const maxDuration = 15;
+export const maxDuration = 30;
+
+const openaiClient = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
+  
+  // Check if the last message is requesting an image
+  const lastMessage = messages[messages.length - 1];
+  const isImageRequest = lastMessage.content.toLowerCase().includes('show me') || 
+                         lastMessage.content.toLowerCase().includes('generate an image');
 
+  // if (isImageRequest) {
+  //   try {
+  //     const response = await openaiClient.images.generate({
+  //       model: "dall-e-2",
+  //       prompt: lastMessage.content,
+  //       n: 1,
+  //       size: "512x512",
+  //     });
+
+  //     return new Response(JSON.stringify({
+  //       role: 'assistant',
+  //       content: `Here's the image you requested: ${response.data[0].url}`,
+  //       isImage: true,
+  //       imageUrl: response.data[0].url
+  //     }));
+  //   } catch (error) {
+  //     console.error('Error generating image:', error);
+  //     return new Response(JSON.stringify({
+  //       role: 'assistant',
+  //       content: "I'm sorry, I couldn't generate that image. Could you try rephrasing your request?"
+  //     }));
+  //   }
+  // }
   const result = await streamText({
     model: openai('gpt-4o'),
     system: `You are an AI assistant for a Tree of Life Explorer application. 
