@@ -127,11 +127,11 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="h-[850px] flex flex-col items-center justify-center text-gray-500 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-6"
+        className="h-[750px] flex flex-col items-center justify-center text-muted-foreground bg-card rounded-lg p-6"
       >
-        <Info className="w-16 h-16 mb-4 text-indigo-400" />
+        <Info className="w-16 h-16 mb-4 text-primary" />
         <p className="text-lg font-semibold text-center">
-          Select a node to view details and chat with AI
+          Select a node to view details
         </p>
       </motion.div>
     );

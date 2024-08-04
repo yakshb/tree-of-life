@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { ZoomIn, ZoomOut, Maximize, RotateCcw } from "lucide-react";
 import NodeLegend from "./NodeLegend";
 import AIChatTest from "../ai-interface/AIChatTest";
+import { IntroBadge } from "./IntroBadge";
 
 const DynamicTree = dynamic(() => import("react-d3-tree"), { ssr: false });
 
@@ -179,7 +180,7 @@ const VisualTreeOfLife: React.FC = () => {
               style={{ height: "calc(100% - 40px)" }}
             >
               <DynamicTree
-                ref={treeWrapperRef}
+                // ref={treeWrapperRef}
                 data={treeData as TreeNodeData}
                 orientation="vertical"
                 pathFunc="step"

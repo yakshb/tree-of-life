@@ -1,7 +1,8 @@
-"use client";
+"use client"
 
 import { ChatProvider } from "@/components/ai-interface/ChatContext";
 import VisualTreeOfLife from "@/components/TreeOfLife/index";
+import { IntroBadge } from "@/components/TreeOfLife/IntroBadge";
 
 export default function Home() {
   return (
