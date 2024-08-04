@@ -80,7 +80,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
         `How much DNA do humans share with ${node.name}?`,
         `What are the key characteristics of ${node.name}?`,
         // Use the below once image generation for the chatbot has been fixed
-        // `Show me a realistic depiction of ${node.name}`,
+        // `Show me a visual depiction of ${node.name}`,
       ]
     : [];
 
@@ -97,7 +97,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
     if (message.isImage) {
       return (
         <div>
-          <p>Here's the image you requested:</p>
+          <p>Here&apos;s the image you requested:</p>
           <Image 
             src={message.imageUrl} 
             alt="Generated image" 
@@ -143,7 +143,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="h-[850px] overflow-hidden bg-gradient-to-br from-background to-emerald-50 shadow-lg">
+      <Card className="h-[800px] overflow-hidden bg-gradient-to-br from-background to-emerald-50 shadow-lg">
         <CardContent className="p-6 flex flex-col h-full">
           <motion.h2
             initial={{ opacity: 0, x: -20 }}
