@@ -17,7 +17,10 @@ export function useTreeSearch() {
       return;
     }
     const results = searchTree(treeData as TreeNodeData, searchTerm);
-    setSearchResults(results);
+    setSearchResults(results.map(result => ({
+      node: result.node,
+      path: result.path.map(node => node.name)
+    })));
   }, []);
 
   return { searchResults, performSearch };

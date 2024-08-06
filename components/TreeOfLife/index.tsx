@@ -145,16 +145,20 @@ const VisualTreeOfLife: React.FC = () => {
     });
   }, []);
 
-  const handleNodeSelect = useCallback((path: string[]) => {
+  const handleNodeSelect = useCallback((selectedNode: TreeNodeData, path: string[]) => {
+    setSelectedNode(selectedNode);
+    setExplorationPath(path.map((name, index) => ({
+      name,
+      description: index === path.length - 1 ? selectedNode.attributes?.description : undefined
+    })));
+
+    // Zoom to the selected node
     if (treeWrapperRef.current) {
-      const node = findNodeByPath(treeData as TreeNodeData, path);
-      if (node) {
-        handleNodeClick(node);
-        // You might want to add logic here to zoom to the selected node
-        // This depends on the specific methods available in react-d3-tree
-      }
+      const treeWrapper = treeWrapperRef.current;
+      const nodeId = path.join('/');
+      treeWrapper.zoomToNode(nodeId, 1.5);
     }
-  }, [handleNodeClick]);
+  }, []);
 
   const findNodeByPath = (node: TreeNodeData, path: string[]): TreeNodeData | null => {
     if (path.length === 0 || node.name !== path[0]) {
@@ -176,130 +180,133 @@ const VisualTreeOfLife: React.FC = () => {
 
   return (
     <AISettingsProvider>
-    <Card className="w-full mx-auto p-4 bg-card">
-      <CardHeader>
-        <p className="text-center text-muted-foreground mb-6">
-          Explore the diversity of life with AI assistance. Click on branches to
-          learn more.
-        </p>
-        <SearchBar onNodeSelect={handleNodeSelect} />  {/* Add this line */}
-        <AISettings/>
-      </CardHeader>
-      <CardContent>
-        <ExplorationPath
-          path={explorationPath}
-          onNavigate={handlePathNavigate}
-        />
-        <ResizablePanelGroup
-          direction="horizontal"
-          className="rounded-lg border border-border"
-        >
-          <ResizablePanel defaultSize={70}>
-            <div className="p-2 flex justify-between bg-secondary rounded-t-lg">
-              <div>
-                <Button
-                  onClick={() => handleZoom(true)}
-                  variant="outline"
-                  size="sm"
-                  className="mr-2"
-                >
-                  <ZoomIn size={18} />
-                </Button>
-                <Button
-                  onClick={() => handleZoom(false)}
-                  variant="outline"
-                  size="sm"
-                  className="mr-2"
-                >
-                  <ZoomOut size={18} />
-                </Button>
-              </div>
-              <div>
-                <Button
-                  onClick={expandAllNodes}
-                  variant="outline"
-                  size="sm"
-                  className="mr-2"
-                >
-                  <Maximize size={18} />
-                </Button>
-                <Button onClick={resetChart} variant="outline" size="sm">
-                  <RotateCcw size={18} />
-                </Button>
-              </div>
-            </div>
-            <div
-              ref={treeContainerRef}
-              className={`${styles.treeContainer} bg-background dark:bg-gray-400 rounded-b-lg overflow-hidden relative`}
-              style={{ height: "calc(100% - 40px)" }}
-            >
-              <DynamicTree
-                // ref={treeWrapperRef}
-                data={treeData as TreeNodeData}
-                orientation="vertical"
-                pathFunc="step"
-                renderCustomNodeElement={(rd3tProps) => (
-                  <CustomNodeRenderer
-                    nodeDatum={rd3tProps.nodeDatum as TreeNodeData}
-                    toggleNode={rd3tProps.toggleNode}
-                    onNodeClick={handleNodeClick}
-                  />
-                )}
-                separation={{ siblings: 1.5, nonSiblings: 2 }}
-                transitionDuration={600}
-                zoomable={true}
-                collapsible={true}
-                translate={translate}
-                dimensions={dimensions}
-                nodeSize={{ x: 180, y: 150 }}
-                zoom={zoom}
-                pathClassFunc={() => "tree-link"}
-                onUpdate={(updateArgs) => {
-                  console.log("Tree updated:", updateArgs);
-                }}
-              />
-              <div className="absolute bottom-4 left-4">
-                <NodeLegend />
-              </div>
-            </div>
-          </ResizablePanel>
-          <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={30} minSize={30}>
-            <div className="h-full p-4">
-              <Tabs defaultValue="summary" className="">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger
-                    className="font-semibold tracking-tight"
-                    value="summary"
+      <Card className="w-full mx-auto p-4 bg-card">
+        <CardHeader>
+          <p className="text-center text-muted-foreground mb-6">
+            Explore the diversity of life with AI assistance. Click on branches
+            to learn more.
+          </p>
+          <SearchBar onNodeSelect={handleNodeSelect} /> {/* Add this line */}
+          <AISettings />
+        </CardHeader>
+        <CardContent>
+          <ExplorationPath
+            path={explorationPath}
+            onNavigate={handlePathNavigate}
+          />
+          <ResizablePanelGroup
+            direction="horizontal"
+            className="rounded-lg border border-border"
+          >
+            <ResizablePanel defaultSize={70}>
+              <div className="p-2 flex justify-between bg-secondary rounded-t-lg">
+                <div>
+                  <Button
+                    onClick={() => handleZoom(true)}
+                    variant="outline"
+                    size="sm"
+                    className="mr-2"
                   >
-                    Summary
-                  </TabsTrigger>
-                  {/* <TabsTrigger
+                    <ZoomIn size={18} />
+                  </Button>
+                  <Button
+                    onClick={() => handleZoom(false)}
+                    variant="outline"
+                    size="sm"
+                    className="mr-2"
+                  >
+                    <ZoomOut size={18} />
+                  </Button>
+                </div>
+                <div>
+                  <Button
+                    onClick={expandAllNodes}
+                    variant="outline"
+                    size="sm"
+                    className="mr-2"
+                  >
+                    <Maximize size={18} />
+                  </Button>
+                  <Button onClick={resetChart} variant="outline" size="sm">
+                    <RotateCcw size={18} />
+                  </Button>
+                </div>
+              </div>
+              <div
+                ref={treeContainerRef}
+                className={`${styles.treeContainer} bg-background dark:bg-gray-400 rounded-b-lg overflow-hidden relative`}
+                style={{ height: "calc(100% - 40px)" }}
+              >
+                <DynamicTree
+                  ref={treeWrapperRef}
+                  data={treeData as TreeNodeData}
+                  orientation="vertical"
+                  pathFunc="step"
+                  renderCustomNodeElement={(rd3tProps) => (
+                    <CustomNodeRenderer
+                      nodeDatum={rd3tProps.nodeDatum as TreeNodeData}
+                      toggleNode={rd3tProps.toggleNode}
+                      onNodeClick={handleNodeClick}
+                    />
+                  )}
+                  separation={{ siblings: 1.5, nonSiblings: 2 }}
+                  transitionDuration={600}
+                  zoomable={true}
+                  collapsible={true}
+                  translate={translate}
+                  dimensions={dimensions}
+                  nodeSize={{ x: 180, y: 150 }}
+                  zoom={zoom}
+                  pathClassFunc={() => "tree-link"}
+                  onUpdate={(updateArgs) => {
+                    console.log("Tree updated:", updateArgs);
+                  }}
+                />
+                <div className="absolute bottom-4 left-4">
+                  <NodeLegend />
+                </div>
+              </div>
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+            <ResizablePanel defaultSize={30} minSize={30}>
+              <div className="h-full p-4">
+                <Tabs defaultValue="summary" className="">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger
+                      className="font-semibold tracking-tight"
+                      value="summary"
+                    >
+                      Summary
+                    </TabsTrigger>
+                    {/* <TabsTrigger
                     className="font-semibold tracking-tight"
                     value="ai"
                   >
                     AI Insights
                   </TabsTrigger> */}
-                  <TabsTrigger
-                    className="font-semibold tracking-tight"
-                    value="ai"
-                  >
-                    AI Insights
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="summary">
-                  <InfoPanel node={selectedNode} />
-                </TabsContent>
-                <TabsContent value="ai">
-                  <AIAssistant onResponse={setAIResponse} node={selectedNode} />
-                  {/* <AIChatTest /> */}
-                </TabsContent>
-              </Tabs>
-            </div>
-          </ResizablePanel>
-        </ResizablePanelGroup>
-      </CardContent>
-    </Card>
+                    <TabsTrigger
+                      className="font-semibold tracking-tight"
+                      value="ai"
+                    >
+                      AI Insights
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="summary">
+                    <InfoPanel node={selectedNode} />
+                  </TabsContent>
+                  <TabsContent value="ai">
+                    <AIAssistant
+                      onResponse={setAIResponse}
+                      node={selectedNode}
+                    />
+                    {/* <AIChatTest /> */}
+                  </TabsContent>
+                </Tabs>
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </CardContent>
+      </Card>
     </AISettingsProvider>
   );
 };

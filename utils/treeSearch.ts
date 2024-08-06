@@ -2,27 +2,26 @@ import { TreeNodeData } from '@/types/treeTypes';
 
 interface SearchResult {
   node: TreeNodeData;
-  path: string[];
+  path: TreeNodeData[];
 }
 
-export function searchTree(node: TreeNodeData, searchTerm: string, currentPath: string[] = []): SearchResult[] {
-  let results: SearchResult[] = [];
+export function searchTree(node: TreeNodeData, searchTerm: string): SearchResult[] {
+  const results: SearchResult[] = [];
+  const searchTermLower = searchTerm.toLowerCase();
 
-  // Check if the current node matches the search term
-  if (
-    node.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    node.attributes?.scientificName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    node.attributes?.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  ) {
-    results.push({ node, path: [...currentPath, node.name] });
-  }
+  function search(currentNode: TreeNodeData, currentPath: TreeNodeData[]) {
+    if (currentNode.name.toLowerCase().includes(searchTermLower) ||
+        currentNode.attributes?.description?.toLowerCase().includes(searchTermLower)) {
+      results.push({ node: currentNode, path: [...currentPath, currentNode] });
+    }
 
-  // Recursively search children
-  if (node.children) {
-    for (const child of node.children) {
-      results = results.concat(searchTree(child, searchTerm, [...currentPath, node.name]));
+    if (currentNode.children) {
+      for (const child of currentNode.children) {
+        search(child as TreeNodeData, [...currentPath, currentNode]);
+      }
     }
   }
 
+  search(node, []);
   return results;
 }
