@@ -8,9 +8,8 @@ import Image from "next/image";
 import logo from "@/assets/TOLai-logo.svg"
 
 const links = [
-  { href: "/#about", text: "About" },
-  { href: "/#projects", text: "Projects" },
-  { href: "/#contact", text: "Contact" },
+  { href: "/about", text: "About" },
+  { href: "/contribute", text: "Contribute" },
   { href: "/blog", text: "On Life" },
 ];
 

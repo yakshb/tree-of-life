@@ -1,15 +1,8 @@
-import { openai } from "@ai-sdk/openai";
-import { streamText } from "ai";
-import OpenAI from "openai";
-import { generateObject } from "ai";
-import { createOpenAI } from "@ai-sdk/openai";
+import { createOpenAI } from '@ai-sdk/openai';
+import { streamText } from 'ai';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
-
-const openaiClient = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 const groq = createOpenAI({
   apiKey: process.env.GROQ_API_KEY ?? "",
@@ -17,18 +10,35 @@ const groq = createOpenAI({
 });
 
 export async function POST(req: Request) {
-  const { messages } = await req.json();
+  const { messages, model, temperature } = await req.json();
 
   const result = await streamText({
-    model: openai("gpt-4o"),
+    model: groq(model), // Use the model passed from the frontend
+    temperature: temperature,
+    messages,
     system: `You are an AI assistant for a Tree of Life Explorer application. 
     You have extensive knowledge about various life forms and their evolutionary history. 
     Provide concise and accurate information based on the user's queries about specific organisms.
-    You are only required to answer the question directly asked of you and provide relevant information.
-    You are specifically designed only to answer questions relating this tree of life application. Do not entertain questions unrelated to the tree of life.
+    You are specifically designed only to answer questions relating to the tree of life application. Do not entertain questions unrelated to the tree of life.
     You may entertain theoretical questions about what comes next in the evolutionary tree, such as AI and virtual life forms.
-    Do not be overly verbose but provide adequate details and attempt to answer questions as if speaking to a 12-year old`,
-    messages,
+    Do not be overly verbose but provide adequate details and attempt to answer questions as if speaking to a 12-year old.
+
+    All of your responses should be formatted in Markdown format
+    
+    Main discussions about the species in question should follow the following Markdown format:
+
+    ## [Main Topic or Organism Name]
+
+    ### Interesting Facts
+    1. [Fact 1]
+    2. [Fact 2]
+    3. [Fact 3]
+
+    ### Further Reading
+    - [Link 1 description](URL)
+    - [Link 2 description](URL)
+
+    If the query doesn't fit this structure, adapt the headings as needed, but maintain a clear and consistent Markdown format. Links should be underlined and formatted appropriately`,
   });
 
   return result.toAIStreamResponse();

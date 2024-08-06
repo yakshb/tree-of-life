@@ -49,12 +49,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <ThemeProvider
+      {/* <ThemeProvider
         attribute="class"
         defaultTheme="light"
         // enableSystem
         disableTransitionOnChange
-      >
+      > */}
         <body
           className={cn(
             "min-h-full bg-background font-sans antialiased",
@@ -72,7 +72,7 @@ export default function RootLayout({
             </div>
           </footer>
         </body>
-      </ThemeProvider>
+      {/* </ThemeProvider> */}
     </html>
   );
 }

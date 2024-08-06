@@ -18,6 +18,7 @@ import { useChat as useChatContext } from "../ai-interface/ChatContext";
 import ReactMarkdown from "react-markdown";
 import Spinner from "../ai-interface/Spinner";
 import Image from "next/image";
+import { useAISettings } from '../ai-interface/AISettingsContext';
 // import { useSuggestedPrompts } from "../../hooks/useSuggestedPrompts";
 // import SuggestedPrompts from "../ai-interface/SuggestedPrompts";
 
@@ -50,11 +51,12 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
 }) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { chatHistory, updateChatHistory } = useChatContext();
+  const { aiSettings } = useAISettings();
 
   const { messages, input, handleInputChange, handleSubmit, isLoading } =
     useChat({
       api: "/api/chat",
-      body: { node },
+      body: { node, model: aiSettings.model, temperature: aiSettings.temperature },
       initialMessages: node ? chatHistory[node.name] || [] : [],
       onFinish: (message) => {
         onResponse(message.content);
@@ -63,7 +65,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
         }
       },
     });
-
+    
     // const { suggestedPrompts, isLoading: isLoadingPrompts } = useSuggestedPrompts(node, messages);
 
   useEffect(() => {

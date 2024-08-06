@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { treeData } from "../../data/treeData";
 import styles from "@/styles/TreeStyles.module.css";
@@ -20,16 +20,37 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ZoomIn, ZoomOut, Maximize, RotateCcw } from "lucide-react";
 import NodeLegend from "./NodeLegend";
-import AIChatTest from "../ai-interface/AIChatTest";
-import { IntroBadge } from "./IntroBadge";
+import { useTreeSearch } from "@/hooks/useTreeSearch";
+import { SearchBar } from "./SearchBar";
+import AISettings from "../ai-interface/AISettings";
+import { AISettingsProvider } from "../ai-interface/AISettingsContext";
 
 const DynamicTree = dynamic(() => import("react-d3-tree"), { ssr: false });
+
+// interface TreeNodeData extends TreeNodeDatum {
+//   children?: TreeNodeData[];
+//   attributes?: {
+//     description?: string;
+//     status?: "Living" | "Extinct" | "Living and Extinct" | "Developing";
+//   };
+// }
 
 interface TreeNodeData extends TreeNodeDatum {
   children?: TreeNodeData[];
   attributes?: {
+    scientificName?: string;
     description?: string;
+    age?: string;
     status?: "Living" | "Extinct" | "Living and Extinct" | "Developing";
+    domain?: string;
+    kingdom?: string;
+    phylum?: string;
+    class?: string;
+    order?: string;
+    family?: string;
+    genus?: string;
+    species?: string;
+    geologicalAge?: string;
   };
 }
 
@@ -44,6 +65,7 @@ const VisualTreeOfLife: React.FC = () => {
   const [zoom, setZoom] = useState(1);
   const treeContainerRef = useRef<HTMLDivElement>(null);
   const treeWrapperRef = useRef<any>(null);
+  const { performSearch } = useTreeSearch();
 
   const handleNodeClick = useCallback((nodeData: TreeNodeData) => {
     setSelectedNode(nodeData);
@@ -103,7 +125,7 @@ const VisualTreeOfLife: React.FC = () => {
       if (node.children) {
         node.children.forEach(expand);
       }
-      if (node.__rd3t && node.__rd3t.collapsed !== undefined) {
+      if (node.__rd3t) {
         node.__rd3t.collapsed = false;
       }
     };
@@ -123,13 +145,45 @@ const VisualTreeOfLife: React.FC = () => {
     });
   }, []);
 
+  const handleNodeSelect = useCallback((path: string[]) => {
+    if (treeWrapperRef.current) {
+      const node = findNodeByPath(treeData as TreeNodeData, path);
+      if (node) {
+        handleNodeClick(node);
+        // You might want to add logic here to zoom to the selected node
+        // This depends on the specific methods available in react-d3-tree
+      }
+    }
+  }, [handleNodeClick]);
+
+  const findNodeByPath = (node: TreeNodeData, path: string[]): TreeNodeData | null => {
+    if (path.length === 0 || node.name !== path[0]) {
+      return null;
+    }
+    if (path.length === 1) {
+      return node;
+    }
+    if (node.children) {
+      for (const child of node.children) {
+        const found = findNodeByPath(child, path.slice(1));
+        if (found) {
+          return found;
+        }
+      }
+    }
+    return null;
+  };
+
   return (
+    <AISettingsProvider>
     <Card className="w-full mx-auto p-4 bg-card">
       <CardHeader>
         <p className="text-center text-muted-foreground mb-6">
           Explore the diversity of life with AI assistance. Click on branches to
           learn more.
         </p>
+        <SearchBar onNodeSelect={handleNodeSelect} />  {/* Add this line */}
+        <AISettings/>
       </CardHeader>
       <CardContent>
         <ExplorationPath
@@ -246,6 +300,7 @@ const VisualTreeOfLife: React.FC = () => {
         </ResizablePanelGroup>
       </CardContent>
     </Card>
+    </AISettingsProvider>
   );
 };
 
