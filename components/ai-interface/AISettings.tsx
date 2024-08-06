@@ -15,24 +15,41 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-  } from "@/components/ui/tooltip";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { AISettingsContext } from "./AISettingsContext";
 import MetaIcon from "../../assets/icons/meta";
 import MistralIcon from "../../assets/icons/mistral";
 import GoogleIcon from "@/assets/icons/google";
 import { Info } from "lucide-react";
+import AnthropicIcon from "@/assets/icons/anthropic";
 
 const groqModels = [
+  {
+    value: "claude-3.5-haiku",
+    label: "Claude 3.5 Haiku",
+    provider: "Anthropic",
+    icon: AnthropicIcon,
+    description: "Unavailable",
+    disabled: true,
+  },
+  {
+    value: "claude-3.5-opus",
+    label: "Claude 3.5 Opus",
+    provider: "Anthropic",
+    icon: AnthropicIcon,
+    description: "Unavailable",
+    disabled: true,
+  },
   {
     value: "llama-3.1-405b-reasoning",
     label: "Llama 3.1 405B",
     provider: "Meta",
     icon: MetaIcon,
-    description: "Preview",
+    description: "Unavailable",
     disabled: true,
   },
   {
@@ -40,14 +57,14 @@ const groqModels = [
     label: "Llama 3.1 70B",
     provider: "Meta",
     icon: MetaIcon,
-    description: "Preview",
+    description: "Default",
   },
   {
     value: "llama-3.1-8b-instant",
     label: "Llama 3.1 8B",
     provider: "Meta",
     icon: MetaIcon,
-    description: "Preview",
+    description: "Fastest",
   },
   {
     value: "llama3-70b-8192",
@@ -87,27 +104,28 @@ const groqModels = [
 ];
 
 const temperatureOptions = [
-    { value: 0.25, label: "Concise" },
-    { value: 0.5, label: "Standard" },
-    { value: 0.75, label: "Detailed" },
-  ];
-  
-  export default function AISettings() {
-    const { aiSettings, updateAISettings } = useContext(AISettingsContext);
-  
-    const handleModelChange = (newModel: string) => {
-      updateAISettings({ ...aiSettings, model: newModel });
-    };
-  
-    const handleTemperatureChange = (newTemperature: number[]) => {
-      updateAISettings({ ...aiSettings, temperature: newTemperature[0] });
-    };
-  
-    return (
-      <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="ai-settings">
-          <AccordionTrigger className="text-lg font-semibold">
-            <p className="flex items-center space-x-2">AI Settings
+  { value: 0.25, label: "Concise" },
+  { value: 0.5, label: "Standard" },
+  { value: 0.75, label: "Detailed" },
+];
+
+export default function AISettings() {
+  const { aiSettings, updateAISettings } = useContext(AISettingsContext);
+
+  const handleModelChange = (newModel: string) => {
+    updateAISettings({ ...aiSettings, model: newModel });
+  };
+
+  const handleTemperatureChange = (newTemperature: number[]) => {
+    updateAISettings({ ...aiSettings, temperature: newTemperature[0] });
+  };
+
+  return (
+    <Accordion type="single" collapsible className="w-full">
+      <AccordionItem value="ai-settings">
+        <AccordionTrigger className="text-lg font-semibold">
+          <p className="flex items-center space-x-2">
+            AI Settings
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -118,62 +136,83 @@ const temperatureOptions = [
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            </p>
-          </AccordionTrigger>
-          <AccordionContent>
-            <div className="space-y-4 p-4 bg-gray-50 rounded-md">
-              <div className="flex items-center space-x-4">
-                <Label htmlFor="model" className="w-20 flex-shrink-0">Model:</Label>
-                <Select value={aiSettings.model} onValueChange={handleModelChange}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a model" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {groqModels.map((model) => (
-                      <SelectItem key={model.value} value={model.value} disabled={model.disabled}>
-                        <div className="flex items-center">
-                          <span className={`w-2 h-2 rounded-full mr-2 ${model.disabled ? 'bg-red-500' : 'bg-green-500'}`} />
-                          <model.icon className="w-5 h-5 mr-2" />
-                          <span>{model.label}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Info className="w-4 h-4 text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Select the AI model for generating responses</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+          </p>
+        </AccordionTrigger>
+        <AccordionContent>
+          <div className="space-y-4 p-4 bg-gray-50 rounded-md">
+            <div className="flex items-center space-x-4">
+              <Label htmlFor="model" className="w-20 flex-shrink-0">
+                Model:
+              </Label>
+              <Select
+                value={aiSettings.model}
+                onValueChange={handleModelChange}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a model" />
+                </SelectTrigger>
+                <SelectContent>
+                  {groqModels.map((model) => (
+                    <SelectItem
+                      key={model.value}
+                      value={model.value}
+                      disabled={model.disabled}
+                    >
+                      <div className="flex items-center">
+                        <span
+                          className={`w-2 h-2 rounded-full mr-2 ${
+                            model.disabled ? "bg-red-500" : "bg-green-500"
+                          }`}
+                        />
+                        <model.icon className="w-5 h-5 mr-2" />
+                        <span>{model.label}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="w-4 h-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Select the AI model for generating responses</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="temperature" className="font-medium">
+                  Response Style:
+                </Label>
+                <span className="text-sm font-medium">
+                  {
+                    temperatureOptions.find(
+                      (o) => o.value === aiSettings.temperature
+                    )?.label
+                  }
+                </span>
               </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="temperature" className="font-medium">Response Style:</Label>
-                  <span className="text-sm font-medium">{temperatureOptions.find(o => o.value === aiSettings.temperature)?.label}</span>
-                </div>
-                <Slider
-                  id="temperature"
-                  min={0.25}
-                  max={0.75}
-                  step={0.25}
-                  value={[aiSettings.temperature]}
-                  onValueChange={handleTemperatureChange}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Concise</span>
-                  <span>Standard</span>
-                  <span>Detailed</span>
-                </div>
+              <Slider
+                id="temperature"
+                min={0.25}
+                max={0.75}
+                step={0.25}
+                value={[aiSettings.temperature]}
+                onValueChange={handleTemperatureChange}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Concise</span>
+                <span>Standard</span>
+                <span>Detailed</span>
               </div>
             </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-    );
-  }
+          </div>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
+}
