@@ -26,24 +26,49 @@ import MistralIcon from "../../assets/icons/mistral";
 import GoogleIcon from "@/assets/icons/google";
 import { Info } from "lucide-react";
 import AnthropicIcon from "@/assets/icons/anthropic";
+import OpenAIIcon from "@/assets/icons/openai";
 
 const groqModels = [
-  {
-    value: "claude-3.5-haiku",
-    label: "Claude 3.5 Haiku",
-    provider: "Anthropic",
-    icon: AnthropicIcon,
-    description: "Unavailable",
-    disabled: true,
-  },
-  {
-    value: "claude-3.5-opus",
-    label: "Claude 3.5 Opus",
-    provider: "Anthropic",
-    icon: AnthropicIcon,
-    description: "Unavailable",
-    disabled: true,
-  },
+//   {
+//     value: "gpt-4o",
+//     label: "GPT-4o",
+//     provider: "OpenAI",
+//     icon: OpenAIIcon,
+//     description: "Unavailable",
+//     disabled: true,
+//   },
+//   {
+//     value: "gpt-4o-mini",
+//     label: "GPT-4o mini",
+//     provider: "OpenAI",
+//     icon: OpenAIIcon,
+//     description: "Unavailable",
+//     disabled: true,
+//   },
+//   {
+//     value: "gpt-4-turbo",
+//     label: "GPT-4 Turbo",
+//     provider: "OpenAI",
+//     icon: OpenAIIcon,
+//     description: "Unavailable",
+//     disabled: true,
+//   },
+//   {
+//     value: "claude-3.5-haiku",
+//     label: "Claude 3.5 Haiku",
+//     provider: "Anthropic",
+//     icon: AnthropicIcon,
+//     description: "Unavailable",
+//     disabled: true,
+//   },
+//   {
+//     value: "claude-3.5-opus",
+//     label: "Claude 3.5 Opus",
+//     provider: "Anthropic",
+//     icon: AnthropicIcon,
+//     description: "Unavailable",
+//     disabled: true,
+//   },
   {
     value: "llama-3.1-405b-reasoning",
     label: "Llama 3.1 405B",
