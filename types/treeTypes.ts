@@ -1,10 +1,12 @@
-export interface TreeNodeData {
+import { TreeNodeDatum as ReactD3TreeNodeDatum } from 'react-d3-tree';
+
+export interface TreeNodeData extends ReactD3TreeNodeDatum {
   name: string;
   attributes?: {
     scientificName?: string;
     description?: string;
     age?: string;
-    status?: string;
+    status?: "Living" | "Extinct" | "Living and Extinct" | "Developing";
     domain?: string;
     kingdom?: string;
     phylum?: string;
@@ -14,12 +16,12 @@ export interface TreeNodeData {
     genus?: string;
     species?: string;
     geologicalAge?: string;
-    // Add any other attributes that might be present in your treeData
   };
   children?: TreeNodeData[];
 }
   
-  export interface ExplorationPathItem {
-    name: string;
-    description?: string;
-  }
+export interface ExplorationPathItem {
+  name: string;
+  node: TreeNodeData;
+  fullPath: string[];
+}

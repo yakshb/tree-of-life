@@ -54,6 +54,8 @@ interface TreeNodeData extends TreeNodeDatum {
   };
 }
 
+
+
 const VisualTreeOfLife: React.FC = () => {
   const [aiResponse, setAIResponse] = useState("");
   const [explorationPath, setExplorationPath] = useState<ExplorationPathItem[]>(
@@ -77,13 +79,12 @@ const VisualTreeOfLife: React.FC = () => {
       if (existingIndex !== -1) {
         return newPath.slice(0, existingIndex + 1);
       } else {
-        return [
-          ...newPath,
-          {
-            name: nodeData.name,
-            description: nodeData.attributes?.description,
-          },
-        ];
+        const newItem: ExplorationPathItem = {
+          name: nodeData.name,
+          node: nodeData,
+          fullPath: [...prevPath.map(item => item.name), nodeData.name]
+        };
+        return [...newPath, newItem];
       }
     });
   }, []);
@@ -145,18 +146,19 @@ const VisualTreeOfLife: React.FC = () => {
     });
   }, []);
 
-  const handleNodeSelect = useCallback((selectedNode: TreeNodeData, path: string[]) => {
-    setSelectedNode(selectedNode);
-    setExplorationPath(path.map((name, index) => ({
-      name,
-      description: index === path.length - 1 ? selectedNode.attributes?.description : undefined
-    })));
-
-    // Zoom to the selected node
-    if (treeWrapperRef.current) {
-      const treeWrapper = treeWrapperRef.current;
-      const nodeId = path.join('/');
-      treeWrapper.zoomToNode(nodeId, 1.5);
+  const handleNodeSelect = useCallback((node: TreeNodeData, path: string[]) => {
+    setSelectedNode(node);
+    const newPath: ExplorationPathItem[] = path.map((name, index) => {
+      const foundNode = findNodeByPath(treeData as TreeNodeData, path.slice(0, index + 1));
+      return {
+        name,
+        node: foundNode || node, // Fallback to the selected node if not found
+        fullPath: path.slice(0, index + 1)
+      };
+    });
+    setExplorationPath(newPath);
+    if (treeWrapperRef.current && treeWrapperRef.current.zoomToNode) {
+      treeWrapperRef.current.zoomToNode(node, 1.5);
     }
   }, []);
 
@@ -190,10 +192,7 @@ const VisualTreeOfLife: React.FC = () => {
           <AISettings />
         </CardHeader>
         <CardContent>
-          <ExplorationPath
-            path={explorationPath}
-            onNavigate={handlePathNavigate}
-          />
+        <ExplorationPath path={explorationPath} onNavigate={handleNodeSelect} />
           <ResizablePanelGroup
             direction="horizontal"
             className="rounded-lg border border-border"
@@ -238,7 +237,6 @@ const VisualTreeOfLife: React.FC = () => {
                 style={{ height: "calc(100% - 40px)" }}
               >
                 <DynamicTree
-                  ref={treeWrapperRef}
                   data={treeData as TreeNodeData}
                   orientation="vertical"
                   pathFunc="step"

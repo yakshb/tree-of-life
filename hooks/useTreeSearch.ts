@@ -12,15 +12,17 @@ export function useTreeSearch() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
 
   const performSearch = useCallback((searchTerm: string) => {
-    if (searchTerm.trim() === '') {
+    if (!searchTerm || searchTerm.trim() === '') {
       setSearchResults([]);
       return;
     }
-    const results = searchTree(treeData as TreeNodeData, searchTerm);
-    setSearchResults(results.map(result => ({
-      node: result.node,
-      path: result.path.map(node => node.name)
-    })));
+    try {
+      const results = searchTree(treeData as TreeNodeData, searchTerm);
+      setSearchResults(results || []);
+    } catch (error) {
+      console.error('Error in tree search:', error);
+      setSearchResults([]);
+    }
   }, []);
 
   return { searchResults, performSearch };

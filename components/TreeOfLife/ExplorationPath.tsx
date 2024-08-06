@@ -1,11 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
-import { ExplorationPathItem } from '@/types/treeTypes';
+import { ExplorationPathItem, TreeNodeData } from '@/types/treeTypes';
 
 interface ExplorationPathProps {
   path: ExplorationPathItem[];
-  onNavigate: (index: number) => void;
+  onNavigate: (node: TreeNodeData, path: string[]) => void;
 }
 
 const ExplorationPath: React.FC<ExplorationPathProps> = ({ path, onNavigate }) => (
@@ -27,7 +27,7 @@ const ExplorationPath: React.FC<ExplorationPathProps> = ({ path, onNavigate }) =
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.1 }}
             className="text-green-800 dark:text-green-200 hover:underline cursor-pointer"
-            onClick={() => onNavigate(index)}
+            onClick={() => onNavigate(item.node, item.fullPath)}
           >
             {item.name}
           </motion.span>
