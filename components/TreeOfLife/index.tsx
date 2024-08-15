@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useCallback, useEffect, useRef, useMemo } from "react";
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  useMemo,
+} from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { treeData } from "../../data/treeData";
 import styles from "@/styles/TreeStyles.module.css";
@@ -15,10 +21,22 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "../ui/resizable";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import dynamic from "next/dynamic";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { ZoomIn, ZoomOut, Maximize, RotateCcw } from "lucide-react";
+import {
+  ZoomIn,
+  ZoomOut,
+  Maximize,
+  RotateCcw,
+  ChevronsUpDown,
+} from "lucide-react";
 import NodeLegend from "./NodeLegend";
 import { useTreeSearch } from "@/hooks/useTreeSearch";
 import { SearchBar } from "./SearchBar";
@@ -54,8 +72,6 @@ interface TreeNodeData extends TreeNodeDatum {
   };
 }
 
-
-
 const VisualTreeOfLife: React.FC = () => {
   const [aiResponse, setAIResponse] = useState("");
   const [explorationPath, setExplorationPath] = useState<ExplorationPathItem[]>(
@@ -82,7 +98,7 @@ const VisualTreeOfLife: React.FC = () => {
         const newItem: ExplorationPathItem = {
           name: nodeData.name,
           node: nodeData,
-          fullPath: [...prevPath.map(item => item.name), nodeData.name]
+          fullPath: [...prevPath.map((item) => item.name), nodeData.name],
         };
         return [...newPath, newItem];
       }
@@ -149,11 +165,14 @@ const VisualTreeOfLife: React.FC = () => {
   const handleNodeSelect = useCallback((node: TreeNodeData, path: string[]) => {
     setSelectedNode(node);
     const newPath: ExplorationPathItem[] = path.map((name, index) => {
-      const foundNode = findNodeByPath(treeData as TreeNodeData, path.slice(0, index + 1));
+      const foundNode = findNodeByPath(
+        treeData as TreeNodeData,
+        path.slice(0, index + 1)
+      );
       return {
         name,
         node: foundNode || node, // Fallback to the selected node if not found
-        fullPath: path.slice(0, index + 1)
+        fullPath: path.slice(0, index + 1),
       };
     });
     setExplorationPath(newPath);
@@ -162,7 +181,10 @@ const VisualTreeOfLife: React.FC = () => {
     }
   }, []);
 
-  const findNodeByPath = (node: TreeNodeData, path: string[]): TreeNodeData | null => {
+  const findNodeByPath = (
+    node: TreeNodeData,
+    path: string[]
+  ): TreeNodeData | null => {
     if (path.length === 0 || node.name !== path[0]) {
       return null;
     }
@@ -192,78 +214,106 @@ const VisualTreeOfLife: React.FC = () => {
           <AISettings />
         </CardHeader>
         <CardContent>
-        <ExplorationPath path={explorationPath} onNavigate={handleNodeSelect} />
+          <ExplorationPath
+            path={explorationPath}
+            onNavigate={handleNodeSelect}
+          />
           <ResizablePanelGroup
             direction="horizontal"
             className="rounded-lg border border-border"
           >
-            <ResizablePanel defaultSize={70}>
-              <div className="p-2 flex justify-between bg-secondary rounded-t-lg">
-                <div>
-                  <Button
-                    onClick={() => handleZoom(true)}
-                    variant="outline"
-
-                    className="mr-2"
-                  >
-                    <ZoomIn size={18} />
-                  </Button>
-                  <Button
-                    onClick={() => handleZoom(false)}
-                    variant="outline"
-
-                    className="mr-2"
-                  >
-                    <ZoomOut size={18} />
-                  </Button>
-                </div>
-                
-                <div className="flex gap-2">
-                  {/* <Button
-                    onClick={expandAllNodes}
-                    variant="outline"
-                    size="sm"
-                    className="mr-2"
-                  >
-                    <Maximize size={18} />
-                  </Button> */}
-                  <SearchBar onNodeSelect={handleNodeSelect} /> {/* Add this line */}
-                  <Button onClick={resetChart} variant="outline">
-                    <RotateCcw size={18} />
-                  </Button>
-                </div>
-              </div>
-              <div
-                ref={treeContainerRef}
-                className={`${styles.treeContainer} bg-background dark:bg-gray-400 rounded-b-lg overflow-hidden relative`}
-                style={{ height: "calc(100% - 40px)" }}
-              >
-                <DynamicTree
-                  data={treeData as TreeNodeData}
-                  orientation="vertical"
-                  pathFunc="step"
-                  renderCustomNodeElement={(rd3tProps) => (
-                    <CustomNodeRenderer
-                      nodeDatum={rd3tProps.nodeDatum as TreeNodeData}
-                      toggleNode={rd3tProps.toggleNode}
-                      onNodeClick={handleNodeClick}
-                    />
-                  )}
-                  separation={{ siblings: 1.5, nonSiblings: 2 }}
-                  transitionDuration={600}
-                  zoomable={true}
-                  collapsible={true}
-                  translate={translate}
-                  dimensions={dimensions}
-                  nodeSize={{ x: 180, y: 180 }}
-                  zoom={zoom}
-                  pathClassFunc={() => "tree-link"}
-                  onUpdate={(updateArgs) => {
-                    console.log("Tree updated:", updateArgs);
-                  }}
-                />
-                <div className="absolute bottom-4 left-4">
-                  <NodeLegend />
+            <ResizablePanel defaultSize={70} minSize={30}>
+              <div className="h-full flex flex-col">
+                <Card className="m-2">
+                  <CardContent className="p-2 flex justify-between items-center">
+                    <div className="flex space-x-2">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              onClick={() => handleZoom(true)}
+                              variant="outline"
+                              size="icon"
+                            >
+                              <ZoomIn size={18} />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Zoom In</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              onClick={() => handleZoom(false)}
+                              variant="outline"
+                              size="icon"
+                            >
+                              <ZoomOut size={18} />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Zoom Out</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              onClick={resetChart}
+                              variant="outline"
+                              size="icon"
+                            >
+                              <RotateCcw size={18} />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Reset View</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    <SearchBar onNodeSelect={handleNodeSelect} />
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="outline" size="icon">
+                            <ChevronsUpDown size={18} />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Expand/Collapse All</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </CardContent>
+                </Card>
+                <div
+                  ref={treeContainerRef}
+                  className="flex-grow bg-background dark:bg-gray-800 rounded-lg overflow-hidden relative m-2"
+                >
+                  <DynamicTree
+                    data={treeData as TreeNodeData}
+                    orientation="vertical"
+                    pathFunc="step"
+                    renderCustomNodeElement={(rd3tProps) => (
+                      <CustomNodeRenderer
+                        nodeDatum={rd3tProps.nodeDatum as TreeNodeData}
+                        toggleNode={rd3tProps.toggleNode}
+                        onNodeClick={handleNodeClick}
+                      />
+                    )}
+                    separation={{ siblings: 1.5, nonSiblings: 2 }}
+                    transitionDuration={600}
+                    zoomable={true}
+                    collapsible={true}
+                    translate={translate}
+                    dimensions={dimensions}
+                    nodeSize={{ x: 180, y: 180 }}
+                    zoom={zoom}
+                    pathClassFunc={() => "tree-link"}
+                    onUpdate={(updateArgs) => {
+                      console.log("Tree updated:", updateArgs);
+                    }}
+                  />
+                  <div className="absolute bottom-4 left-4">
+                    <NodeLegend />
+                  </div>
                 </div>
               </div>
             </ResizablePanel>

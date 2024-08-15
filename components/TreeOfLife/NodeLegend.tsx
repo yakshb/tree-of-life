@@ -1,29 +1,39 @@
 import React from 'react';
+import { useTheme } from 'next-themes';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 const NodeLegend: React.FC = () => {
+  const { theme } = useTheme();
+
   const legendItems = [
-    { status: 'Living', color: 'hsl(142.1 76.2% 36.3%)' },
-    { status: 'Extinct', color: 'hsl(0 84.2% 60.2%)' },
-    { status: 'Living and Extinct', color: 'hsl(142.1 76.2% 36.3%)' },
-    { status: 'Developing', color: 'hsl(217.2 91.2% 59.8%)' },
-    { status: 'Unknown', color: 'hsl(240 3.8% 46.1%)' },
+    { status: 'Living', color: theme === 'dark' ? '#4ade80' : '#22c55e' },
+    { status: 'Extinct', color: theme === 'dark' ? '#f87171' : '#ef4444' },
+    { status: 'Living and Extinct', color: theme === 'dark' ? '#facc15' : '#eab308' },
+    { status: 'Developing', color: theme === 'dark' ? '#60a5fa' : '#3b82f6' },
+    { status: 'Unknown', color: theme === 'dark' ? '#9ca3af' : '#6b7280' },
   ];
 
   return (
-    <div className="bg-card rounded-lg p-4 shadow-sm">
-      <h3 className="text-lg font-semibold mb-2 text-foreground">Node Status Legend</h3>
-      <div className="flex flex-wrap gap-4">
-        {legendItems.map((item) => (
-          <div key={item.status} className="flex items-center">
-            <div
-              className="w-4 h-4 rounded-full mr-2"
-              style={{ backgroundColor: item.color }}
-            />
-            <span className="text-sm text-muted-foreground">{item.status}</span>
-          </div>
-        ))}
-      </div>
-    </div>
+    <Card className="w-full max-w-md">
+      <CardHeader>
+        <CardTitle className="text-lg font-semibold">Node Status Legend</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-2 gap-3">
+          {legendItems.map((item) => (
+            <div key={item.status} className="flex items-center space-x-2">
+              <Badge
+                variant="outline"
+                className="w-3 h-3 p-0 rounded-full"
+                style={{ backgroundColor: item.color, borderColor: item.color }}
+              />
+              <span className="text-sm">{item.status}</span>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

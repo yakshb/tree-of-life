@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { useTreeSearch } from '@/hooks/useTreeSearch';
-import { TreeNodeData } from '@/types/treeTypes';
-import { Search, ArrowRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useRef } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useTreeSearch } from "@/hooks/useTreeSearch";
+import { TreeNodeData } from "@/types/treeTypes";
+import { Search, ArrowRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface SearchBarProps {
   onNodeSelect: (node: TreeNodeData, path: string[]) => void;
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({ onNodeSelect }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const { searchResults, performSearch } = useTreeSearch();
   const searchRef = useRef<HTMLDivElement>(null);
@@ -27,13 +27,16 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onNodeSelect }) => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -45,7 +48,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onNodeSelect }) => {
   };
 
   return (
-    <div ref={searchRef} className="relative w-[500px]">
+    <div ref={searchRef} className="relative px-2 flex-grow">
       <form onSubmit={handleSubmit} className="relative">
         <Input
           type="text"
@@ -54,8 +57,15 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onNodeSelect }) => {
           placeholder="Search Tree of Life..."
           className="pl-10 pr-4 py-2 w-full"
         />
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-        <Button type="submit" variant="ghost" className="absolute right-2 top-1/2 transform -translate-y-1/2">
+        <Search
+          className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+          size={18}
+        />
+        <Button
+          type="submit"
+          variant="ghost"
+          className="absolute right-2 top-1/2 transform -translate-y-1/2"
+        >
           <ArrowRight size={18} />
         </Button>
       </form>
@@ -78,7 +88,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onNodeSelect }) => {
                 onClick={() => {
                   onNodeSelect(result.node, result.path);
                   setIsOpen(false);
-                  setSearchTerm('');
+                  setSearchTerm("");
                 }}
               >
                 <div className="font-medium">{result.node.name}</div>
