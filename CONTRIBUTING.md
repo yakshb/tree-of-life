@@ -84,7 +84,7 @@ We're looking for various types of contributions, including but not limited to:
 ## Community and Communication
 
 - Join our [Discord server](https://discord.gg/your-invite-link) for real-time discussion.
-- Follow us on Twitter [@TreeOfLifeAI](https://twitter.com/TreeOfLifeAI) for announcements.
+- Follow us on Twitter [@TOL.ai](https://x.com/ai_tol) for announcements.
 
 Remember, contributions to this project should be conducted with respect for all community members and in accordance with our [Code of Conduct](CODE_OF_CONDUCT.md).
 
