@@ -6,6 +6,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
 import { TreeNodeDatum } from "react-d3-tree";
 import { useTheme } from "next-themes";
 
@@ -73,9 +78,8 @@ const CustomNodeRenderer: React.FC<CustomNodeProps> = ({
   }, [theme]);
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
+      <HoverCard>
+        <HoverCardTrigger asChild>
           <motion.g
             onClick={handleClick}
             onMouseEnter={() => setIsHovered(true)}
@@ -103,14 +107,13 @@ const CustomNodeRenderer: React.FC<CustomNodeProps> = ({
               {nodeDatum.name}
             </motion.text>
           </motion.g>
-        </TooltipTrigger>
-        <TooltipContent>
+        </HoverCardTrigger>
+        <HoverCardContent>
           <p className="text-sm">
             {nodeDatum.attributes?.description || "No description available"}
           </p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+        </HoverCardContent>
+      </HoverCard>
   );
 };
 

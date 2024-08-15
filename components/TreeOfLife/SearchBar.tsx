@@ -45,7 +45,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onNodeSelect }) => {
   };
 
   return (
-    <div ref={searchRef} className="relative mb-4">
+    <div ref={searchRef} className="relative w-[500px]">
       <form onSubmit={handleSubmit} className="relative">
         <Input
           type="text"

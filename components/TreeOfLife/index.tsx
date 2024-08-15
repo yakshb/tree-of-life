@@ -188,7 +188,7 @@ const VisualTreeOfLife: React.FC = () => {
             Explore the diversity of life with AI assistance. Click on branches
             to learn more.
           </p>
-          <SearchBar onNodeSelect={handleNodeSelect} /> {/* Add this line */}
+          {/* <SearchBar onNodeSelect={handleNodeSelect} /> Add this line */}
           <AISettings />
         </CardHeader>
         <CardContent>
@@ -203,7 +203,7 @@ const VisualTreeOfLife: React.FC = () => {
                   <Button
                     onClick={() => handleZoom(true)}
                     variant="outline"
-                    size="sm"
+
                     className="mr-2"
                   >
                     <ZoomIn size={18} />
@@ -211,22 +211,24 @@ const VisualTreeOfLife: React.FC = () => {
                   <Button
                     onClick={() => handleZoom(false)}
                     variant="outline"
-                    size="sm"
+
                     className="mr-2"
                   >
                     <ZoomOut size={18} />
                   </Button>
                 </div>
-                <div>
-                  <Button
+                
+                <div className="flex gap-2">
+                  {/* <Button
                     onClick={expandAllNodes}
                     variant="outline"
                     size="sm"
                     className="mr-2"
                   >
                     <Maximize size={18} />
-                  </Button>
-                  <Button onClick={resetChart} variant="outline" size="sm">
+                  </Button> */}
+                  <SearchBar onNodeSelect={handleNodeSelect} /> {/* Add this line */}
+                  <Button onClick={resetChart} variant="outline">
                     <RotateCcw size={18} />
                   </Button>
                 </div>
@@ -253,7 +255,7 @@ const VisualTreeOfLife: React.FC = () => {
                   collapsible={true}
                   translate={translate}
                   dimensions={dimensions}
-                  nodeSize={{ x: 180, y: 150 }}
+                  nodeSize={{ x: 180, y: 180 }}
                   zoom={zoom}
                   pathClassFunc={() => "tree-link"}
                   onUpdate={(updateArgs) => {
@@ -276,12 +278,6 @@ const VisualTreeOfLife: React.FC = () => {
                     >
                       Summary
                     </TabsTrigger>
-                    {/* <TabsTrigger
-                    className="font-semibold tracking-tight"
-                    value="ai"
-                  >
-                    AI Insights
-                  </TabsTrigger> */}
                     <TabsTrigger
                       className="font-semibold tracking-tight"
                       value="ai"
