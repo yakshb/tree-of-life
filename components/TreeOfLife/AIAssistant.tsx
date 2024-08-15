@@ -130,7 +130,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
         }
       } catch (error) {
         console.error("Error fetching suggested prompts:", error);
-        setPromptError(error.message);
+        // setPromptError(error.message);
         // Fallback to default prompts if fetch fails
         setSuggestedPrompts([
           `Tell me more about ${node.name}`,
