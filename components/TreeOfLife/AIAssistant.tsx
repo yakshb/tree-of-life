@@ -14,7 +14,7 @@ import { useChat as useChatContext } from "../ai-interface/ChatContext";
 import ReactMarkdown from "react-markdown";
 import Spinner from "../ai-interface/Spinner";
 import Image from "next/image";
-import { useAISettings } from '../ai-interface/AISettingsContext';
+import { useAISettings } from "../ai-interface/AISettingsContext";
 import MarkdownRenderer from "../ai-interface/MarkdownRenderer";
 // import { useSuggestedPrompts } from "../../hooks/useSuggestedPrompts";
 // import SuggestedPrompts from "../ai-interface/SuggestedPrompts";
@@ -42,23 +42,37 @@ interface AIAssistantProps {
   node: TreeNodeData | null;
 }
 
-export const AIAssistant: React.FC<AIAssistantProps> = ({ onResponse, node }) => {
+export const AIAssistant: React.FC<AIAssistantProps> = ({
+  onResponse,
+  node,
+}) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { chatHistory, updateChatHistory } = useChatContext();
   const { aiSettings } = useAISettings();
   const [suggestedPrompts, setSuggestedPrompts] = useState<string[]>([]);
+  const [promptError, setPromptError] = useState<string | null>(null);
+  const [lastPromptFetch, setLastPromptFetch] = useState(0);
+  const cooldownPeriod = 60000; // 1 minute cooldown
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-    api: "/api/chat",
-    body: { node, model: aiSettings.model, temperature: aiSettings.temperature },
-    initialMessages: node ? chatHistory[node.name] || [] : [],
-    onFinish: (message) => {
-      onResponse(message.content);
-      if (node) {
-        updateChatHistory(node.name, messages);
-      }
-    },
-  });
+  const { messages, input, handleInputChange, handleSubmit, isLoading } =
+    useChat({
+      api: "/api/chat",
+      body: {
+        node,
+        model: aiSettings.model,
+        temperature: aiSettings.temperature,
+      },
+      initialMessages: node ? chatHistory[node.name] || [] : [],
+      onFinish: (message) => {
+        onResponse(message.content);
+        if (node) {
+          updateChatHistory(node.name, messages);
+        }
+      },
+      onError: (error) => {
+        console.error("Chat error:", error);
+      },
+    });
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -67,7 +81,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ onResponse, node }) =>
         if (scrollContainer) {
           scrollContainer.scrollTo({
             top: scrollContainer.scrollHeight,
-            behavior: 'smooth'
+            behavior: "smooth",
           });
         }
       };
@@ -82,21 +96,41 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ onResponse, node }) =>
     }
   }, [messages]);
 
+  useEffect(() => {
+    setLastPromptFetch(0);
+  }, [node?.name]);
+
   const fetchSuggestedPrompts = useCallback(async () => {
+    const now = Date.now();
+    if (now - lastPromptFetch < cooldownPeriod && lastPromptFetch !== 0) {
+      console.log("Skipping prompt fetch due to cooldown");
+      return;
+    }
+
     if (node) {
       try {
-        const response = await fetch('/api/generate-prompts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        setPromptError(null);
+        const response = await fetch("/api/generate-prompts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ node, chatHistory: messages }),
         });
+
         if (!response.ok) {
-          throw new Error('Failed to fetch prompts');
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to fetch prompts");
         }
+
         const data = await response.json();
-        setSuggestedPrompts(data.prompts);
+        if (Array.isArray(data.prompts) && data.prompts.length > 0) {
+          setSuggestedPrompts(data.prompts);
+          setLastPromptFetch(now);
+        } else {
+          throw new Error("Invalid prompts data received");
+        }
       } catch (error) {
-        console.error('Error fetching suggested prompts:', error);
+        console.error("Error fetching suggested prompts:", error);
+        setPromptError(error.message);
         // Fallback to default prompts if fetch fails
         setSuggestedPrompts([
           `Tell me more about ${node.name}`,
@@ -106,11 +140,11 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ onResponse, node }) =>
         ]);
       }
     }
-  }, [node, messages]);
+  }, [node, messages, lastPromptFetch, cooldownPeriod]);
 
   useEffect(() => {
     fetchSuggestedPrompts();
-  }, [fetchSuggestedPrompts]);
+  }, [fetchSuggestedPrompts, node?.name]);
 
   const handlePromptClick = useCallback(
     (prompt: string) => {
@@ -126,11 +160,11 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ onResponse, node }) =>
       return (
         <div>
           <p>Here&apos;s the image you requested:</p>
-          <Image 
-            src={message.imageUrl} 
-            alt="Generated image" 
-            width={512} 
-            height={512} 
+          <Image
+            src={message.imageUrl}
+            alt="Generated image"
+            width={512}
+            height={512}
             className="mt-2 rounded-md"
           />
         </div>
@@ -181,33 +215,35 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ onResponse, node }) =>
               ref={chatContainerRef}
               className="flex-grow overflow-y-auto p-4 space-y-4 scroll-smooth custom-scrollbar"
             >
-                {messages.map((message) => (
-                  <motion.div
-                    key={message.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3 }}
-                    className={`flex items-start space-x-2 ${
-                      message.role === "assistant" ? "justify-start" : "justify-end"
+              {messages.map((message) => (
+                <motion.div
+                  key={message.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className={`flex items-start space-x-2 ${
+                    message.role === "assistant"
+                      ? "justify-start"
+                      : "justify-end"
+                  }`}
+                >
+                  {message.role === "assistant" && (
+                    <Avatar>
+                      <AvatarFallback>AI</AvatarFallback>
+                    </Avatar>
+                  )}
+                  <div
+                    className={`px-5 py-2 rounded-lg max-w-[80%] text-wrap ${
+                      message.role === "assistant"
+                        ? "bg-blue-100"
+                        : "bg-green-200 text-right"
                     }`}
                   >
-                    {message.role === "assistant" && (
-                      <Avatar>
-                        <AvatarFallback>AI</AvatarFallback>
-                      </Avatar>
-                    )}
-                    <div
-                      className={`px-5 py-2 rounded-lg max-w-[80%] text-wrap ${
-                        message.role === "assistant"
-                          ? "bg-blue-100"
-                          : "bg-green-200 text-right"
-                      }`}
-                    >
-                      {renderMessage(message)}
-                    </div>
-                  </motion.div>
-                ))}
+                    {renderMessage(message)}
+                  </div>
+                </motion.div>
+              ))}
             </div>
             <div className="p-4 border-t space-y-4">
               <div className="flex flex-wrap gap-2">
@@ -236,7 +272,11 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ onResponse, node }) =>
                   {isLoading ? (
                     <motion.div
                       animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      transition={{
+                        duration: 1,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
                     >
                       <Send className="w-5 h-5" />
                     </motion.div>

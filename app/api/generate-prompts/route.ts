@@ -1,51 +1,45 @@
-// pages/api/generatePrompts.ts
+// app/api/generate-prompts/route.ts
 import { createOpenAI } from '@ai-sdk/openai';
 import { generateText } from 'ai';
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextResponse } from 'next/server';
 
 const groq = createOpenAI({
   apiKey: process.env.GROQ_API_KEY ?? "",
   baseURL: "https://api.groq.com/openai/v1",
 });
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method Not Allowed' });
-  }
-
-  const { node, chatHistory } = req.body;
+export async function POST(req: Request) {
+  const { node, chatHistory } = await req.json();
 
   try {
     const { text } = await generateText({
-      model: groq("llama3-8b-8192"), // Use the model passed from the frontend
+      model: groq("llama-3.1-8b-instant"),
+      maxTokens: 200,
       messages: [
         {
           role: "system",
-          content: `You are an AI assistant generating relevant prompts for a Tree of Life Explorer application. Based on the current node and chat history, suggest 4 engaging questions or prompts that would be interesting for users to explore next. Output format should be JSON in the following structure:
-          {
-            "q1": "First question",
-            "q2": "Second question",
-            "q3": "Third question",
-            "q4": "Fourth question"
-          }`
+          content: `You are an AI assistant generating relevant prompts for a Tree of Life Explorer application. Based on the current node and chat history, suggest 4 engaging questions or prompts that would be interesting for users to explore next. Output as a simple list.`
         },
         {
           role: "user",
-          content: `Current node: ${JSON.stringify(node)}. Chat history: ${JSON.stringify(chatHistory)}. Generate 4 relevant prompts.`
+          content: `Current node: ${JSON.stringify(node)}. Chat history: ${JSON.stringify(chatHistory)}. Do not include any text before or after the prompts, only list questions. Be creative with your prompts. Generate 4 relevant prompts in the following example format:
+          1. What are some unique features found in ${node.name}?
+          2. What is the role of ${node.name} in the food chain?
+          3. ...`
         }
       ],
       temperature: 0.7,
+      abortSignal: req.signal, // Forward the abort signal
     });
 
-    // Parse the JSON output
-    const parsedPrompts = JSON.parse(text);
+    const prompts = text.split('\n').filter(line => line.trim() !== '').slice(0, 4);
 
-    // Extract prompts from the parsed JSON
-    const generatedPrompts = Object.values(parsedPrompts);
-
-    res.status(200).json({ prompts: generatedPrompts });
-  } catch (error) {
+    return NextResponse.json({ prompts });
+  } catch (error: any) {
     console.error('Error generating prompts:', error);
-    res.status(500).json({ message: 'Error generating prompts' });
+    if (error.statusCode === 429) {
+      return NextResponse.json({ error: 'Rate limit exceeded. Please try again later.' }, { status: 429 });
+    }
+    return NextResponse.json({ error: 'Failed to generate prompts' }, { status: 500 });
   }
 }
