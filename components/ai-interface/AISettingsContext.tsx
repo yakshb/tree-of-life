@@ -11,7 +11,7 @@ interface AISettingsContextType {
 }
 
 const defaultSettings: AISettings = {
-    model: "llama-3.1-70b-versatile", // or any other model ID you prefer as default
+    model: "llama3-8b-8192", // or any other model ID you prefer as default
     temperature: 0.5,
   };
 

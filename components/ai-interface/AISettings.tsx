@@ -82,7 +82,7 @@ const groqModels = [
     label: "Llama 3.1 70B",
     provider: "Meta",
     icon: MetaIcon,
-    description: "Default",
+    description: "Recommended",
   },
   {
     value: "llama-3.1-8b-instant",
@@ -96,7 +96,7 @@ const groqModels = [
     label: "LLaMa 3 70B",
     provider: "Meta",
     icon: MetaIcon,
-    description: "Recommended",
+    description: "Default",
   },
   {
     value: "llama3-8b-8192",
