@@ -33,7 +33,7 @@ export async function POST(req: Request) {
           What are the key characteristics of ${node.name}?`,
         },
       ],
-      temperature: 0.7,
+      temperature: 0.5,
       abortSignal: req.signal, // Forward the abort signal
     });
 

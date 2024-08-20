@@ -1,13 +1,20 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { streamText } from 'ai';
+import { randomUUID } from 'crypto';
+import { hprompt } from "@helicone/helicone";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
 const groq = createOpenAI({
   apiKey: process.env.GROQ_API_KEY ?? "",
-  baseURL: "https://api.groq.com/openai/v1",
+  baseUrl: "https://groq.helicone.ai/openai/v1",
+  headers: {
+    "Helicone-Auth": `Bearer ${process.env.HELICONE_API_KEY}`,
+  },
 });
+
+const session = randomUUID();
 
 export async function POST(req: Request) {
   const { messages, model, temperature } = await req.json();
@@ -16,6 +23,12 @@ export async function POST(req: Request) {
     model: groq(model), // Use the model passed from the frontend
     temperature: temperature,
     messages,
+    headers: {
+      "Helicone-Session-Id": session,
+      "Helicone-Session-Path": "/abstract",
+      "Helicone-Prompt-Id": "prompt_story",
+      "Helicone-Cache-Enabled": "true", // add this header and set to true
+    },
     system: `You are an AI assistant for a Tree of Life Explorer application. 
     You have extensive knowledge about various life forms and their evolutionary history. 
     Provide concise and accurate information based on the user's queries about specific organisms.

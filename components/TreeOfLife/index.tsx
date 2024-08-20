@@ -10,7 +10,7 @@ import React, {
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { treeData } from "../../data/treeData";
 import styles from "@/styles/TreeStyles.module.css";
-import AIAssistant from "./AIAssistant";
+import AIAssistant from "../ai-interface/AIAssistant";
 import InfoPanel from "./InfoPanel";
 import ExplorationPath from "./ExplorationPath";
 import CustomNodeRenderer from "./CustomNodeRenderer";

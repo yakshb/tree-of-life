@@ -8,14 +8,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import { TreeNodeDatum } from "react-d3-tree";
-import { Info, Send } from "lucide-react";
+import { Bot, Info, Send, Sparkles } from "lucide-react";
 import { useChat } from "ai/react";
-import { useChat as useChatContext } from "../ai-interface/ChatContext";
+import { useChat as useChatContext } from "./ChatContext";
 import ReactMarkdown from "react-markdown";
-import Spinner from "../ai-interface/Spinner";
+import Spinner from "./Spinner";
 import Image from "next/image";
-import { useAISettings } from "../ai-interface/AISettingsContext";
-import MarkdownRenderer from "../ai-interface/MarkdownRenderer";
+import { useAISettings } from "./AISettingsContext";
+import MarkdownRenderer from "./MarkdownRenderer";
 // import { useSuggestedPrompts } from "../../hooks/useSuggestedPrompts";
 // import SuggestedPrompts from "../ai-interface/SuggestedPrompts";
 
@@ -54,7 +54,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
   const [lastPromptFetch, setLastPromptFetch] = useState(0);
   const cooldownPeriod = 60000; // 1 minute cooldown
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading } =
+  const { messages, setMessages, input, handleInputChange, handleSubmit, isLoading } =
     useChat({
       api: "/api/chat",
       body: {
@@ -179,7 +179,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="h-[750px] flex flex-col items-center justify-center text-muted-foreground bg-card rounded-lg p-6"
+        className="h-[800px] flex flex-col items-center justify-center text-muted-foreground bg-card rounded-lg p-6"
       >
         <Info className="w-16 h-16 mb-4 text-primary" />
         <p className="text-lg font-semibold text-center">
@@ -195,26 +195,27 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="h-[800px] overflow-hidden bg-gradient-to-br from-background to-emerald-50 shadow-lg">
+      <Card className="h-[800px] overflow-hidden bg-gradient-to-br from-background to-emerald-50 shadow-xl rounded-xl">
         <CardContent className="p-6 flex flex-col h-full">
           <motion.h2
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="text-2xl font-bold mb-4 text-emerald-700"
+            className="text-3xl font-bold mb-6 text-emerald-700"
           >
             Ask Your AI Assistant
           </motion.h2>
-          <div className="flex flex-col flex-grow w-full bg-white/50 border rounded-md shadow-md overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b">
-              <h2 className="text-lg font-semibold">
+          <div className="flex flex-col flex-grow w-full bg-white/70 backdrop-blur-sm border rounded-xl shadow-lg overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b bg-emerald-50">
+              <h2 className="text-xl font-semibold text-emerald-800">
                 Learn more about {node.name}
               </h2>
             </div>
             <div
               ref={chatContainerRef}
-              className="flex-grow overflow-y-auto p-4 space-y-4 scroll-smooth custom-scrollbar"
+              className="flex-grow overflow-y-auto p-4 space-y-6 scroll-smooth custom-scrollbar"
             >
+              <AnimatePresence>
               {messages.map((message) => (
                 <motion.div
                   key={message.id}
@@ -229,31 +230,37 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
                   }`}
                 >
                   {message.role === "assistant" && (
-                    <Avatar>
-                      <AvatarFallback>AI</AvatarFallback>
-                    </Avatar>
+                    <Avatar className="w-10 h-10 border-2 border-emerald-500">
+                    <AvatarImage src="/ai-assistant-avatar.png" alt="AI Assistant" />
+                    <AvatarFallback>
+                      <Bot className="w-6 h-6 text-emerald-600" />
+                    </AvatarFallback>
+                  </Avatar>
                   )}
                   <div
-                    className={`px-5 py-2 rounded-lg max-w-[80%] text-wrap ${
-                      message.role === "assistant"
-                        ? "bg-blue-100"
-                        : "bg-green-200 text-right"
-                    }`}
-                  >
+                      className={`px-4 py-3 rounded-lg max-w-[80%] text-wrap shadow-md ${
+                        message.role === "assistant"
+                          ? "bg-emerald-100 text-emerald-900"
+                          : "bg-blue-100 text-blue-900"
+                      }`}
+                    >
                     {renderMessage(message)}
                   </div>
                 </motion.div>
               ))}
+              </AnimatePresence>
             </div>
             <div className="p-4 border-t space-y-4">
               <div className="flex flex-wrap gap-2">
                 {suggestedPrompts.map((prompt, index) => (
+                  
                   <Badge
                     key={index}
                     variant="secondary"
-                    className="text-sm cursor-pointer hover:bg-indigo-100 transition-colors duration-200"
+                    className="text-sm cursor-pointer hover:bg-indigo-100 transition-colors duration-200 gap-1"
                     onClick={() => handlePromptClick(prompt)}
                   >
+                    <Sparkles className="w-4 h-4 text-emerald-600" />
                     {prompt}
                   </Badge>
                 ))}
@@ -263,7 +270,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
                 className="flex items-center space-x-2"
               >
                 <Input
-                  className="flex-grow"
+                  className="flex-grow bg-white border-emerald-200 focus:ring-emerald-500 focus:border-emerald-500"
                   value={input}
                   placeholder="Ask about this life form..."
                   onChange={handleInputChange}
