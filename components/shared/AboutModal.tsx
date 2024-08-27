@@ -376,7 +376,7 @@ export default function AboutModal() {
               <CardContent className="space-y-6">
                 <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-6 rounded-lg">
                   <p className="text-center text-muted-foreground italic">
-                    "Alone we can do so little; together we can do so much." -
+                    &quot;Alone we can do so little; together we can do so much.&quot; -
                     Helen Keller
                   </p>
                 </div>
