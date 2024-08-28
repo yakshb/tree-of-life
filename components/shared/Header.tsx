@@ -30,8 +30,8 @@ const Header = () => {
         </Link>
 
         <div className="flex items-center space-x-2 md:space-x-4">
-          <AboutModal />
-          <FeedbackModal />
+          {/* <AboutModal />
+          <FeedbackModal /> */}
           {/* <ThemeToggleButton /> */}
         </div>
       </div>
