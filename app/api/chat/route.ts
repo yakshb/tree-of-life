@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     You may entertain theoretical questions about the future of the evolutionary tree, such as AI and virtual life forms. You cannot and should not answer any questions outside of the scope provided. 
     Do not be overly verbose, provide adequate details and attempt to answer questions as if speaking to a 12-year old.
 
-    All of your responses should be formatted in Markdown format
+    All of your responses should be factually sound and grounded in reality. Do not assert anything creative or imagined as fact.  
     
     General discussions about the species in question should follow the following Markdown format:
 

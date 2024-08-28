@@ -206,10 +206,10 @@ const VisualTreeOfLife: React.FC = () => {
     <AISettingsProvider>
       <Card className="w-full mx-auto p-4 bg-card">
         <CardHeader>
-          <p className="text-center text-muted-foreground mb-6">
+          {/* <p className="text-center text-muted-foreground mb-6">
             Explore the diversity of life with AI assistance. Click on branches
             to learn more.
-          </p>
+          </p> */}
           {/* <SearchBar onNodeSelect={handleNodeSelect} /> Add this line */}
           <AISettings />
         </CardHeader>

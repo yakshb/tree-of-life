@@ -2,13 +2,24 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateText } from "ai";
 import { NextResponse } from "next/server";
+import { RateLimiter } from "limiter";
 
 const groq = createOpenAI({
   apiKey: process.env.GROQ_API_KEY ?? "",
   baseURL: "https://api.groq.com/openai/v1",
 });
 
+const limiter = new RateLimiter({ tokensPerInterval: 4, interval: "minute" });
+
 export async function POST(req: Request) {
+  const remainingRequests = await limiter.removeTokens(1);
+  if (remainingRequests < 0) {
+    return NextResponse.json(
+      { error: "Rate limit exceeded. Please try again later." },
+      { status: 429 }
+    );
+  }
+
   const { node, chatHistory } = await req.json();
 
   try {
