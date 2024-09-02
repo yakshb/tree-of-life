@@ -182,7 +182,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
                 node.attributes?.description || "No description available"
               }
             />
-            <InfoElement
+            {/* <InfoElement
               icon={<GitBranch className="text-primary" />}
               title="Taxonomy"
               element={
@@ -201,7 +201,7 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
                   )}
                 </div>
               }
-            />
+            /> */}
             <InfoElement
               icon={<Globe className="text-primary" />}
               title={
