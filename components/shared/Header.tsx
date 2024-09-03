@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import logo from "@/assets/TOLai-logo.svg";
 import { Button } from "@/components/ui/button";
-import { FeedbackModal } from "./FeedbackModal";
+// import { FeedbackModal } from "./FeedbackModal";
 import AboutModal from "./AboutModal";
 
 const Header = () => {
