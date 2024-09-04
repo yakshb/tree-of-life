@@ -12,11 +12,11 @@ const inter = Inter({ subsets: ["latin"], variable: "---font-sans" });
 
 export const metadata: Metadata = {
   title: {
-    default: "AI-Interactive Tree of Life Explorer",
-    template: "%s | AI-Interactive Tree of Life Explorer",
+    default: "Genosphere | Evolutionary Explorer",
+    template: "%s | Genosphere",
   },
   description:
-    "Explore the evolutionary tree of life with AI-powered insights. Interactive visualization of biodiversity, powered by advanced AI for an engaging educational experience.",
+    "Explore the tree diagrams with AI-powered insights. Interactive tree-based visualizations, powered by advanced AI.",
   keywords: [
     "tree of life",
     "AI",
@@ -31,21 +31,21 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Yaksh Birla" }],
   creator: "Yaksh Birla",
-  publisher: "AI-Interactive Tree of Life Explorer Team",
+  publisher: "Genosphere Team",
   openGraph: {
-    title: "AI-Interactive Tree of Life Explorer",
+    title: "Genosphere | Decoding Life with AI",
     description:
       "Dive into the fascinating world of evolution with our AI-powered, interactive tree of life. Discover connections between species and explore biodiversity like never before.",
     type: "website",
     locale: "en_US",
-    url: "https://tree-of-life.vercel.app",
-    siteName: "AI-Interactive Tree of Life Explorer",
+    url: "https://genosphere.vercel.app",
+    siteName: "Genosphere",
     images: [
       {
         url: `${ogImage.src}?v=${Date.now()}`,
         width: ogImage.width,
         height: ogImage.height,
-        alt: "AI-Interactive visualization of the tree of life",
+        alt: "AI-Interactive visualization of evolution",
       },
     ],
   },
@@ -111,7 +111,7 @@ export default function RootLayout({
         </main>
         <footer className="bg-white border-t border-gray-200">
           <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-center text-gray-500">
-            © {new Date().getFullYear()} Tree of Life Explorer. All rights
+            © {new Date().getFullYear()} Genosphere AI. All rights
             reserved.
           </div>
         </footer>

@@ -26,7 +26,7 @@ const Header = () => {
             width={40}
             height={40}
           />
-          Tree of Life Explorer
+          Genosphere
         </Link>
 
         <div className="flex items-center space-x-2 md:space-x-4">
