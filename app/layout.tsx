@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/shared/Header";
 // import { SpeedInsights } from "@vercel/speed-insights/next";
-// import { Analytics } from "@vercel/analytics/react";
+import { Analytics } from "@vercel/analytics/react";
 import ogImage from "@/app/opengraph-image.jpg";
 
 const inter = Inter({ subsets: ["latin"], variable: "---font-sans" });
@@ -13,7 +13,7 @@ const inter = Inter({ subsets: ["latin"], variable: "---font-sans" });
 export const metadata: Metadata = {
   title: {
     default: "AI-Interactive Tree of Life Explorer",
-    template: "%s | AI-Interactive Tree of Life Explorer"
+    template: "%s | AI-Interactive Tree of Life Explorer",
   },
   description:
     "Explore the evolutionary tree of life with AI-powered insights. Interactive visualization of biodiversity, powered by advanced AI for an engaging educational experience.",
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     "biodiversity",
     "phylogenetic tree",
     "educational tool",
-    "biology visualization"
+    "biology visualization",
   ],
   authors: [{ name: "Yaksh Birla" }],
   creator: "Yaksh Birla",
@@ -45,17 +45,18 @@ export const metadata: Metadata = {
         url: `${ogImage.src}?v=${Date.now()}`,
         width: ogImage.width,
         height: ogImage.height,
-        alt: 'AI-Interactive visualization of the tree of life',
+        alt: "AI-Interactive visualization of the tree of life",
       },
     ],
   },
   twitter: {
-    card: 'summary_large_image',
-    site: '@TreeOfLifeAI', // Replace with your actual Twitter handle
-    creator: '@yakshb', // Replace with your actual Twitter handle
+    card: "summary_large_image",
+    site: "@TreeOfLifeAI", // Replace with your actual Twitter handle
+    creator: "@yakshb", // Replace with your actual Twitter handle
     images: [`${ogImage.src}?v=${Date.now()}`],
     title: "Explore Evolution with AI | Tree of Life Explorer",
-    description: "Discover the interconnectedness of life through our AI-powered, interactive evolutionary tree. Perfect for students, educators, and curious minds.",
+    description:
+      "Discover the interconnectedness of life through our AI-powered, interactive evolutionary tree. Perfect for students, educators, and curious minds.",
   },
   // viewport: {
   //   width: 'device-width',
@@ -68,16 +69,16 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
   // themeColor: [
   //   { media: '(prefers-color-scheme: light)', color: '#22c55e' },
   //   { media: '(prefers-color-scheme: dark)', color: '#4ade80' },
   // ],
-  category: 'Education',
+  category: "Education",
 };
 
 export default function RootLayout({
@@ -103,7 +104,10 @@ export default function RootLayout({
       >
         <Header />
         <main className="flex-grow">
-          <div className="mx-auto py-6 sm:px-6 lg:px-8">{children}</div>
+          <div className="mx-auto py-6 sm:px-6 lg:px-8">
+            {children}
+            <Analytics />
+          </div>
         </main>
         <footer className="bg-white border-t border-gray-200">
           <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-center text-gray-500">
