@@ -16,8 +16,6 @@ import Spinner from "./Spinner";
 import Image from "next/image";
 import { useAISettings } from "./AISettingsContext";
 import MarkdownRenderer from "./MarkdownRenderer";
-// import { useSuggestedPrompts } from "../../hooks/useSuggestedPrompts";
-// import SuggestedPrompts from "../ai-interface/SuggestedPrompts";
 
 interface TreeNodeData extends TreeNodeDatum {
   attributes?: {
@@ -130,8 +128,6 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
         }
       } catch (error) {
         console.error("Error fetching suggested prompts:", error);
-        // setPromptError(error.message);
-        // Fallback to default prompts if fetch fails
         setSuggestedPrompts([
           `Tell me more about ${node.name}`,
           `What is the evolutionary history of ${node.name}?`,
@@ -250,17 +246,16 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
               ))}
               </AnimatePresence>
             </div>
-            <div className="p-4 border-t space-y-4">
+            <div className="p-4 border-t space-y-4 bg-white">
               <div className="flex flex-wrap gap-2">
                 {suggestedPrompts.map((prompt, index) => (
-                  
                   <Badge
                     key={index}
                     variant="secondary"
-                    className="text-sm cursor-pointer hover:bg-indigo-100 transition-colors duration-200 gap-1"
+                    className="text-sm cursor-pointer hover:bg-gray-100 transition-colors duration-200 flex items-center gap-1 px-3 py-1 rounded-full bg-gray-50 text-black border border-emerald-300"
                     onClick={() => handlePromptClick(prompt)}
                   >
-                    <Sparkles className="w-4 h-4 text-emerald-600" />
+                    <Sparkles className="w-4 h-4 text-yellow-500" />
                     {prompt}
                   </Badge>
                 ))}
@@ -275,7 +270,11 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
                   placeholder="Ask about this life form..."
                   onChange={handleInputChange}
                 />
-                <Button type="submit" disabled={isLoading}>
+                <Button 
+                  type="submit" 
+                  disabled={isLoading}
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white"
+                >
                   {isLoading ? (
                     <motion.div
                       animate={{ rotate: 360 }}

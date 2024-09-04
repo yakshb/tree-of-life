@@ -57,11 +57,11 @@ const CustomNodeRenderer: React.FC<CustomNodeProps> = ({
   }, [nodeDatum.attributes?.status, theme]);
 
   const getTextColor = useCallback(() => {
-    return theme === "dark" ? "#f3f4f6" : "#1f2937";
+    return theme === "dark" ? "#ffffff" : "#000000";
   }, [theme]);
 
   const getHoverColor = useCallback(() => {
-    return theme === "dark" ? "#f3f4f6" : "#1f2937";
+    return theme === "dark" ? "#ffffff" : "#000000";
   }, [theme]);
 
   const getNodeSize = useMemo(() => {
@@ -89,49 +89,50 @@ const CustomNodeRenderer: React.FC<CustomNodeProps> = ({
 
   return (
     <HoverCard>
-      <motion.g
-        onClick={handleClick}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        style={{ cursor: "pointer" }}
-      >
-        <motion.circle
-          r={getNodeSize}
-          fill={getNodeColor()}
-          stroke={isHovered ? getHoverColor() : "transparent"}
-          strokeWidth={2}
-          initial={{ scale: 1 }}
-          whileHover={{ scale: 1.1 }}
-        />
-        <motion.text
-          dy="0.35em"
-          x={getTextOffset}
-          textAnchor="start"
-          fontSize={14}
-          fill={getTextColor()}
-          fontWeight={isHovered ? 600 : 500}
-          initial={{ opacity: 0.7 }}
-          animate={{ opacity: isHovered ? 1 : 0.7 }}
+      <HoverCardTrigger asChild>
+        <motion.g
+          onClick={handleClick}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          style={{ cursor: "pointer" }}
         >
-          {nodeDatum.name}
-        </motion.text>
-        {nodeDatum.attributes?.scientificName && (
+          <motion.circle
+            r={getNodeSize}
+            fill={getNodeColor()}
+            stroke={isHovered ? getHoverColor() : "transparent"}
+            strokeWidth={2}
+            initial={{ scale: 1 }}
+            whileHover={{ scale: 1.1 }}
+          />
           <motion.text
-            dy="1.7em"
+            dy="0.35em"
             x={getTextOffset}
             textAnchor="start"
-            fontSize={12}
+            fontSize={14}
             fill={getTextColor()}
-            fontStyle="italic"
-            opacity={0.7}
+            fontWeight={isHovered ? 600 : 500}
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
+            style={{ paintOrder: "stroke", stroke: theme === "dark" ? "#000000" : "#ffffff", strokeWidth: "3px", strokeLinecap: "butt", strokeLinejoin: "miter" }}
           >
-            {nodeDatum.attributes.scientificName}
+            {nodeDatum.name}
           </motion.text>
-        )}
-      </motion.g>
-      {/* <HoverCardTrigger asChild>
-          {isHovered}
-      </HoverCardTrigger> */}
+          {nodeDatum.attributes?.scientificName && (
+            <motion.text
+              dy="1.7em"
+              x={getTextOffset}
+              textAnchor="start"
+              fontSize={12}
+              fill={getTextColor()}
+              fontStyle="italic"
+              opacity={0.9}
+              style={{ paintOrder: "stroke", stroke: theme === "dark" ? "#000000" : "#ffffff", strokeWidth: "2px", strokeLinecap: "butt", strokeLinejoin: "miter" }}
+            >
+              {nodeDatum.attributes.scientificName}
+            </motion.text>
+          )}
+        </motion.g>
+      </HoverCardTrigger>
       <HoverCardContent className="z-50 w-80">
         <h3 className="text-lg font-semibold">{nodeDatum.name}</h3>
         {nodeDatum.attributes?.scientificName && (
