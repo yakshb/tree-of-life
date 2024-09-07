@@ -5,6 +5,8 @@ import { IntroBadge } from "@/components/shared/IntroBadge";
 import ParticlesDemo from "@/components/shared/ParticlesBackground";
 import VisualTreeOfLife from "@/components/TreeOfLife/index";
 import { motion } from "framer-motion";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 export default function Home() {
   return (
@@ -32,11 +34,26 @@ export default function Home() {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="w-full max-w-8xl"
+        className="hidden md:block w-full max-w-8xl"
       >
         <ChatProvider>
           <VisualTreeOfLife />
         </ChatProvider>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="visible md:hidden w-full max-w-8xl"
+      >
+        <Alert variant="destructive" className="relative item-center z-50">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Attention</AlertTitle>
+          <AlertDescription>
+            This application is best viewed on a larger screen. For the optimal experience, please visit us on a desktop or tablet device.
+          </AlertDescription>
+        </Alert>
       </motion.div>
     </main>
   );
