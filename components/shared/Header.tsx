@@ -14,8 +14,8 @@ const Header = () => {
   const pathname = usePathname();
 
   return (
-    <nav className="sticky top-0 z-50 backdrop-filter bg-white/80 dark:bg-black/80 backdrop-blur-lg bg-opacity-50 border-b-[#343D3F]">
-      <div className="mx-auto flex items-center justify-between px-2 py-auto md:px-12">
+    <nav className="sticky top-0 z-50 backdrop-filter bg-transparent/1 border-b  backdrop-blur-lg bg-opacity-50 border-b-[#dcffdc]">
+      <div className="mx-auto flex items-center justify-between px-2 py-2 md:py-0 md:px-12">
         <Link
           className="gap-3 flex flex-row align-middle items-center group text-2xl md:text-3xl font-semibold tracking-tight"
           href="/"
@@ -25,14 +25,13 @@ const Header = () => {
             alt="Tree of Life Explorer AI Logo"
             width={250}
             height={100}
+            className="w-[150px] md:w-[250px] h-auto"
           />
           
         </Link>
 
         <div className="flex items-center space-x-2 md:space-x-4">
-          {/* <AboutModal />
-          <FeedbackModal /> */}
-          {/* <ThemeToggleButton /> */}
+          <AboutModal />
         </div>
       </div>
     </nav>

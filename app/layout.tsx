@@ -102,7 +102,20 @@ export default function RootLayout({
           inter.variable
         )}
       >
+        {/* <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background:
+              "linear-gradient(45deg, #e0f2fe, #e0e7ff, #fae8ff, #fff1f2, #f0fdf4)",
+            zIndex: -1,
+          }}
+        /> */}
         <Header />
+
         <main className="flex-grow">
           <div className="mx-auto py-6 sm:px-6 lg:px-8">
             {children}
@@ -111,8 +124,7 @@ export default function RootLayout({
         </main>
         <footer className="bg-white border-t border-gray-200">
           <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-center text-gray-500">
-            © {new Date().getFullYear()} Genosphere AI. All rights
-            reserved.
+            © {new Date().getFullYear()} Genosphere AI. All rights reserved.
           </div>
         </footer>
       </body>

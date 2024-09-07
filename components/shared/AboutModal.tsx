@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import {
   Dialog,
@@ -21,13 +23,12 @@ import {
   Brain,
   Code,
   Users,
-  TreesIcon,
+  Globe,
   Sparkles,
   Network,
   Check,
   Dna,
   Microscope,
-  Globe,
   RefreshCw,
   Search,
   GitBranch,
@@ -38,23 +39,29 @@ import {
   FileText,
 } from "lucide-react";
 import Image from "next/image";
-import logo from "@/assets/TOLai-logo.svg";
+import logo from "@/assets/GENOSPHERE.svg";
 import cover from "@/assets/about-page-cover.jpg";
 
 export default function AboutModal() {
   const [activeTab, setActiveTab] = useState("introduction");
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          size="icon"
-          className={`rounded-full ${
+          size={isHovered ? "default" : "icon"}
+          className={`rounded-full transition-all duration-300 ${
             activeTab === "about" ? "bg-primary text-primary-foreground" : ""
           }`}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         >
-          <TreesIcon className="h-[1.2rem] w-[1.2rem]" />
+          <Globe className="h-[1.2rem] w-[1.2rem]" />
+          {isHovered && (
+            <span className="ml-2 tracking-tight font-semibold">About</span>
+          )}
           <span className="sr-only">About Tree of Life AI</span>
         </Button>
       </DialogTrigger>
@@ -64,10 +71,10 @@ export default function AboutModal() {
             <Image
               src={logo}
               alt="Tree of Life Explorer AI Logo"
-              width={40}
-              height={40}
+              width={250}
+              height={100}
+              className="w-[150px] md:w-[250px] h-auto"
             />
-            Tree of Life Explorer
           </DialogTitle>
         </DialogHeader>
         <Tabs
@@ -75,17 +82,18 @@ export default function AboutModal() {
           className="w-full"
           onValueChange={setActiveTab}
         >
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="introduction">Introduction</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="introduction">Intro</TabsTrigger>
             <TabsTrigger value="features">Features</TabsTrigger>
-            <TabsTrigger value="using-ai">Using AI</TabsTrigger>
-            <TabsTrigger value="contributing">Contributing</TabsTrigger>
+            {/* <TabsTrigger value="features">Connect</TabsTrigger> */}
+            {/* <TabsTrigger value="using-ai">Using AI</TabsTrigger>
+            <TabsTrigger value="contributing">Contributing</TabsTrigger> */}
           </TabsList>
           <TabsContent value="introduction" className="mt-6">
             <Card>
               <CardHeader>
                 <CardTitle className="text-3xl font-bold">
-                  Welcome to Tree of Life AI
+                  Explore Evolution with AI
                 </CardTitle>
                 <CardDescription className="text-lg">
                   Uncover the intricate web of life through the lens of
@@ -103,50 +111,54 @@ export default function AboutModal() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6">
                   <div className="space-y-4">
                     <h3 className="text-2xl font-semibold flex items-center gap-2">
                       <Globe className="h-6 w-6 text-primary" />
-                      Our Mission
+                      Welcome to the Tree of Life
                     </h3>
+                    <p className="text-muted-foreground my-2">
+                      Sometimes it can be hard to appreciate just how long life
+                      has been on Earth and how far life has come. From the
+                      origins of life, we&apos;ve developed over billions of
+                      years, through a web of intricate connections and twists
+                      along the way.
+                    </p>
                     <p className="text-muted-foreground">
-                      Tree of Life AI is an innovative application that
-                      harnesses the power of artificial intelligence to explore
-                      and visualize the vast network of biological relationships
-                      connecting all living organisms on Earth. Our mission is
-                      to make the complex world of evolutionary biology
-                      accessible and engaging for everyone, from curious
-                      students to seasoned researchers.
+                      To see this web unfold, we created Genosphere! An
+                      interactive playground to explore the tree of life.
+                      We&apos;ve combined AI with biological data to create a
+                      fun, engaging way to learn about evolution.
                     </p>
                   </div>
 
                   <div className="space-y-4">
                     <h3 className="text-2xl font-semibold flex items-center gap-2">
                       <Microscope className="h-6 w-6 text-primary" />
-                      Our Approach
+                      The Approach
                     </h3>
                     <p className="text-muted-foreground">
-                      By combining state-of-the-art artificial intelligence with
-                      comprehensive biological databases, Tree of Life AI offers
-                      a unique platform for exploring the rich tapestry of life
-                      on Earth. Our intuitive interface and powerful tools make
-                      it easy for users of all backgrounds to dive into the
-                      fascinating world of evolutionary biology.
+                      We&apos;ve mixed the latest open-soruce generative AI with
+                      a treasure trove of biological data to create a unique way
+                      to learn about evolution. Whether you&apos;re simply
+                      curious, a biology buff, or just someone who thinks DNA is
+                      neat, Genosphere is your go-to for fun, research, and
+                      those &quot;wow, I didn&apos;t know that!&quot; moments
+                      about life on Earth.
                     </p>
                   </div>
                 </div>
 
-                <div className="bg-muted p-6 rounded-lg">
+                <div className="bg-card p-6 rounded-lg border">
                   <h3 className="text-2xl font-semibold mb-4 flex items-center gap-2">
                     <Dna className="h-6 w-6 text-primary" />
-                    Why Tree of Life AI?
+                    Why Genosphere?
                   </h3>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <ul className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {[
-                      "Explore the intricate web of life with interactive visualizations",
+                      "Explore the web of life with interactive visualizations",
                       "Discover evolutionary connections between species",
-                      "Contribute to and benefit from a global community of researchers",
-                      "Leverage cutting-edge AI to enhance your understanding of biodiversity",
+                      "Use AI to ask questions for deeper insights or for fun",
                     ].map((item, index) => (
                       <li key={index} className="flex items-start gap-2">
                         <div className="mt-1 bg-primary text-primary-foreground rounded-full p-1">
@@ -178,7 +190,7 @@ export default function AboutModal() {
                     className="text-sm py-2 px-3 flex items-center gap-2"
                   >
                     <Users className="w-4 h-4" />
-                    Collaborative Research
+                    Personalized Research
                   </Badge>
                 </div>
               </CardContent>
@@ -187,24 +199,24 @@ export default function AboutModal() {
           <TabsContent value="features" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-2xl font-bold">
+                <CardTitle className="text-3xl font-bold">
                   Key Features
                 </CardTitle>
-                <CardDescription>
+                {/* <CardDescription>
                   Discover the innovative capabilities of Tree of Life AI
-                </CardDescription>
+                </CardDescription> */}
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card className="bg-gradient-to-br from-green-100 to-green-50 dark:from-green-900 dark:to-green-800">
+                  <Card>
                     <CardHeader className="pb-2">
-                      <div className="bg-green-500 text-white rounded-full p-2 w-10 h-10 flex items-center justify-center mb-2">
+                      <div className="bg-primary text-primary-foreground rounded-full p-2 w-10 h-10 flex items-center justify-center mb-2">
                         <Network className="h-6 w-6" />
                       </div>
                       <CardTitle>Interactive Phylogenetic Trees</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm">
+                      <p className="text-sm text-muted-foreground">
                         Explore the tree of life with stunning, interactive
                         visualizations. Zoom, pan, and click through branches to
                         discover evolutionary relationships in an intuitive
@@ -213,57 +225,52 @@ export default function AboutModal() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900 dark:to-blue-800">
+                  <Card>
                     <CardHeader className="pb-2">
-                      <div className="bg-blue-500 text-white rounded-full p-2 w-10 h-10 flex items-center justify-center mb-2">
+                      <div className="bg-primary text-primary-foreground rounded-full p-2 w-10 h-10 flex items-center justify-center mb-2">
                         <Brain className="h-6 w-6" />
                       </div>
                       <CardTitle>AI-Powered Exploration</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm">
+                      <p className="text-sm text-muted-foreground">
                         Harness the power of AI to identify species, analyze
-                        genetic sequences, and uncover hidden patterns in
+                        evolutionary features, and uncover hidden patterns in
                         biological data. Our AI assistant guides you through
                         complex evolutionary concepts.
                       </p>
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-gradient-to-br from-purple-100 to-purple-50 dark:from-purple-900 dark:to-purple-800">
+                  <Card>
                     <CardHeader className="pb-2">
-                      <div className="bg-purple-500 text-white rounded-full p-2 w-10 h-10 flex items-center justify-center mb-2">
+                      <div className="bg-primary text-primary-foreground rounded-full p-2 w-10 h-10 flex items-center justify-center mb-2">
                         <Sparkles className="h-6 w-6" />
                       </div>
                       <CardTitle>Multiple LLM Support</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm">
+                      <p className="text-sm text-muted-foreground">
                         Leverage the latest open-source models in our beta, with
-                        planned support for OpenAI, Anthropic, and custom
-                        fine-tuned models. Enhance your research with
-                        cutting-edge language models and image generation
-                        capabilities.
+                        planned support for OpenAI, Anthropic, and other models.
                       </p>
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-gradient-to-br from-orange-100 to-orange-50 dark:from-orange-900 dark:to-orange-800">
+                  <Card>
                     <CardHeader className="pb-2">
-                      <div className="bg-orange-500 text-white rounded-full p-2 w-10 h-10 flex items-center justify-center mb-2">
+                      <div className="bg-primary text-primary-foreground rounded-full p-2 w-10 h-10 flex items-center justify-center mb-2">
                         <Users className="h-6 w-6" />
                       </div>
-                      <CardTitle>Collaboration Tools</CardTitle>
+                      <CardTitle>Image Recognition</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm">
-                        <span className="font-semibold text-orange-600 dark:text-orange-400">
+                      <p className="text-sm text-muted-foreground">
+                        <span className="font-semibold text-md text-primary">
                           Coming Soon:
                         </span>{" "}
-                        Share your findings, collaborate on projects, and
-                        contribute to the global scientific community. Join
-                        forces with researchers worldwide to unlock the secrets
-                        of biodiversity.
+                        We plan to add support for image models to help you turn
+                        your questions into a stunning visual experience.
                       </p>
                     </CardContent>
                   </Card>
@@ -271,7 +278,14 @@ export default function AboutModal() {
               </CardContent>
             </Card>
           </TabsContent>
-          <TabsContent value="using-ai" className="mt-6">
+        </Tabs>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+{
+  /* <TabsContent value="using-ai" className="mt-6">
             <Card>
               <CardHeader>
                 <CardTitle className="text-2xl font-bold flex items-center gap-2">
@@ -299,7 +313,7 @@ export default function AboutModal() {
                   Watch how AI enhances your Tree of Life exploration experience
                 </p>
 
-                <div className="bg-muted p-6 rounded-lg">
+                <div className="bg-card p-6 rounded-lg border">
                   <h3 className="text-xl font-semibold mb-4">
                     AI-Powered Features
                   </h3>
@@ -346,7 +360,7 @@ export default function AboutModal() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-center gap-4 bg-gradient-to-r from-primary/10 to-primary/5 p-6 rounded-lg">
+                <div className="flex items-center justify-center gap-4 bg-card p-6 rounded-lg border">
                   <RefreshCw className="h-10 w-10 text-primary animate-spin-slow" />
                   <div>
                     <h3 className="text-xl font-semibold">
@@ -374,7 +388,7 @@ export default function AboutModal() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-6 rounded-lg">
+                <div className="bg-card p-6 rounded-lg border">
                   <p className="text-center text-muted-foreground italic">
                     &quot;Alone we can do so little; together we can do so much.&quot; -
                     Helen Keller
@@ -445,9 +459,5 @@ export default function AboutModal() {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
-        </Tabs>
-      </DialogContent>
-    </Dialog>
-  );
+          </TabsContent> */
 }
