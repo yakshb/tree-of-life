@@ -1,125 +1,107 @@
-# AI-Interactive Tree of Life Explorer
+# Genosphere
 
-## Table of Contents
-- [Introduction](#introduction)
-- [Features](#features)
-- [Technologies Used](#technologies-used)
-- [AI Integration](#ai-integration)
-- [Getting Started](#getting-started)
-- [Key Components](#key-components)
-- [Advanced Features](#advanced-features)
-- [Contributing](#contributing)
-- [License](#license)
-- [About the Author](#about-the-author)
-
-## Introduction
-
-The AI-Interactive Tree of Life Explorer is a cutting-edge educational tool that revolutionizes the way we visualize and explore evolutionary relationships between different life forms. By leveraging state-of-the-art AI technologies and interactive data visualization, this project offers an unparalleled, engaging approach to understanding the complexities of biological evolution.
-
-Our tool stands out by providing real-time, AI-generated insights and prompts, making the exploration of the tree of life an interactive and personalized learning experience. Whether you're a student, educator, or enthusiast, this platform offers a unique blend of visual learning and AI-assisted discovery.
+Genosphere is an open-source interactive Tree of Life explorer and adaptive evolution tutor with a Groq-powered AI guide. Teachers, researchers, naturalists, and curious people can browse evolutionary relationships, inspect biological summaries, search the tree, and ask follow-up questions about a selected node.
 
 ## Features
 
-- Interactive, zoomable, and pannable visualization of the tree of life
-- AI-powered exploration with dynamic prompt generation
-- Real-time chat interface with an AI assistant for in-depth queries
-- Adaptive learning experience that evolves with user interactions
-- Dynamic node expansion and collapsing for focused exploration
-- Exploration path tracking for easy navigation through complex hierarchies
-- Responsive design optimized for various devices and screen sizes
-- Efficient caching and rate limiting for optimal performance
+- Zoomable, pannable phylogenetic tree with expandable branches
+- Search and exploration-path navigation
+- Standardized biological summaries and geological context for 124 curated nodes
+- Live taxonomic reconciliation, descendant coverage, common names, and licensed media
+- Streaming AI chat grounded in the selected node
+- AI-generated suggested questions with local fallbacks
+- Runtime model availability checks through GroqCloud
+- Light and dark themes
 
-## Technologies Used
+## Use cases
 
-- [Next.js 14](https://nextjs.org/) with App Router for efficient, server-side rendering and routing
-- [React 18](https://reactjs.org/) for building a dynamic and responsive user interface
-- [TypeScript](https://www.typescriptlang.org/) for type-safe code and enhanced developer experience
-- [react-d3-tree](https://github.com/bkrem/react-d3-tree) for rendering the interactive phylogenetic tree
-- [Framer Motion](https://www.framer.com/motion/) for smooth, physics-based animations
-- [Tailwind CSS](https://tailwindcss.com/) for rapid, utility-first styling
-- [Vercel AI SDK](https://github.com/vercel/ai) for seamless AI integration
-- [Groq](https://groq.com/) for high-performance AI inference
+- **Adaptive evolution tutor — available now:** node-grounded explanations, branch comparisons, and guided questions for teaching and independent learning.
+- **Biodiversity field guide — near-term extension:** taxonomy, licensed media, common names, observations, and location overlays. Taxonomic enrichment and media work today; spatial observation layers are planned.
+- **Taxonomic curation workbench — medium-term direction:** detect synonyms, rank conflicts, missing data, and topology drift with source-aware review workflows.
+- **Paleobiology timeline — medium-term direction:** explore taxa through geological time, evolutionary radiations, and extinction events.
 
-## AI Integration
+The deployed site includes a crawlable page for each direction while clearly separating current capabilities from roadmap work.
 
-The AI component of this project is powered by advanced language models and offers several key features:
+## Groq models
 
-- Dynamic prompt generation based on the current node and chat history
-- Real-time chat interface for in-depth queries about specific life forms
-- Adaptive learning that tailors responses to the user's exploration path
-- Efficient caching of AI responses to reduce latency and API usage
-- Rate limiting to ensure fair usage and prevent abuse
+The chat model can be changed from the AI Settings panel. The server accepts only these model IDs:
 
-We use the Groq API with the `llama-3-8b` model, by default, for the chat interface, ensuring fast and relevant responses. However, thanks to Groq's wide selection of open-source large language models, users have access to the latest Llama Models by Meta, Gemma by Google and Mixtral 8x7B by Mistral.
+- `llama-3.1-8b-instant` (default and prompt generation)
+- `llama-3.3-70b-versatile`
+- `openai/gpt-oss-120b`
+- `openai/gpt-oss-20b`
 
-## Getting Started
+`GET /api/models` calls Groq's OpenAI-compatible `GET /openai/v1/models` endpoint, returns Groq's active catalog as `availableModels`, and reports whether each configured app model is currently active in `models`. Model IDs sent by clients are validated against the server-side allowlist before inference.
 
-To set up a local copy of the project, follow these steps:
+## Stack
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/yakshb/tree-of-life.git
-   ```
+- Next.js 16 App Router and React 19
+- TypeScript
+- Tailwind CSS and Radix UI
+- react-d3-tree
+- GroqCloud's OpenAI-compatible REST API
 
-2. Navigate to the project directory:
-   ```
-   cd tree-of-life
-   ```
+The app uses native `fetch` and web streams, so no OpenAI or legacy AI SDK dependency is required.
 
-3. Install dependencies:
-   ```
-   npm install
-   ```
+## Local setup
 
-4. Set up environment variables:
-   Create a `.env.local` file in the root directory and add the following:
-   ```
-   GROQ_API_KEY=your_groq_api_key
-   OPENAI_API_KEY=your_openai_api_key
-   ```
+Requirements:
 
-5. Run the development server:
-   ```
-   npm run dev
-   ```
+- Node.js `^20.19`, `^22.13`, or `>=24`
+- A [GroqCloud API key](https://console.groq.com/keys)
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
+```bash
+git clone https://github.com/yakshb/tree-of-life.git
+cd tree-of-life
+npm install
+cp .env.example .env.local
+```
 
-## Key Components
+Set your Groq key in `.env.local`:
 
-- `VisualTreeOfLife`: Orchestrates the tree visualization and user interactions
-- `AIAssistant`: Manages the AI chat interface and prompt generation
-- `InfoPanel`: Displays detailed information about selected nodes
-- `ExplorationPath`: Tracks and displays the user's navigation history
-- `CustomNodeRenderer`: Defines the appearance and behavior of individual tree nodes
-- `generate-prompts` API route: Handles AI-powered prompt generation with caching and rate limiting
+```bash
+GROQ_API_KEY=your_groq_api_key
+```
 
-## Advanced Features
+Start the development server:
 
-- **Adaptive Prompt Generation**: The AI generates context-aware prompts based on the current node and chat history, ensuring relevance and encouraging deeper exploration.
-- **Efficient Caching**: AI-generated prompts are cached using Vercel KV, reducing API calls and improving response times for frequently accessed information.
-- **Intelligent Rate Limiting**: Implements Upstash Ratelimit to prevent API abuse while ensuring a smooth user experience.
-- **Streaming Responses**: Utilizes streaming capabilities for real-time AI responses, enhancing the interactivity of the chat interface.
-- **Error Handling and Fallbacks**: Robust error handling with fallback mechanisms to ensure uninterrupted user experience even when AI services are unavailable.
+```bash
+npm run dev
+```
 
-## Contributing
+Open [http://localhost:3000](http://localhost:3000).
 
-We welcome contributions to enhance this educational tool. Please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) file for detailed guidelines on how to contribute.
+## Quality checks
 
-## License
+```bash
+npm run lint
+npm run typecheck
+npm run build
+```
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Run all three with `npm run check`. Production builds use Webpack for broad
+environment compatibility; `npm run build:turbopack` opts into Next.js 16's
+default Turbopack builder.
 
-## About the Author
+## API routes
 
-Yaksh Birla - AI and Web Development Enthusiast
+- `POST /api/chat` validates the selected model, request size, message count, message length, temperature, and node context, then proxies a streaming Groq chat completion.
+- `POST /api/generate-prompts` generates four suggested biology questions with the fast Llama 3.1 8B model.
+- `GET /api/models` checks the four configured IDs against Groq's active model catalog.
+- `GET /api/taxa` reconciles curated names against GBIF and independently checks iNaturalist for exact or clearly labeled representative media, lineage, direct descendant taxa, common names, and provenance.
 
-- [yakshb.com](http://yakshb.com)
-- GitHub: [@yakshb](https://github.com/yakshb)
-- LinkedIn: [Yaksh Birla](https://www.linkedin.com/in/yakshb/)
+The POST routes include best-effort, per-instance request throttling. Production deployments that need globally consistent abuse protection should add a distributed rate limiter at the platform or data-store layer.
 
-Project Link: [https://github.com/yakshb/tree-of-life](https://github.com/yakshb/tree-of-life)
+## Project structure
 
----
+```text
+app/                  Next.js pages and API routes
+components/           Tree, AI, shared, and UI components
+data/treeData.ts      Curated seed topology, normalized at import
+lib/taxonomy/         Taxonomy normalization, audits, and source adapters
+lib/groq-models.ts    Shared model catalog and allowlist
+lib/groq.ts           Server-only Groq API client
+types/                Shared application types
+```
 
-We're excited to see how this tool can evolve with community contributions. Together, we can make the exploration of life's diversity an engaging and AI-enhanced experience for learners worldwide!
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines. This project is available under the [MIT License](LICENSE).

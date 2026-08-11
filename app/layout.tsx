@@ -1,68 +1,66 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import Link from "next/link";
+import "@fontsource/ubuntu-mono/400.css";
+import "@fontsource/ubuntu-mono/700.css";
 import "./globals.css";
-import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/shared/Header";
 // import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from "@vercel/analytics/react";
 import ogImage from "@/app/opengraph-image.jpg";
-
-const inter = Inter({ subsets: ["latin"], variable: "---font-sans" });
+import { SITE_URL, siteDescription } from "@/lib/discovery";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  applicationName: "Genosphere",
   title: {
-    default: "Genosphere | Evolutionary Explorer",
+    default: "Genosphere — Interactive Tree of Life & Evolution Tutor",
     template: "%s | Genosphere",
   },
-  description:
-    "Explore the tree diagrams with AI-powered insights. Interactive tree-based visualizations, powered by advanced AI.",
+  description: siteDescription,
   keywords: [
+    "interactive tree of life",
+    "adaptive evolution tutor",
+    "biodiversity field guide",
+    "taxonomic curation workbench",
+    "paleobiology timeline",
+    "taxonomy explorer",
+    "species relationship map",
     "tree of life",
-    "AI",
-    "open source biology",
-    "open source AI",
-    "interactive learning",
     "evolution",
     "biodiversity",
     "phylogenetic tree",
-    "educational tool",
-    "biology visualization",
+    "evolution teaching tool",
+    "biodiversity research tool",
+    "open source biology",
   ],
   authors: [{ name: "Yaksh Birla" }],
   creator: "Yaksh Birla",
-  publisher: "Genosphere Team",
+  publisher: "Genosphere",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title: "Genosphere | Decoding Life with AI",
-    description:
-      "Dive into the fascinating world of evolution with our AI-powered, interactive tree of life. Discover connections between species and explore biodiversity like never before.",
+    title: "Genosphere — Interactive Tree of Life & Evolution Tutor",
+    description: siteDescription,
     type: "website",
     locale: "en_US",
-    url: "https://genosphere.vercel.app",
+    url: SITE_URL,
     siteName: "Genosphere",
     images: [
       {
-        url: `${ogImage.src}?v=${Date.now()}`,
+        url: ogImage.src,
         width: ogImage.width,
         height: ogImage.height,
-        alt: "AI-Interactive visualization of evolution",
+        alt: "Genosphere interactive Tree of Life explorer",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    site: "@TreeOfLifeAI", // Replace with your actual Twitter handle
-    creator: "@yakshb", // Replace with your actual Twitter handle
-    images: [`${ogImage.src}?v=${Date.now()}`],
-    title: "Explore Evolution with AI | Tree of Life Explorer",
-    description:
-      "Discover the interconnectedness of life through our AI-powered, interactive evolutionary tree. Perfect for students, educators, and curious minds.",
+    images: [ogImage.src],
+    title: "Genosphere — Interactive Tree of Life & Evolution Tutor",
+    description: siteDescription,
   },
-  // viewport: {
-  //   width: 'device-width',
-  //   initialScale: 1,
-  //   maximumScale: 1,
-  // },
   robots: {
     index: true,
     follow: true,
@@ -74,11 +72,15 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  // themeColor: [
-  //   { media: '(prefers-color-scheme: light)', color: '#22c55e' },
-  //   { media: '(prefers-color-scheme: dark)', color: '#4ade80' },
-  // ],
-  category: "Education",
+  category: "Science and education",
+};
+
+export const viewport: Viewport = {
+  colorScheme: "light dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0c0a09" },
+  ],
 };
 
 export default function RootLayout({
@@ -87,46 +89,43 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      {/* <ThemeProvider
-        attribute="class"
-        defaultTheme="light"
-        // enableSystem
-        disableTransitionOnChange
-      > */}
-      {/* Wrap child content in Theme Provider */}
-      {/* </ThemeProvider> */}
-      <body
-        className={cn(
-          "min-h-full bg-background font-sans antialiased",
-          inter.variable
-        )}
-      >
-        {/* <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            background:
-              "linear-gradient(45deg, #e0f2fe, #e0e7ff, #fae8ff, #fff1f2, #f0fdf4)",
-            zIndex: -1,
-          }}
-        /> */}
-        <Header />
-
-        <main className="flex-grow">
-          <div className="mx-auto py-6 sm:px-6 lg:px-8">
+    <html lang="en" suppressHydrationWarning>
+      <body className="min-h-full bg-background font-sans antialiased">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Header />
+          <main className="flex-grow">
             {children}
-            <Analytics />
-          </div>
-        </main>
-        <footer className="bg-white border-t border-gray-200">
-          <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-center text-gray-500">
-            © {new Date().getFullYear()} Genosphere AI. All rights reserved.
-          </div>
-        </footer>
+          </main>
+          <footer className="border-t border-border bg-background">
+            <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-5 text-xs text-muted-foreground sm:flex-row sm:px-6 lg:px-8">
+              <p>© {new Date().getFullYear()} Genosphere. Open-source evolution atlas.</p>
+              <nav aria-label="Footer" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+                <Link className="transition-colors hover:text-foreground" href="/#explorer">
+                  Explorer
+                </Link>
+                <Link className="transition-colors hover:text-foreground" href="/use-cases">
+                  Use cases
+                </Link>
+                <Link className="transition-colors hover:text-foreground" href="/faq">
+                  FAQ
+                </Link>
+                <a
+                  className="transition-colors hover:text-foreground"
+                  href="https://github.com/yakshb/tree-of-life"
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  GitHub
+                </a>
+              </nav>
+            </div>
+          </footer>
+        </ThemeProvider>
       </body>
     </html>
   );

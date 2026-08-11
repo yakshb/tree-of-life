@@ -1,0 +1,48 @@
+# Genosphere
+
+> Genosphere is an open-source interactive Tree of Life explorer and adaptive evolution tutor for teachers, students, researchers, naturalists, and curious people.
+
+Canonical URL: https://genosphere.vercel.app
+Source code: https://github.com/yakshb/tree-of-life
+License: MIT
+
+## What works today
+
+- A searchable, pannable, zoomable, and progressively expandable Tree of Life with 124 curated nodes.
+- Standardized biological summaries, taxonomic ranks, geological ranges, and living or extinct status.
+- A resizable node inspector with node-grounded Groq chat and suggested questions.
+- GBIF name reconciliation, accepted taxonomy, lineage, direct descendants, common names, media, and provenance.
+- Independent iNaturalist matching for attributed taxon imagery and common names.
+
+## Use cases and maturity
+
+- Adaptive evolution tutor — available now. Explore lineages, compare traits, explain adaptations, and generate guided questions.
+- Biodiversity field guide — near-term extension. Taxonomy, licensed media, common names, and descendant context exist now; observation and location overlays are planned.
+- Taxonomic curation workbench — medium-term direction. Normalization, source reconciliation, warnings, and missing-data audits exist now; synonym, rank-conflict, and topology-drift review queues are planned.
+- Paleobiology timeline — medium-term direction. Geological ranges and extinction status exist now; time filters and extinction-event overlays are planned.
+
+## Important limitations
+
+- Genosphere is an exploratory educational map, not a comprehensive or publication-ready phylogenetic authority.
+- AI responses may be inaccurate. Verify scientific claims against primary literature and authoritative datasets.
+- The curated teaching topology and live taxonomic sources serve different purposes; reconciliation does not silently overwrite topology.
+- Media appears only when a source match and attribution are available.
+
+## Crawlable use-case pages
+
+- https://genosphere.vercel.app/use-cases
+- https://genosphere.vercel.app/use-cases/adaptive-evolution-tutor
+- https://genosphere.vercel.app/use-cases/biodiversity-field-guide
+- https://genosphere.vercel.app/use-cases/taxonomic-curation-workbench
+- https://genosphere.vercel.app/use-cases/paleobiology-timeline
+
+## Project questions
+
+- https://genosphere.vercel.app/faq
+
+## Public application endpoints
+
+- GET /api/models — reports the Groq model catalog and configured model availability.
+- GET /api/taxa — returns live taxonomic reconciliation and enrichment for a requested taxon.
+- POST /api/chat — streams a node-grounded answer using an allowed Groq model.
+- POST /api/generate-prompts — generates contextual questions using Llama 3.1 8B Instant.

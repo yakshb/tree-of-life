@@ -1,60 +1,60 @@
-"use client";
-
 import { ChatProvider } from "@/components/ai-interface/ChatContext";
-import { IntroBadge } from "@/components/shared/IntroBadge";
-import ParticlesDemo from "@/components/shared/ParticlesBackground";
-import VisualTreeOfLife from "@/components/TreeOfLife/index";
-import { motion } from "framer-motion";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import VisualTreeOfLife from "@/components/TreeOfLife";
+import { SITE_URL, siteDescription } from "@/lib/discovery";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: "Genosphere",
+      alternateName: "Genosphere Evolution Atlas",
+      description: siteDescription,
+      inLanguage: "en-US",
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": `${SITE_URL}/#application`,
+      name: "Genosphere",
+      url: SITE_URL,
+      description: siteDescription,
+      applicationCategory: "EducationalApplication",
+      applicationSubCategory: "Evolutionary biology and biodiversity",
+      operatingSystem: "Any operating system with a modern web browser",
+      isAccessibleForFree: true,
+      license: "https://opensource.org/license/mit",
+      sameAs: "https://github.com/yakshb/tree-of-life",
+      audience: [
+        { "@type": "EducationalAudience", educationalRole: "teacher" },
+        { "@type": "EducationalAudience", educationalRole: "student" },
+        { "@type": "Audience", audienceType: "Researchers and naturalists" },
+      ],
+      featureList: [
+        "Interactive Tree of Life navigation",
+        "Node-grounded adaptive evolution tutor",
+        "Live GBIF and iNaturalist taxonomic enrichment",
+      ],
+    },
+  ],
+};
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-8 md:p-24">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-center mb-12"
-      >
-        <IntroBadge />
-        <h1 className="bg-gradient-to-br dark:from-white from-black from-30% dark:to-white/40 to-black/40 bg-clip-text py-6 text-5xl font-medium leading-none tracking-tighter text-transparent text-balance sm:text-5xl md:text-6xl lg:text-7xl translate-y-[-1rem]">
-          Evolution Meets AI
-        </h1>
-        {/* <h1 className="pointer-events-none tracking-tighter whitespace-pre-wrap mb-4 bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-center text-5xl sm:text-6xl md:text-7xl font-bold leading-none text-transparent">
-          Tree of Life Explorer
-        </h1> */}
-        <p className="text-lg text-center text-muted-foreground max-w-2xl mx-auto">
-          Explore the diversity of life with AI assistance. Click on branches to
-          learn more.
-        </p>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="hidden md:block w-full max-w-8xl"
-      >
+    <div className="relative min-h-screen overflow-hidden py-4 sm:py-5">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
+      <div className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[420px] w-[880px] -translate-x-1/2 rounded-full bg-primary/10 blur-[140px]" />
+      <div id="explorer" className="scroll-mt-20">
         <ChatProvider>
           <VisualTreeOfLife />
         </ChatProvider>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="visible md:hidden w-full max-w-8xl"
-      >
-        <Alert variant="destructive" className="relative item-center z-50">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Attention</AlertTitle>
-          <AlertDescription>
-            This application is best viewed on a larger screen. For the optimal experience, please visit us on a desktop or tablet device.
-          </AlertDescription>
-        </Alert>
-      </motion.div>
-    </main>
+      </div>
+    </div>
   );
 }
