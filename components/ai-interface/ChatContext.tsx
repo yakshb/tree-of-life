@@ -1,31 +1,44 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Message } from 'ai';
+"use client";
+
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
+import type { ChatMessage } from "@/types/chatTypes";
 
 interface ChatContextType {
-  chatHistory: Record<string, Message[]>;
-  updateChatHistory: (nodeId: string, messages: Message[]) => void;
+  chatHistory: Record<string, ChatMessage[]>;
+  updateChatHistory: (nodeId: string, messages: ChatMessage[]) => void;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
-export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [chatHistory, setChatHistory] = useState<Record<string, Message[]>>({});
-
-  const updateChatHistory = (nodeId: string, messages: Message[]) => {
-    setChatHistory(prev => ({ ...prev, [nodeId]: messages }));
-  };
-
-  return (
-    <ChatContext.Provider value={{ chatHistory, updateChatHistory }}>
-      {children}
-    </ChatContext.Provider>
+export function ChatProvider({ children }: { children: ReactNode }) {
+  const [chatHistory, setChatHistory] = useState<
+    Record<string, ChatMessage[]>
+  >({});
+  const updateChatHistory = useCallback(
+    (nodeId: string, messages: ChatMessage[]) => {
+      setChatHistory((previous) => ({ ...previous, [nodeId]: messages }));
+    },
+    [],
   );
-};
+  const value = useMemo(
+    () => ({ chatHistory, updateChatHistory }),
+    [chatHistory, updateChatHistory],
+  );
 
-export const useChat = () => {
+  return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
+}
+
+export function useChatHistory() {
   const context = useContext(ChatContext);
-  if (context === undefined) {
-    throw new Error('useChat must be used within a ChatProvider');
+  if (!context) {
+    throw new Error("useChatHistory must be used within ChatProvider");
   }
   return context;
-};
+}

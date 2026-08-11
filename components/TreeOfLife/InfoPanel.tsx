@@ -1,339 +1,331 @@
-"use client"
+"use client";
 
-import React from "react";
 import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
+import { useEffect, useState } from "react";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { TreeNodeDatum } from "react-d3-tree";
-import {
-  Info,
-  NotebookPen,
-  Calendar,
-  Lightbulb,
+  AlertTriangle,
+  CalendarDays,
+  Clock3,
+  Dna,
+  ExternalLink,
+  GitFork,
+  ImageIcon,
   Leaf,
-  Bug,
-  BrainCircuit,
-  GitBranch,
-  Globe,
-  HelpCircle,
+  Map,
 } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
-
-interface TreeNodeData extends TreeNodeDatum {
-  attributes?: {
-    scientificName?: string;
-    description?: string;
-    age?: string;
-    status?: string;
-    domain?: string;
-    kingdom?: string;
-    phylum?: string;
-    class?: string;
-    order?: string;
-    family?: string;
-    genus?: string;
-    species?: string;
-    geologicalAge?: string;
-    // [key: string]: string | undefined;  // Add index signature
-  };
-}
+import { Badge } from "@/components/ui/badge";
+import type { TaxonEnrichment } from "@/types/taxonEnrichment";
+import type { TreeNodeData } from "@/types/treeTypes";
 
 interface InfoPanelProps {
-  node: TreeNodeData | null;
+  node: TreeNodeData;
 }
 
-const geologicalPeriods: { [key: string]: number } = {
-  Hadean: 4600,
-  Archean: 4000,
-  Proterozoic: 2500,
-  Paleoproterozoic: 2500,
-  Mesoproterozoic: 1600,
-  Neoproterozoic: 1000,
-  Paleozoic: 541,
-  Cambrian: 541,
-  Ordovician: 485,
-  Silurian: 444,
-  Devonian: 419,
-  Carboniferous: 359,
-  Permian: 299,
-  Mesozoic: 252,
-  Triassic: 252,
-  Jurassic: 201,
-  Cretaceous: 145,
-  Cenozoic: 66,
-  Paleogene: 66,
-  Neogene: 23,
-  Pleistocene: 2.58,
-  Holocene: 0.0117,
-  Anthropocene: 0.000074, // Approximately 1950 CE
-};
+const taxonomyFields = [
+  ["Domain", "domain"],
+  ["Realm", "realm"],
+  ["Kingdom", "kingdom"],
+  ["Clade", "clade"],
+  ["Phylum", "phylum"],
+  ["Subphylum", "subphylum"],
+  ["Class", "class"],
+  ["Infraclass", "infraclass"],
+  ["Superorder", "superorder"],
+  ["Order", "order"],
+  ["Suborder", "suborder"],
+  ["Infraorder", "infraorder"],
+  ["Parvorder", "parvorder"],
+  ["Superfamily", "superfamily"],
+  ["Family", "family"],
+  ["Subfamily", "subfamily"],
+  ["Tribe", "tribe"],
+  ["Genus", "genus"],
+  ["Species", "species"],
+] as const;
 
-const InfoPanel: React.FC<InfoPanelProps> = ({ node }) => {
-  if (!node) {
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="h-[750px] flex flex-col items-center justify-center text-muted-foreground bg-card rounded-lg p-6"
-      >
-        <Info className="w-16 h-16 mb-4 text-primary" />
-        <p className="text-lg font-semibold text-center">
-          Select a node to view details
-        </p>
-      </motion.div>
-    );
-  }
+export default function InfoPanel({ node }: InfoPanelProps) {
+  const [enrichment, setEnrichment] = useState<TaxonEnrichment | null>(null);
+  const [isEnrichmentLoading, setIsEnrichmentLoading] = useState(
+    node.metadata.branchType === "biological",
+  );
+  const [enrichmentError, setEnrichmentError] = useState<string | null>(null);
 
-  const taxonomyLevels = [
-    "domain",
-    "kingdom",
-    "phylum",
-    "subphylum",
-    "class",
-    "order",
-    "family",
-    "genus",
-    "species",
+  useEffect(() => {
+    if (node.metadata.branchType !== "biological") return;
+
+    const controller = new AbortController();
+    const params = new URLSearchParams({ name: node.name });
+    if (node.attributes?.scientificName) {
+      params.set("scientificName", node.attributes.scientificName);
+    }
+
+    fetch(`/api/taxa?${params.toString()}`, { signal: controller.signal })
+      .then(async (response) => {
+        const body = (await response.json()) as TaxonEnrichment & { error?: string };
+        if (!response.ok) {
+          throw new Error(body.error || "Could not load authoritative taxon data.");
+        }
+        setEnrichment(body);
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        setEnrichmentError(
+          error instanceof Error
+            ? error.message
+            : "Could not load authoritative taxon data.",
+        );
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setIsEnrichmentLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [node]);
+
+  const taxonomy = taxonomyFields.flatMap(([label, key]) => {
+    const value = node.attributes?.[key];
+    return value && value.toLowerCase() !== "n/a" ? [{ label, value }] : [];
+  });
+  const inferredRank = node.metadata.rank;
+  const isBroadTaxon = !["genus", "species"].includes(inferredRank);
+  const activeImage = enrichment?.media[0] ?? null;
+  const isRepresentativeImage =
+    isBroadTaxon || activeImage?.representation === "representative";
+
+  const facts = [
+    {
+      label: "Time range",
+      value: node.attributes?.age ?? "Not specified",
+      icon: Clock3,
+    },
+    {
+      label: "Geological period",
+      value: node.attributes?.geologicalAge ?? "Not specified",
+      icon: CalendarDays,
+    },
+    {
+      label: "Curated branches",
+      value: `${node.children?.length ?? 0}`,
+      icon: GitFork,
+    },
   ];
-
-  const getGeologicalAge = () => {
-    const age = node.attributes?.geologicalAge;
-    if (!age) return null;
-
-    const [startPeriod, endPeriod] = age.split(" to ").map((p) => p.trim());
-
-    const getAge = (period: string) => {
-      if (!period) return 4600; // Default to Earth's age if period is undefined
-      if (period === "present") return 0;
-      const exactMatch = geologicalPeriods[period];
-      if (exactMatch !== undefined) return exactMatch;
-
-      // If no exact match, find the most recent period that matches the start of the string
-      const matchingPeriod = Object.keys(geologicalPeriods).find((key) =>
-        period.startsWith(key)
-      );
-      return matchingPeriod ? geologicalPeriods[matchingPeriod] : 4600; // Default to Earth's age if no match
-    };
-
-    const startAge = getAge(startPeriod);
-    const endAge = getAge(endPeriod);
-
-    const progress = ((4600 - startAge) / 4600) * 100;
-    const endProgress = ((4600 - endAge) / 4600) * 100;
-
-    // Calculate color based on age (red for older, green for younger)
-    const startHue = Math.min(120, (progress / 100) * 120);
-    const endHue = Math.min(120, (endProgress / 100) * 120);
-    const startColor = `hsl(${startHue}, 100%, 50%)`;
-    const endColor = `hsl(${endHue}, 100%, 50%)`;
-
-    return {
-      startPeriod,
-      endPeriod,
-      startAge,
-      endAge,
-      progress,
-      endProgress,
-      startColor,
-      endColor,
-    };
-  };
-
-  const geologicalAge = getGeologicalAge();
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.25 }}
+      className="space-y-5 pb-5"
     >
-      <Card className="h-[800px] overflow-auto bg-gradient-to-br from-background to-emerald-50 dark:bg-gradient-to-br dark:from-background dark:to-emerald-950  shadow-lg">
-        <CardContent className="p-6">
-          <motion.h2
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="text-3xl font-bold mb-2 text-primary"
-          >
-            {node.name}
-          </motion.h2>
-          {node.attributes?.scientificName && (
-            <motion.p
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-              className="text-xl italic text-foreground mb-6"
-            >
-              {node.attributes.scientificName}
-            </motion.p>
-          )}
-
-          <div className="space-y-6">
-            <InfoItem
-              icon={<NotebookPen className="text-primary" />}
-              title="Description"
-              content={
-                node.attributes?.description || "No description available"
-              }
-            />
-            {/* <InfoElement
-              icon={<GitBranch className="text-primary" />}
-              title="Taxonomy"
-              element={
-                <div className="flex flex-wrap gap-2">
-                  {taxonomyLevels.map(
-                    (level) =>
-                      node.attributes?.[level] &&
-                      node.attributes[level] !== "N/A" && (
-                        <span
-                          key={level}
-                          className="px-2 py-1 bg-secondary text-secondary-foreground rounded-full text-sm"
-                        >
-                          {level}: {node.attributes[level]}
-                        </span>
-                      )
-                  )}
-                </div>
-              }
-            /> */}
-            <InfoElement
-              icon={<Globe className="text-primary" />}
-              title={
-                <div className="flex items-center">
-                  Geological Timeline
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <HelpCircle className="w-4 h-4 ml-2 text-muted-foreground" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                      <p>Represents the geological age during which this species originated, based on scientific research</p>
-                        {/* <p>The color gradient represents the geological age:</p>
-                        <p>Red: Older periods</p>
-                        <p>Green: Younger periods</p> */}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              }
-              element={
-                <p>
-                  {geologicalAge?.startPeriod}
-                </p>
-                // geologicalAge && (
-                //   <div className="bg-card/50 rounded-lg p-4 shadow-sm">
-                //     <TooltipProvider>
-                //       <Tooltip>
-                //         <TooltipTrigger className="w-full">
-                //           <div className="mb-2">
-                //             <Progress
-                //               value={geologicalAge.endProgress}
-                //               className="h-2"
-                //               style={{
-                //                 background: `linear-gradient(to right, ${geologicalAge.startColor}, ${geologicalAge.endColor})`,
-                //               }}
-                //             />
-                //           </div>
-                //         </TooltipTrigger>
-                //         <TooltipContent>
-                //           <p>
-                //             {geologicalAge.startPeriod}:{" "}
-                //             {geologicalAge.startAge} mya
-                //           </p>
-                //           <p>
-                //             {geologicalAge.endPeriod}:{" "}
-                //             {geologicalAge.endAge === 0
-                //               ? "present"
-                //               : `${geologicalAge.endAge} mya`}
-                //           </p>
-                //         </TooltipContent>
-                //       </Tooltip>
-                //     </TooltipProvider>
-                //     <div className="flex justify-between mt-2 text-sm text-muted-foreground">
-                //       <span>{geologicalAge.startPeriod}</span>
-                //       <span>{geologicalAge.endPeriod}</span>
-                //     </div>
-                //   </div>
-                // )
-              }
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InfoItem
-                icon={<Calendar className="text-primary" />}
-                title="Age"
-                content={node.attributes?.age || "Age not specified"}
-              />
-              {node.attributes?.status && (
-                <InfoItem
-                  icon={getStatusIcon(node.attributes.status)}
-                  title="Status"
-                  content={node.attributes.status}
-                />
-              )}
-            </div>
+      <section className="overflow-hidden rounded-2xl border border-border/70 bg-card">
+        <div className="flex items-center justify-between gap-3 border-b border-border/60 px-3.5 py-2.5">
+          <div className="flex min-w-0 items-center gap-2 text-xs font-bold">
+            <ImageIcon className="h-4 w-4 text-primary" />
+            Visual reference
           </div>
-        </CardContent>
-      </Card>
+          {activeImage?.representation && (
+            <Badge
+              variant="outline"
+              className="shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.1em] text-muted-foreground"
+            >
+              {activeImage.representation === "exact"
+                ? "Exact taxon"
+                : "Representative"}
+            </Badge>
+          )}
+        </div>
+
+        {isEnrichmentLoading ? (
+          <div className="aspect-[16/9] animate-pulse bg-muted/60" />
+        ) : activeImage ? (
+          <figure>
+            {/* External biodiversity media varies by provider, so a native image keeps the source URL intact. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={activeImage.url}
+              alt={`${isBroadTaxon ? "Representative " : ""}${node.name} ${activeImage.type}`}
+              className="aspect-[16/9] w-full bg-muted/20 object-contain"
+              loading="lazy"
+              referrerPolicy="no-referrer"
+            />
+            <figcaption className="flex items-start justify-between gap-3 px-3.5 py-2.5 text-[11px] leading-4 text-muted-foreground">
+              <div>
+                <span className="font-bold text-foreground">
+                  {isRepresentativeImage
+                    ? "Representative sourced visual"
+                    : "Sourced visual"}
+                </span>
+                <span className="ml-1.5">
+                  {activeImage.representation === "representative" &&
+                  activeImage.representedTaxon
+                    ? `Shows ${activeImage.representedTaxon} · `
+                    : ""}
+                  {[activeImage.creator, activeImage.license]
+                    .filter(Boolean)
+                    .join(" · ") || "Attribution supplied by the source"}
+                </span>
+              </div>
+              {activeImage.sourceUrl && (
+                <a
+                  href={activeImage.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex shrink-0 items-center gap-1 text-primary hover:underline"
+                >
+                  {activeImage.source}
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              )}
+            </figcaption>
+          </figure>
+        ) : (
+          <div className="flex min-h-32 flex-col items-center justify-center px-5 py-8 text-center">
+            <ImageIcon className="h-5 w-5 text-muted-foreground" />
+            <p className="mt-2 text-xs font-bold">No sourced visual found</p>
+            <p className="mt-1 max-w-xs text-[11px] leading-4 text-muted-foreground">
+              No exact taxon image or attributable representative was found in
+              iNaturalist or GBIF.
+            </p>
+          </div>
+        )}
+
+        {enrichmentError && (
+          <p className="flex items-start gap-2 border-t border-border/60 px-3.5 py-2.5 text-xs text-amber-700 dark:text-amber-300">
+            <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+            {enrichmentError}
+          </p>
+        )}
+      </section>
+
+      <section>
+        <div className="mb-3 flex items-center gap-2 text-sm font-medium text-primary">
+          <Leaf className="h-4 w-4" />
+          At a glance
+        </div>
+        <p className="text-sm leading-6 text-foreground/80">
+          {node.attributes?.description ??
+            "This branch does not have a written description yet. Ask the AI guide for a contextual overview."}
+        </p>
+      </section>
+
+      {enrichment && enrichment.directChildren.length > 0 && (
+        <section>
+          <div className="mb-3 flex items-center gap-2">
+            <GitFork className="h-4 w-4 text-primary" />
+            <h3 className="font-semibold">Live catalogue branches</h3>
+          </div>
+          <p className="mb-3 text-xs leading-5 text-muted-foreground">
+            Direct descendants returned by GBIF extend beyond the curated map.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {enrichment.directChildren.slice(0, 10).map((child) => (
+              <a
+                key={child.key}
+                href={`https://www.gbif.org/species/${child.key}`}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full border border-border/70 bg-muted/30 px-2.5 py-1 text-xs transition-colors hover:border-primary/40 hover:text-primary"
+              >
+                {child.canonicalName ?? child.scientificName}
+              </a>
+            ))}
+            {enrichment.directChildren.length > 10 && (
+              <Badge variant="secondary" className="rounded-full font-normal">
+                +{enrichment.directChildren.length - 10} more
+              </Badge>
+            )}
+          </div>
+        </section>
+      )}
+
+      <section className="grid grid-cols-[repeat(auto-fit,minmax(116px,1fr))] gap-2.5">
+        {facts.map(({ label, value, icon: Icon }) => (
+          <div
+            key={label}
+            className="rounded-xl border border-border/70 bg-muted/20 p-3"
+          >
+            <Icon className="mb-3 h-4 w-4 text-primary" />
+            <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+              {label}
+            </p>
+            <p className="mt-1 text-xs font-semibold leading-5 text-foreground">
+              {value}
+            </p>
+          </div>
+        ))}
+      </section>
+
+      <section className="rounded-xl border border-border/70 bg-card p-4">
+        <div className="mb-3 flex items-center gap-2">
+          <Map className="h-4 w-4 text-primary" />
+          <h3 className="font-semibold">Evolutionary context</h3>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
+              Rank
+            </p>
+            <p className="mt-1 font-medium capitalize">
+              {inferredRank}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
+              Current status
+            </p>
+            <p className="mt-1 font-medium">
+              {node.attributes?.status ?? "Unspecified"}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div className="mb-3 flex items-center gap-2">
+          <Dna className="h-4 w-4 text-primary" />
+          <h3 className="font-semibold">Taxonomic profile</h3>
+        </div>
+        {taxonomy.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {taxonomy.map(({ label, value }) => (
+              <Badge
+                key={`${label}-${value}`}
+                variant="secondary"
+                className="rounded-md px-2.5 py-1 text-xs font-normal"
+              >
+                <span className="mr-1.5 text-muted-foreground">{label}</span>
+                {value}
+              </Badge>
+            ))}
+          </div>
+        ) : (
+          <p className="rounded-xl bg-muted/40 p-4 text-sm text-muted-foreground">
+            Detailed taxonomic fields have not been added for this branch yet.
+          </p>
+        )}
+        {enrichment?.match && (
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
+            <Badge variant="outline" className="rounded-full text-primary">
+              GBIF matched
+              {typeof enrichment.match.confidence === "number"
+                ? ` · ${enrichment.match.confidence}%`
+                : ""}
+            </Badge>
+            {enrichment.sources.map((source) => (
+              <a
+                key={source.url}
+                href={source.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 hover:text-primary hover:underline"
+              >
+                {source.name}
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            ))}
+          </div>
+        )}
+      </section>
     </motion.div>
   );
-};
-
-const InfoItem: React.FC<{
-  icon: React.ReactNode;
-  title: string;
-  content: string;
-}> = ({ icon, title, content }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: 0.3, duration: 0.5 }}
-    className="flex items-start bg-card/50 rounded-lg p-4 shadow-md"
-  >
-    <div className="mr-4 mt-1">{icon}</div>
-    <div>
-      <h3 className="text-lg font-semibold text-primary mb-2">{title}</h3>
-      <p className="text-foreground">{content}</p>
-    </div>
-  </motion.div>
-);
-
-const InfoElement: React.FC<{
-  icon: React.ReactNode;
-  title: React.ReactNode | string;
-  element: React.ReactNode;
-}> = ({ icon, title, element }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: 0.3, duration: 0.5 }}
-    className="flex bg-card/50 rounded-lg p-4 shadow-md"
-  >
-    <div className="mr-4 mt-1">{icon}</div>
-    <div className="w-full">
-      <h3 className="text-lg font-semibold text-primary mb-2">{title}</h3>
-      {element}
-    </div>
-  </motion.div>
-);
-
-const getStatusIcon = (status: string) => {
-  switch (status.toLowerCase()) {
-    case "living":
-      return <Leaf className="text-green-500" />;
-    case "extinct":
-      return <Bug className="text-red-500" />;
-    case "non-biological":
-      return <BrainCircuit className="text-blue-500" />;
-    default:
-      return <Lightbulb className="text-yellow-500" />;
-  }
-};
-
-export default InfoPanel;
+}

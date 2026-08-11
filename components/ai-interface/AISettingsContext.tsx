@@ -1,7 +1,20 @@
-import React, { createContext, useState, useContext } from 'react';
+"use client";
+
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
+import {
+  DEFAULT_GROQ_MODEL,
+  type GroqModelId,
+} from "@/lib/groq-models";
 
 interface AISettings {
-  model: string;
+  model: GroqModelId;
   temperature: number;
 }
 
@@ -11,27 +24,35 @@ interface AISettingsContextType {
 }
 
 const defaultSettings: AISettings = {
-    model: "llama3-8b-8192", // or any other model ID you prefer as default
-    temperature: 0.5,
-  };
+  model: DEFAULT_GROQ_MODEL,
+  temperature: 0.5,
+};
 
-export const AISettingsContext = createContext<AISettingsContextType>({
-  aiSettings: defaultSettings,
-  updateAISettings: () => {},
-});
+const AISettingsContext = createContext<AISettingsContextType | undefined>(
+  undefined,
+);
 
-export const AISettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export function AISettingsProvider({ children }: { children: ReactNode }) {
   const [aiSettings, setAISettings] = useState<AISettings>(defaultSettings);
-
-  const updateAISettings = (newSettings: AISettings) => {
+  const updateAISettings = useCallback((newSettings: AISettings) => {
     setAISettings(newSettings);
-  };
+  }, []);
+  const value = useMemo(
+    () => ({ aiSettings, updateAISettings }),
+    [aiSettings, updateAISettings],
+  );
 
   return (
-    <AISettingsContext.Provider value={{ aiSettings, updateAISettings }}>
+    <AISettingsContext.Provider value={value}>
       {children}
     </AISettingsContext.Provider>
   );
-};
+}
 
-export const useAISettings = () => useContext(AISettingsContext);
+export function useAISettings() {
+  const context = useContext(AISettingsContext);
+  if (!context) {
+    throw new Error("useAISettings must be used within AISettingsProvider");
+  }
+  return context;
+}

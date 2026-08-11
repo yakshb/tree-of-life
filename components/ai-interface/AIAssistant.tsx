@@ -1,302 +1,650 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+"use client";
+
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+  type FormEvent,
+  type KeyboardEvent,
+} from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import remarkGfm from "remark-gfm";
-import rehypeRaw from "rehype-raw";
-import { TreeNodeDatum } from "react-d3-tree";
-import { Bot, Info, Send, Sparkles } from "lucide-react";
-import { useChat } from "ai/react";
-import { useChat as useChatContext } from "./ChatContext";
-import ReactMarkdown from "react-markdown";
-import Spinner from "./Spinner";
-import Image from "next/image";
+import {
+  Bot,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Copy,
+  Dna,
+  SendHorizontal,
+  Sparkles,
+  Square,
+  UserRound,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { GROQ_MODELS, type GroqModelId } from "@/lib/groq-models";
+import type { ChatMessage } from "@/types/chatTypes";
+import type { TreeNodeData } from "@/types/treeTypes";
 import { useAISettings } from "./AISettingsContext";
+import { useChatHistory } from "./ChatContext";
 import MarkdownRenderer from "./MarkdownRenderer";
 
-interface TreeNodeData extends TreeNodeDatum {
-  attributes?: {
-    scientificName?: string;
-    description?: string;
-    age?: string;
-    status?: string;
-    domain?: string;
-    kingdom?: string;
-    phylum?: string;
-    class?: string;
-    order?: string;
-    family?: string;
-    genus?: string;
-    species?: string;
-    geologicalAge?: string;
-  };
-}
-
 interface AIAssistantProps {
-  onResponse: (response: string) => void;
-  node: TreeNodeData | null;
+  node: TreeNodeData;
+  onConversationStateChange?: (hasConversation: boolean) => void;
 }
 
-export const AIAssistant: React.FC<AIAssistantProps> = ({
-  onResponse,
-  node,
-}) => {
-  const chatContainerRef = useRef<HTMLDivElement>(null);
-  const { chatHistory, updateChatHistory } = useChatContext();
-  const { aiSettings } = useAISettings();
-  const [suggestedPrompts, setSuggestedPrompts] = useState<string[]>([]);
-  const [promptError, setPromptError] = useState<string | null>(null);
-  const [lastPromptFetch, setLastPromptFetch] = useState(0);
-  const cooldownPeriod = 60000; // 1 minute cooldown
+export interface AIAssistantHandle {
+  clearConversation: () => void;
+}
 
-  const { messages, setMessages, input, handleInputChange, handleSubmit, isLoading } =
-    useChat({
-      api: "/api/chat",
-      body: {
-        node,
-        model: aiSettings.model,
-        temperature: aiSettings.temperature,
-      },
-      initialMessages: node ? chatHistory[node.name] || [] : [],
-      onFinish: (message) => {
-        onResponse(message.content);
-        if (node) {
-          updateChatHistory(node.name, messages);
-        }
-      },
-      onError: (error) => {
-        console.error("Chat error:", error);
-      },
-    });
+const responseStyles = [
+  { value: 0.25, label: "Concise" },
+  { value: 0.5, label: "Standard" },
+  { value: 0.75, label: "Creative" },
+] as const;
 
-  useEffect(() => {
-    if (chatContainerRef.current) {
-      const scrollToBottom = () => {
-        const scrollContainer = chatContainerRef.current;
-        if (scrollContainer) {
-          scrollContainer.scrollTo({
-            top: scrollContainer.scrollHeight,
-            behavior: "smooth",
-          });
-        }
+function fallbackPrompts(nodeName: string) {
+  return [
+    `Give me a concise overview of ${nodeName}`,
+    `Trace the evolutionary history of ${nodeName}`,
+    `How is ${nodeName} related to neighboring groups?`,
+    `What makes ${nodeName} biologically distinctive?`,
+  ];
+}
+
+async function readGroqStream(
+  response: Response,
+  onText: (text: string) => void,
+) {
+  if (!response.body) throw new Error("The response stream was empty.");
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    buffer += decoder.decode(value, { stream: !done });
+    const lines = buffer.split("\n");
+    buffer = lines.pop() ?? "";
+
+    for (const line of lines) {
+      if (!line.startsWith("data:")) continue;
+      const data = line.slice(5).trim();
+      if (!data || data === "[DONE]") continue;
+
+      const event = JSON.parse(data) as {
+        choices?: Array<{ delta?: { content?: string } }>;
       };
-
-      // Scroll immediately for the first message
-      if (messages.length === 1) {
-        scrollToBottom();
-      } else {
-        // Use a short timeout to ensure smooth scrolling for subsequent messages
-        setTimeout(scrollToBottom, 100);
-      }
+      const text = event.choices?.[0]?.delta?.content;
+      if (text) onText(text);
     }
-  }, [messages]);
+
+    if (done) break;
+  }
+}
+
+const AIAssistant = forwardRef<AIAssistantHandle, AIAssistantProps>(
+  function AIAssistant({ node, onConversationStateChange }, ref) {
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const suggestedPromptsRef = useRef<HTMLDivElement>(null);
+  const chatAbortController = useRef<AbortController | null>(null);
+  const promptAbortController = useRef<AbortController | null>(null);
+  const stopRequestedRef = useRef(false);
+  const partialAssistantRef = useRef("");
+  const { chatHistory, updateChatHistory } = useChatHistory();
+  const { aiSettings, updateAISettings } = useAISettings();
+  const [messages, setMessages] = useState<ChatMessage[]>(() =>
+    chatHistory[node.name] ?? [],
+  );
+  const [input, setInput] = useState("");
+  const [suggestedPrompts, setSuggestedPrompts] = useState<string[]>(() =>
+    fallbackPrompts(node.name),
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [chatError, setChatError] = useState<string | null>(null);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+  const [promptScrollState, setPromptScrollState] = useState({
+    canScrollLeft: false,
+    canScrollRight: false,
+    currentIndex: 0,
+  });
+
+  const updatePromptScrollState = useCallback(() => {
+    const scroller = suggestedPromptsRef.current;
+    if (!scroller) return;
+    const currentIndex = Math.min(
+      suggestedPrompts.length - 1,
+      Math.max(0, Math.round(scroller.scrollLeft / scroller.clientWidth)),
+    );
+    setPromptScrollState({
+      canScrollLeft: currentIndex > 0,
+      canScrollRight: currentIndex < suggestedPrompts.length - 1,
+      currentIndex,
+    });
+  }, [suggestedPrompts.length]);
+
+  const goToSuggestedPrompt = useCallback((index: number) => {
+    const scroller = suggestedPromptsRef.current;
+    if (!scroller) return;
+    scroller.scrollTo({
+      left: index * scroller.clientWidth,
+      behavior: "smooth",
+    });
+  }, []);
+
+  const scrollSuggestedPrompts = useCallback(
+    (direction: "left" | "right") => {
+      const offset = direction === "right" ? 1 : -1;
+      const nextIndex = Math.min(
+        suggestedPrompts.length - 1,
+        Math.max(0, promptScrollState.currentIndex + offset),
+      );
+      goToSuggestedPrompt(nextIndex);
+    },
+    [
+      goToSuggestedPrompt,
+      promptScrollState.currentIndex,
+      suggestedPrompts.length,
+    ],
+  );
 
   useEffect(() => {
-    setLastPromptFetch(0);
-  }, [node?.name]);
+    const scroller = suggestedPromptsRef.current;
+    if (!scroller) return;
 
-  const fetchSuggestedPrompts = useCallback(async () => {
-    const now = Date.now();
-    if (now - lastPromptFetch < cooldownPeriod && lastPromptFetch !== 0) {
-      console.log("Skipping prompt fetch due to cooldown");
-      return;
-    }
+    scroller.scrollTo({ left: 0 });
+    const animationFrame = window.requestAnimationFrame(updatePromptScrollState);
+    const observer = new ResizeObserver(updatePromptScrollState);
+    observer.observe(scroller);
 
-    if (node) {
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+      observer.disconnect();
+    };
+  }, [suggestedPrompts, updatePromptScrollState]);
+
+  const fetchSuggestedPrompts = useCallback(
+    async (history: ChatMessage[]) => {
+      promptAbortController.current?.abort();
+      const controller = new AbortController();
+      promptAbortController.current = controller;
+
       try {
-        setPromptError(null);
         const response = await fetch("/api/generate-prompts", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ node, chatHistory: messages }),
+          body: JSON.stringify({ node, chatHistory: history }),
+          signal: controller.signal,
         });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to fetch prompts");
+        if (!response.ok) throw new Error("Prompt generation failed.");
+        const data = (await response.json()) as { prompts?: string[] };
+        if (!data.prompts || data.prompts.length !== 4) {
+          throw new Error("Prompt generation returned an invalid response.");
         }
-
-        const data = await response.json();
-        if (Array.isArray(data.prompts) && data.prompts.length > 0) {
-          setSuggestedPrompts(data.prompts);
-          setLastPromptFetch(now);
-        } else {
-          throw new Error("Invalid prompts data received");
-        }
+        setSuggestedPrompts(data.prompts);
       } catch (error) {
-        console.error("Error fetching suggested prompts:", error);
-        setSuggestedPrompts([
-          `Tell me more about ${node.name}`,
-          `What is the evolutionary history of ${node.name}?`,
-          `How much DNA do humans share with ${node.name}?`,
-          `What are the key characteristics of ${node.name}?`,
-        ]);
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        setSuggestedPrompts(fallbackPrompts(node.name));
       }
-    }
-  }, [node, messages, lastPromptFetch, cooldownPeriod]);
+    },
+    [node],
+  );
 
   useEffect(() => {
-    fetchSuggestedPrompts();
-  }, [fetchSuggestedPrompts, node?.name]);
+    const timeoutId = window.setTimeout(() => {
+      void fetchSuggestedPrompts(messages);
+    }, 0);
 
-  const handlePromptClick = useCallback(
-    (prompt: string) => {
-      handleInputChange({
-        target: { value: prompt },
-      } as React.ChangeEvent<HTMLInputElement>);
-    },
-    [handleInputChange]
-  );
+    return () => {
+      window.clearTimeout(timeoutId);
+      chatAbortController.current?.abort();
+      promptAbortController.current?.abort();
+    };
+    // This component is keyed by node name, so this runs once per species.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [node, fetchSuggestedPrompts]);
 
-  const renderMessage = (message: any) => {
-    if (message.isImage) {
-      return (
-        <div>
-          <p>Here&apos;s the image you requested:</p>
-          <Image
-            src={message.imageUrl}
-            alt="Generated image"
-            width={512}
-            height={512}
-            className="mt-2 rounded-md"
-          />
-        </div>
+  useEffect(() => {
+    const container = chatContainerRef.current;
+    if (!container) return;
+    container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+  }, [messages]);
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const content = input.trim();
+    if (!content || isLoading) return;
+
+    const controller = new AbortController();
+    chatAbortController.current = controller;
+    stopRequestedRef.current = false;
+    partialAssistantRef.current = "";
+
+    const userMessage: ChatMessage = {
+      id: crypto.randomUUID(),
+      role: "user",
+      content,
+    };
+    const assistantMessage: ChatMessage = {
+      id: crypto.randomUUID(),
+      role: "assistant",
+      content: "",
+    };
+    const outgoingMessages = [...messages, userMessage];
+
+    setInput("");
+    setChatError(null);
+    setIsLoading(true);
+    setMessages([...outgoingMessages, assistantMessage]);
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          node,
+          messages: outgoingMessages.map(({ role, content: messageContent }) => ({
+            role,
+            content: messageContent,
+          })),
+          model: aiSettings.model,
+          temperature: aiSettings.temperature,
+        }),
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        const body = (await response.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        throw new Error(body?.error ?? "The AI request failed.");
+      }
+
+      await readGroqStream(response, (chunk) => {
+        partialAssistantRef.current += chunk;
+        setMessages([
+          ...outgoingMessages,
+          { ...assistantMessage, content: partialAssistantRef.current },
+        ]);
+      });
+
+      if (!partialAssistantRef.current.trim()) {
+        throw new Error("Groq returned an empty response.");
+      }
+
+      const completedMessages = [
+        ...outgoingMessages,
+        { ...assistantMessage, content: partialAssistantRef.current },
+      ];
+      setMessages(completedMessages);
+      updateChatHistory(node.name, completedMessages);
+      void fetchSuggestedPrompts(completedMessages);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        if (stopRequestedRef.current) {
+          const partialContent = partialAssistantRef.current.trim();
+          const stoppedMessages = partialContent
+            ? [
+                ...outgoingMessages,
+                {
+                  ...assistantMessage,
+                  content: `${partialContent}\n\n_Response stopped._`,
+                },
+              ]
+            : outgoingMessages;
+          setMessages(stoppedMessages);
+          updateChatHistory(node.name, stoppedMessages);
+        }
+        return;
+      }
+      setMessages(outgoingMessages);
+      setChatError(
+        error instanceof Error
+          ? error.message
+          : "The AI assistant is temporarily unavailable.",
       );
+    } finally {
+      if (chatAbortController.current === controller) {
+        chatAbortController.current = null;
+        setIsLoading(false);
+      }
     }
-    return <MarkdownRenderer content={message.content} />;
   };
 
-  if (!node) {
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="h-[800px] flex flex-col items-center justify-center text-muted-foreground bg-card rounded-lg p-6"
-      >
-        <Info className="w-16 h-16 mb-4 text-primary" />
-        <p className="text-lg font-semibold text-center">
-          Select a node to view details
-        </p>
-      </motion.div>
-    );
-  }
+  const handleStop = () => {
+    stopRequestedRef.current = true;
+    chatAbortController.current?.abort();
+  };
+
+  const handleClear = useCallback(() => {
+    chatAbortController.current?.abort();
+    setMessages([]);
+    setChatError(null);
+    updateChatHistory(node.name, []);
+  }, [node.name, updateChatHistory]);
+
+  useImperativeHandle(
+    ref,
+    () => ({ clearConversation: handleClear }),
+    [handleClear],
+  );
+
+  useEffect(() => {
+    onConversationStateChange?.(messages.length > 0);
+  }, [messages.length, onConversationStateChange]);
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      event.currentTarget.form?.requestSubmit();
+    }
+  };
+
+  const handleCopy = async (message: ChatMessage) => {
+    await navigator.clipboard.writeText(message.content);
+    setCopiedMessageId(message.id);
+    window.setTimeout(() => setCopiedMessageId(null), 1_600);
+  };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <Card className="h-[800px] overflow-hidden bg-gradient-to-br from-background to-emerald-50 shadow-xl rounded-xl">
-        <CardContent className="p-6 flex flex-col h-full">
-          <motion.h2
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="text-3xl font-bold mb-6 text-emerald-700"
+    <div className="flex min-h-0 flex-1 flex-col bg-background">
+      <div
+        ref={chatContainerRef}
+        className="min-h-0 flex-1 space-y-5 overflow-y-auto px-4 py-5 scroll-smooth"
+        aria-live="polite"
+      >
+        {messages.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="py-2"
           >
-            Ask Your AI Assistant
-          </motion.h2>
-          <div className="flex flex-col flex-grow w-full bg-white/70 backdrop-blur-sm border rounded-xl shadow-lg overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b bg-emerald-50">
-              <h2 className="text-xl font-semibold text-emerald-800">
-                Learn more about {node.name}
-              </h2>
+            <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary">
+              <Sparkles className="h-4 w-4" />
             </div>
-            <div
-              ref={chatContainerRef}
-              className="flex-grow overflow-y-auto p-4 space-y-6 scroll-smooth custom-scrollbar"
+            <h3 className="text-base font-semibold tracking-tight">
+              Ask about {node.name}
+            </h3>
+            <p className="mt-1.5 text-sm leading-6 text-muted-foreground">
+              Compare branches, explain traits, trace evolutionary history, or
+              simplify a complex concept.
+            </p>
+          </motion.div>
+        )}
+
+        <AnimatePresence initial={false}>
+          {messages.map((message) => (
+            <motion.article
+              key={message.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={
+                message.role === "assistant"
+                  ? "border-b border-border/60 pb-5 last:border-b-0"
+                  : "ml-auto max-w-[88%] rounded-xl rounded-br-sm bg-muted px-3.5 py-2.5 text-foreground"
+              }
             >
-              <AnimatePresence>
-              {messages.map((message) => (
-                <motion.div
-                  key={message.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className={`flex items-start space-x-2 ${
-                    message.role === "assistant"
-                      ? "justify-start"
-                      : "justify-end"
-                  }`}
-                >
-                  {message.role === "assistant" && (
-                    <Avatar className="w-10 h-10 border-2 border-emerald-500">
-                    <AvatarImage src="/ai-assistant-avatar.png" alt="AI Assistant" />
-                    <AvatarFallback>
-                      <Bot className="w-6 h-6 text-emerald-600" />
-                    </AvatarFallback>
-                  </Avatar>
-                  )}
-                  <div
-                      className={`px-4 py-3 rounded-lg max-w-[80%] text-wrap shadow-md ${
-                        message.role === "assistant"
-                          ? "bg-emerald-100 text-emerald-900"
-                          : "bg-blue-100 text-blue-900"
-                      }`}
-                    >
-                    {renderMessage(message)}
-                  </div>
-                </motion.div>
-              ))}
-              </AnimatePresence>
-            </div>
-            <div className="p-4 border-t space-y-4 bg-white">
-              <div className="flex flex-wrap gap-2">
-                {suggestedPrompts.map((prompt, index) => (
-                  <Badge
-                    key={index}
-                    variant="secondary"
-                    className="text-sm cursor-pointer hover:bg-gray-100 transition-colors duration-200 flex items-center gap-1 px-3 py-1 rounded-full bg-gray-50 text-black border border-emerald-300"
-                    onClick={() => handlePromptClick(prompt)}
-                  >
-                    <Sparkles className="w-4 h-4 text-yellow-500" />
-                    {prompt}
-                  </Badge>
-                ))}
-              </div>
-              <form
-                onSubmit={handleSubmit}
-                className="flex items-center space-x-2"
+              <div
+                className={`mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] ${
+                  message.role === "assistant"
+                    ? "text-primary"
+                    : "text-muted-foreground"
+                }`}
               >
-                <Input
-                  className="flex-grow bg-white border-emerald-200 focus:ring-emerald-500 focus:border-emerald-500"
-                  value={input}
-                  placeholder="Ask about this life form..."
-                  onChange={handleInputChange}
-                />
-                <Button 
-                  type="submit" 
-                  disabled={isLoading}
-                  className="bg-emerald-500 hover:bg-emerald-600 text-white"
-                >
-                  {isLoading ? (
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        duration: 1,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
-                    >
-                      <Send className="w-5 h-5" />
-                    </motion.div>
-                  ) : (
-                    <Send className="w-5 h-5" />
-                  )}
-                </Button>
-              </form>
+                {message.role === "assistant" ? (
+                  <Bot className="h-4 w-4" />
+                ) : (
+                  <UserRound className="h-4 w-4" />
+                )}
+                {message.role === "assistant" ? "Field guide" : "You"}
+              </div>
+              {message.content ? (
+                message.role === "assistant" ? (
+                  <MarkdownRenderer content={message.content} />
+                ) : (
+                  <p className="whitespace-pre-wrap text-sm leading-6">
+                    {message.content}
+                  </p>
+                )
+              ) : (
+                <div className="flex items-center gap-1 py-2" aria-label="Thinking">
+                  {[0, 1, 2].map((index) => (
+                    <span
+                      key={index}
+                      className="h-2 w-2 animate-pulse rounded-full bg-primary"
+                      style={{ animationDelay: `${index * 160}ms` }}
+                    />
+                  ))}
+                </div>
+              )}
+              {message.role === "assistant" && message.content && (
+                <div className="mt-3 flex items-center gap-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 gap-1.5 px-2 text-xs text-muted-foreground"
+                    onClick={() => void handleCopy(message)}
+                  >
+                    {copiedMessageId === message.id ? (
+                      <Check className="h-3.5 w-3.5 text-primary" />
+                    ) : (
+                      <Copy className="h-3.5 w-3.5" />
+                    )}
+                    {copiedMessageId === message.id ? "Copied" : "Copy"}
+                  </Button>
+                </div>
+              )}
+            </motion.article>
+          ))}
+        </AnimatePresence>
+      </div>
+
+      <div className="shrink-0 border-t border-border/70 bg-background p-3">
+        <div className="mb-2 overflow-hidden rounded-xl border border-border/70 bg-muted/20">
+          <div className="flex h-8 items-center justify-between border-b border-border/50 px-2.5">
+            <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+              <Sparkles className="h-3 w-3 text-primary" />
+              Try asking
+            </div>
+            <div className="flex items-center gap-0.5">
+              <span className="mr-1 text-[10px] tabular-nums text-muted-foreground">
+                {promptScrollState.currentIndex + 1} / {suggestedPrompts.length}
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 rounded-full text-muted-foreground"
+                onClick={() => scrollSuggestedPrompts("left")}
+                disabled={!promptScrollState.canScrollLeft}
+                aria-label="Previous suggested question"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 rounded-full text-muted-foreground"
+                onClick={() => scrollSuggestedPrompts("right")}
+                disabled={!promptScrollState.canScrollRight}
+                aria-label="Next suggested question"
+              >
+                <ChevronRight className="h-3.5 w-3.5" />
+              </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
-    </motion.div>
+          <div
+            ref={suggestedPromptsRef}
+            className="scrollbar-none flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain scroll-smooth"
+            onScroll={updatePromptScrollState}
+            role="group"
+            aria-label="Suggested questions"
+            tabIndex={0}
+          >
+            {suggestedPrompts.map((prompt, index) => (
+              <button
+                key={prompt}
+                type="button"
+                className="min-h-14 w-full shrink-0 snap-start whitespace-normal px-3 py-2.5 text-left text-xs leading-5 text-foreground transition-colors hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40 disabled:opacity-50"
+                onClick={() => setInput(prompt)}
+                disabled={isLoading}
+                aria-label={`Use suggested question ${index + 1}: ${prompt}`}
+              >
+                {prompt}
+              </button>
+            ))}
+          </div>
+          <div
+            className="flex h-4 items-start justify-center gap-1.5"
+            aria-label="Choose a suggested question"
+          >
+            {suggestedPrompts.map((prompt, index) => (
+              <button
+                key={prompt}
+                type="button"
+                className="group flex h-4 w-4 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                onClick={() => goToSuggestedPrompt(index)}
+                aria-label={`Show suggested question ${index + 1}`}
+                aria-current={
+                  index === promptScrollState.currentIndex ? "true" : undefined
+                }
+              >
+                <span
+                  className={`h-1.5 rounded-full transition-all ${
+                    index === promptScrollState.currentIndex
+                      ? "w-4 bg-primary"
+                      : "w-1.5 bg-muted-foreground/25 group-hover:bg-muted-foreground/50"
+                  }`}
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+        {chatError && (
+          <p role="alert" className="mb-2 text-sm text-destructive">
+            {chatError}
+          </p>
+        )}
+        <form
+          onSubmit={handleSubmit}
+          className="rounded-xl border border-input bg-background p-2 shadow-sm focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10"
+        >
+          <Textarea
+            value={input}
+            placeholder={`Ask about ${node.name}…`}
+            onChange={(event) => setInput(event.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={isLoading}
+            maxLength={8_000}
+            rows={3}
+            className="max-h-36 min-h-[64px] resize-none border-0 bg-transparent px-2 py-1.5 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+          />
+          <div className="flex min-w-0 items-center gap-1 border-t border-border/60 px-1 pt-2">
+            <span
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground"
+              title="Uses the selected node as context"
+            >
+              <Dna className="h-4 w-4" />
+              <span className="sr-only">Selected node context enabled</span>
+            </span>
+            <div className="min-w-0 flex-1">
+              <Select
+                value={aiSettings.model}
+                onValueChange={(model) =>
+                  updateAISettings({
+                    ...aiSettings,
+                    model: model as GroqModelId,
+                  })
+                }
+                disabled={isLoading}
+              >
+                <SelectTrigger
+                  aria-label="AI model"
+                  className="h-8 w-full min-w-0 border-0 bg-muted/60 px-2 text-xs shadow-none focus:ring-0 [&>span]:truncate"
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {GROQ_MODELS.map((model) => (
+                    <SelectItem key={model.id} value={model.id}>
+                      {model.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Select
+              value={String(aiSettings.temperature)}
+              onValueChange={(temperature) =>
+                updateAISettings({
+                  ...aiSettings,
+                  temperature: Number(temperature),
+                })
+              }
+              disabled={isLoading}
+            >
+              <SelectTrigger
+                aria-label="Response style"
+                className="h-8 w-[94px] shrink-0 border-0 bg-muted/60 px-2 text-xs shadow-none focus:ring-0"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {responseStyles.map((style) => (
+                  <SelectItem key={style.value} value={String(style.value)}>
+                    {style.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {isLoading ? (
+              <Button
+                type="button"
+                size="icon"
+                variant="outline"
+                className="h-8 w-8 shrink-0 rounded-md"
+                onClick={handleStop}
+                aria-label="Stop response"
+              >
+                <Square className="h-3.5 w-3.5 fill-current" />
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                size="icon"
+                className="h-8 w-8 shrink-0 rounded-md"
+                disabled={!input.trim()}
+                aria-label="Send message"
+              >
+                <SendHorizontal className="h-3.5 w-3.5" />
+              </Button>
+            )}
+          </div>
+        </form>
+        <p className="mt-1.5 text-center text-[10px] text-muted-foreground">
+          AI can make mistakes. Verify important biological claims.
+        </p>
+      </div>
+    </div>
   );
-};
+  },
+);
+
+AIAssistant.displayName = "AIAssistant";
 
 export default AIAssistant;

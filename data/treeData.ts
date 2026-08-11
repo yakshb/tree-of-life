@@ -1,4 +1,11 @@
-export const treeData = {
+import {
+  auditTreeData,
+  collectSyntheticConcepts,
+  normalizeTreeData,
+  type SeedTreeNode,
+} from "@/lib/taxonomy/normalize";
+
+const seedTreeData = {
   name: "Origin of Life",
   attributes: {
     scientificName: "N/A",
@@ -2397,5 +2404,11 @@ export const treeData = {
       ],
     }
     ],
-    }
+    };
 
+export const treeData = normalizeTreeData(seedTreeData as SeedTreeNode);
+export const treeDataQualityReport = auditTreeData(treeData);
+export const supplementalConcepts = collectSyntheticConcepts(
+  seedTreeData as SeedTreeNode,
+);
+export const treeDataVersion = "2026.08-normalized";

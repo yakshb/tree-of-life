@@ -1,37 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronsUp, Info, MessageSquare } from "lucide-react";
 import ThemeToggleButton from "./ThemeToggle";
-import { usePathname } from "next/navigation";
-import Image from "next/image";
-import logo from "@/assets/GENOSPHERE.svg";
-import { Button } from "@/components/ui/button";
-// import { FeedbackModal } from "./FeedbackModal";
 import AboutModal from "./AboutModal";
 
 const Header = () => {
-  const pathname = usePathname();
-
   return (
-    <nav className="sticky top-0 z-50 backdrop-filter bg-transparent/1 border-b  backdrop-blur-lg bg-opacity-50 border-b-[#dcffdc]">
-      <div className="mx-auto flex items-center justify-between px-2 py-2 md:py-0 md:px-12">
+    <nav className="sticky top-0 z-40 border-b border-border/50 bg-background/80 backdrop-blur-xl">
+      <div className="mx-auto flex h-14 max-w-[1800px] items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link
-          className="gap-3 flex flex-row align-middle items-center group text-2xl md:text-3xl font-semibold tracking-tight"
+          className="group rounded-full py-1 pr-2 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           href="/"
+          aria-label="Genosphere home"
         >
-          <Image
-            src={logo}
-            alt="Tree of Life Explorer AI Logo"
-            width={250}
-            height={100}
-            className="w-[150px] md:w-[250px] h-auto"
-          />
-          
+          <span className="block text-lg font-bold leading-none tracking-[-0.035em] transition-colors group-hover:text-primary">
+            Genosphere
+          </span>
+          <span className="mt-1 hidden text-[9px] font-bold uppercase leading-none tracking-[0.2em] text-muted-foreground sm:block">
+            Evolution atlas
+          </span>
         </Link>
 
-        <div className="flex items-center space-x-2 md:space-x-4">
+        <div className="flex items-center gap-0.5 rounded-full border border-border/70 bg-background/75 p-1 shadow-sm shadow-black/[0.03]">
           <AboutModal />
+          <span className="mx-0.5 h-4 w-px bg-border/80" aria-hidden="true" />
+          <ThemeToggleButton />
         </div>
       </div>
     </nav>

@@ -1,58 +1,79 @@
-import React from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw';
-import { Components } from 'react-markdown'
+import ReactMarkdown, { type Components } from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface MarkdownRendererProps {
   content: string;
 }
 
-const CustomTable: React.FC<React.TableHTMLAttributes<HTMLTableElement>> = ({ children, ...props }) => (
-  <div className="overflow-x-auto my-4">
-    <table className="min-w-full divide-y divide-gray-200 border border-gray-200" {...props}>
-      {children}
-    </table>
-  </div>
-);
-
-const CustomTableCell: React.FC<{ isHeader: boolean; children: React.ReactNode }> = ({ isHeader, children }) => {
-  const Tag = isHeader ? 'th' : 'td';
-  return (
-    <Tag className={`px-4 py-2 ${isHeader ? 'bg-gray-50 font-semibold text-left' : 'border-t border-gray-200'}`}>
-      {children}
-    </Tag>
-  );
+const components: Components = {
+  h1: (props) => (
+    <h1 className="mb-3 mt-7 text-2xl font-semibold tracking-tight first:mt-0" {...props} />
+  ),
+  h2: (props) => (
+    <h2 className="mb-2.5 mt-7 text-xl font-semibold tracking-tight first:mt-0" {...props} />
+  ),
+  h3: (props) => (
+    <h3 className="mb-2 mt-6 text-base font-semibold first:mt-0" {...props} />
+  ),
+  p: (props) => (
+    <p className="my-3 leading-7 first:mt-0 last:mb-0" {...props} />
+  ),
+  a: (props) => (
+    <a
+      className="font-medium text-primary underline decoration-primary/30 underline-offset-4 transition-colors hover:decoration-primary"
+      target="_blank"
+      rel="noopener noreferrer"
+      {...props}
+    />
+  ),
+  ul: (props) => (
+    <ul className="my-4 list-outside list-disc space-y-2 pl-5 marker:text-primary" {...props} />
+  ),
+  ol: (props) => (
+    <ol className="my-4 list-outside list-decimal space-y-2 pl-5 marker:font-semibold marker:text-primary" {...props} />
+  ),
+  li: (props) => <li className="pl-1 leading-7" {...props} />,
+  strong: (props) => <strong className="font-semibold text-foreground" {...props} />,
+  blockquote: (props) => (
+    <blockquote
+      className="my-5 rounded-r-xl border-l-4 border-primary/60 bg-primary/5 px-4 py-3 italic text-foreground/80"
+      {...props}
+    />
+  ),
+  code: ({ className, ...props }) => (
+    <code
+      className={`rounded-md bg-muted px-1.5 py-0.5 font-mono text-[0.88em] text-foreground ${className ?? ""}`}
+      {...props}
+    />
+  ),
+  pre: (props) => (
+    <pre
+      className="my-5 overflow-x-auto rounded-xl border border-border/70 bg-slate-950 p-4 text-sm leading-6 text-slate-100 [&>code]:bg-transparent [&>code]:p-0 [&>code]:text-inherit"
+      {...props}
+    />
+  ),
+  hr: (props) => <hr className="my-7 border-border/70" {...props} />,
+  table: ({ children, ...props }) => (
+    <div className="my-5 overflow-x-auto rounded-xl border border-border/70">
+      <table className="min-w-full divide-y divide-border text-sm" {...props}>
+        {children}
+      </table>
+    </div>
+  ),
+  th: (props) => (
+    <th className="bg-muted/70 px-4 py-3 text-left font-semibold" {...props} />
+  ),
+  td: (props) => (
+    <td className="border-t border-border/70 px-4 py-3 align-top" {...props} />
+  ),
 };
 
-const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
-  const components: Components = {
-    h1: ({ node, ...props }) => <h1 className="text-2xl font-bold mt-4 mb-2" {...props} />,
-    h2: ({ node, ...props }) => <h2 className="text-xl font-semibold mt-3 mb-2" {...props} />,
-    h3: ({ node, ...props }) => <h3 className="text-lg font-medium mt-2 mb-1" {...props} />,
-    a: ({ node, ...props }) => <a className="text-blue-500 hover:underline" {...props} />,
-    ul: ({ node, ...props }) => <ul className="list-disc list-inside my-2" {...props} />,
-    ol: ({ node, ...props }) => <ol className="list-decimal list-inside my-2" {...props} />,
-    code: ({ node, inline, ...props }: { node?: any; inline?: boolean; [key: string]: any }) => 
-      inline ? (
-        <code className="bg-gray-100 rounded px-1" {...props} />
-      ) : (
-        <code className="block bg-gray-100 rounded p-2 my-2 overflow-x-auto" {...props} />
-      ),
-    table: ({ children, ...props }) => <CustomTable {...props}>{children}</CustomTable>,
-    th: ({ children }) => <CustomTableCell isHeader={true}>{children}</CustomTableCell>,
-    td: ({ children }) => <CustomTableCell isHeader={false}>{children}</CustomTableCell>,
-  };
-
+export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
   return (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
-      rehypePlugins={[rehypeRaw]}
-      components={components}
-    >
-      {content}
-    </ReactMarkdown>
+    <div className="min-w-0 text-[15px] text-foreground/85">
+      <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+        {content}
+      </ReactMarkdown>
+    </div>
   );
-};
-
-export default MarkdownRenderer;
+}
