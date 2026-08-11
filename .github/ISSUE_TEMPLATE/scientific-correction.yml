@@ -1,0 +1,62 @@
+name: Scientific or taxonomic correction
+description: Propose an evidence-backed correction to topology, taxonomy, time range, status, summary, or media.
+title: "[Biology]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Genosphere separates curated topology, live taxonomic reconciliation, and AI explanation. Please identify the affected layer and preserve uncertainty where sources disagree. See [scientific integrity and data provenance](https://github.com/yakshb/tree-of-life/blob/main/docs/scientific-integrity.md).
+  - type: input
+    id: taxon
+    attributes:
+      label: Taxon or node path
+      description: Include the displayed name and its path from Origin of Life when possible.
+      placeholder: Origin of Life > Eukaryotes > Animals > ...
+    validations:
+      required: true
+  - type: dropdown
+    id: claim_type
+    attributes:
+      label: Correction type
+      options:
+        - Phylogenetic relationship or topology
+        - Accepted name, synonym, or rank
+        - Geological range or extinction status
+        - Educational summary or trait
+        - Identifier or provenance
+        - Image match, license, or attribution
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current claim or behavior
+      description: Quote or describe the specific claim that should be reviewed.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed correction
+      description: State the replacement, the affected data layer, and any remaining uncertainty.
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Evidence and sources
+      description: Link primary literature, a versioned taxonomic backbone, or an authoritative specialist source. Explain why each source applies.
+    validations:
+      required: true
+  - type: checkboxes
+    id: standard
+    attributes:
+      label: Scientific contribution standard
+      options:
+        - label: I distinguished taxonomy from phylogeny and did not rely on AI-generated citations as evidence.
+          required: true
+        - label: I stated uncertainty or competing interpretations where relevant.
+          required: true
+        - label: Any proposed media has traceable attribution and a compatible license, when applicable.
+          required: true

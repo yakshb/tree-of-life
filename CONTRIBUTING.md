@@ -36,10 +36,12 @@ conflict while a data engineer builds the review workflow.
 ## Before you start
 
 1. Search existing issues and pull requests for related work.
-2. Open an issue before a large topology, architecture, dependency, or product
+2. Choose the relevant [structured issue form](https://github.com/yakshb/tree-of-life/issues/new/choose)
+   for a bug, scientific correction, or idea/use case.
+3. Open an issue before a large topology, architecture, dependency, or product
    change. Describe the problem, proposed scope, evidence, and alternatives.
-3. Keep a pull request focused enough to review without unrelated cleanup.
-4. Never include API keys, private datasets, or media without a compatible
+4. Keep a pull request focused enough to review without unrelated cleanup.
+5. Never include API keys, private datasets, or media without a compatible
    license and attribution.
 
 Small fixes, documentation improvements, and well-sourced data corrections can
@@ -81,6 +83,10 @@ pull requests should:
 Do not silently replace the editorial topology with a third-party taxonomy.
 Reconciliation results should be reviewable and source-aware.
 
+Read [scientific integrity and data provenance](docs/scientific-integrity.md)
+before changing relationships, ranks, time ranges, summaries, identifiers, or
+media behavior.
+
 ## Engineering contribution standard
 
 - Follow the existing TypeScript, React, and Tailwind conventions.
@@ -114,6 +120,9 @@ Maintainers may ask for a narrower scope or additional evidence. Review comments
 are about the contribution, not the contributor. Be specific, kind, and willing
 to revise your assumptions.
 
+CI runs the same `npm run check` command for every pull request. Review and
+scientific judgment remain human decisions.
+
 ## Good first contributions
 
 - reproduce and document a navigation or accessibility issue;
@@ -132,3 +141,6 @@ to sources, and research use should include independent verification.
 By contributing, you agree that your contribution can be distributed under the
 repository's MIT License. Thank you for helping Genosphere become a useful
 meeting point for evolutionary biology, education, and relational interfaces.
+
+This is a volunteer-led project with best-effort response times. All
+participation is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).
