@@ -1,141 +1,144 @@
-import { createOpenAI } from '@ai-sdk/openai';
-import { streamText } from 'ai';
-import { randomUUID } from 'crypto';
-import { hprompt } from "@helicone/helicone";
+import { createGroqChatCompletion, GroqApiError } from "@/lib/groq";
+import { DEFAULT_GROQ_MODEL, isGroqModelId } from "@/lib/groq-models";
+import { checkRateLimit, getClientIdentifier } from "@/lib/rate-limit";
+import { z } from "zod";
 
-// Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
-const groq = createOpenAI({
-  apiKey: process.env.GROQ_API_KEY ?? "",
-  baseUrl: "https://groq.helicone.ai/openai/v1",
-  headers: {
-    "Helicone-Auth": `Bearer ${process.env.HELICONE_API_KEY}`,
-  },
+const requestSchema = z.object({
+  model: z.unknown().optional(),
+  temperature: z.number().min(0.01).max(2).optional(),
+  node: z
+    .object({
+      name: z.string().min(1).max(200),
+      attributes: z
+        .object({
+          scientificName: z.string().max(300).optional(),
+          description: z.string().max(4_000).optional(),
+          taxonomicRank: z.string().max(100).optional(),
+          status: z.string().max(100).optional(),
+          age: z.string().max(200).optional(),
+          geologicalAge: z.string().max(200).optional(),
+        })
+        .passthrough()
+        .optional(),
+    })
+    .passthrough()
+    .nullable()
+    .optional(),
+  messages: z
+    .array(
+      z.object({
+        role: z.enum(["user", "assistant"]),
+        content: z.string().min(1).max(8_000),
+      }),
+    )
+    .min(1)
+    .max(50),
 });
 
-const session = randomUUID();
+function errorResponse(error: unknown) {
+  if (error instanceof z.ZodError) {
+    return Response.json({ error: "Invalid chat request." }, { status: 400 });
+  }
 
-export async function POST(req: Request) {
-  const { messages, model, temperature } = await req.json();
+  if (error instanceof SyntaxError) {
+    return Response.json(
+      { error: "Request body must be valid JSON." },
+      { status: 400 },
+    );
+  }
 
-  const result = await streamText({
-    model: groq(model), // Use the model passed from the frontend
-    temperature: temperature,
-    messages,
-    headers: {
-      "Helicone-Session-Id": session,
-      "Helicone-Session-Path": "/abstract",
-      "Helicone-Prompt-Id": "prompt_story",
-      "Helicone-Cache-Enabled": "true", // add this header and set to true
-    },
-    system: `You are an AI assistant for a Tree of Life Explorer application. 
-    You have extensive knowledge about various life forms and their evolutionary history. 
-    Provide concise and accurate information based on the user's queries about specific organisms. 
-    You are specifically designed only to answer questions relating to biology, evolution and the tree of life application. DO NOT entertain questions unrelated to the tree of life.
-    You may entertain theoretical questions about the future of the evolutionary tree, such as AI and virtual life forms. You cannot and should not answer any questions outside of the scope provided. 
-    Do not be overly verbose, provide adequate details and attempt to answer questions as if speaking to a 12-year old.
+  if (error instanceof GroqApiError) {
+    const status = error.status >= 400 && error.status < 600 ? error.status : 502;
+    return Response.json({ error: error.message }, { status });
+  }
 
-    All of your responses should be factually sound and grounded in reality. Do not assert anything creative or imagined as fact.  
-    
-    General discussions about the species in question should follow the following Markdown format:
-
-    ## [Main Topic or Organism Name]
-
-    ### [Answer To The Question Asked]
-
-    ### Further Reading 
-    - [Link 1 description](URL)
-    - [Link 2 description](URL)
-    You can provide up to 3 links but only if relevant
-
-    If the query doesn't fit this structure, adapt the headings as needed, but maintain a clear and consistent Markdown format. Links should be underlined and formatted appropriately`,
-  });
-
-  return result.toAIStreamResponse();
+  console.error("Unexpected chat error:", error);
+  return Response.json(
+    { error: "The AI assistant is temporarily unavailable." },
+    { status: 500 },
+  );
 }
 
+export async function POST(request: Request) {
+  const rateLimit = checkRateLimit(
+    `chat:${getClientIdentifier(request)}`,
+    20,
+    60_000,
+  );
+  if (!rateLimit.allowed) {
+    return Response.json(
+      { error: "Too many chat requests. Please try again shortly." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(rateLimit.retryAfterSeconds) },
+      },
+    );
+  }
 
-  // Check if the last message is requesting an image
-  // const lastMessage = messages[messages.length - 1];
-  // const isImageRequest =
-  //   lastMessage.content.toLowerCase().includes("show me") ||
-  //   lastMessage.content.toLowerCase().includes("generate an image");
+  const contentLength = Number(request.headers.get("content-length") ?? 0);
+  if (contentLength > 200_000) {
+    return Response.json({ error: "Request body is too large." }, { status: 413 });
+  }
 
-  // if (isImageRequest) {
-  //   try {
-  //     const response = await openaiClient.images.generate({
-  //       model: "dall-e-2",
-  //       prompt: lastMessage.content,
-  //       n: 1,
-  //       size: "512x512",
-  //     });
+  try {
+    const body = requestSchema.parse(await request.json());
+    if (body.model !== undefined && !isGroqModelId(body.model)) {
+      return Response.json(
+        { error: "The requested Groq model is not supported." },
+        { status: 400 },
+      );
+    }
+    const model = body.model ?? DEFAULT_GROQ_MODEL;
+    const nodeContext = body.node
+      ? `The selected node is ${body.node.name}${
+          body.node.attributes?.scientificName
+            ? ` (${body.node.attributes.scientificName})`
+            : ""
+        }.
+Taxonomic rank: ${body.node.attributes?.taxonomicRank ?? "unranked"}.
+Status: ${body.node.attributes?.status ?? "unknown"}.
+Time range: ${body.node.attributes?.age ?? "not specified"}.
+Geological range: ${body.node.attributes?.geologicalAge ?? "not specified"}.
+Curated summary: ${body.node.attributes?.description ?? "not available"}`
+      : "No tree node is currently selected.";
 
-  //     return new Response(JSON.stringify({
-  //       role: 'assistant',
-  //       content: `Here's the image you requested: ${response.data[0].url}`,
-  //       isImage: true,
-  //       imageUrl: response.data[0].url
-  //     }));
-  //   } catch (error) {
-  //     console.error('Error generating image:', error);
-  //     return new Response(JSON.stringify({
-  //       role: 'assistant',
-  //       content: "I'm sorry, I couldn't generate that image. Could you try rephrasing your request?"
-  //     }));
-  //   }
-  // }
+    const response = await createGroqChatCompletion({
+      model,
+      temperature: body.temperature ?? 0.5,
+      stream: true,
+      signal: request.signal,
+      messages: [
+        {
+          role: "system",
+          content: `You are the AI guide for Genosphere, an interactive Tree of Life explorer.
 
+Answer only questions about biology, evolution, biodiversity, taxonomy, the history of life, or clearly labeled speculation about future or digital life. Politely decline unrelated requests. Explain concepts accurately in clear language suitable for a curious 12-year-old, while preserving scientific nuance. Never present speculation as established fact.
 
-// import { OpenAI } from "openai";
-// import { ChatCompletionMessage } from "openai/resources/index.mjs";
-// import { OpenAIStream, StreamingTextResponse } from "ai";
+${nodeContext}
 
-// export async function POST(req: Request) {
-//   try {
-//     const body = await req.json();
-//     const openai = new OpenAI();
-//     const messages: ChatCompletionMessage[] = body.messages;
+Use concise Markdown with descriptive headings when they improve readability. Include up to three reputable further-reading links only when they are directly relevant. Do not invent citations or URLs.`,
+        },
+        ...body.messages,
+      ],
+    });
 
-//     const { query, node } = await req.json();
+    if (!response.body) {
+      return Response.json(
+        { error: "Groq returned an empty response." },
+        { status: 502 },
+      );
+    }
 
-//     // const prompt = `You are an AI assistant for a Tree of Life Explorer application.
-//     // The user is asking about ${node.name}.
-//     // Provide a detailed response including:
-//     // 1. A brief description of ${node.name}
-//     // 2. Key characteristics
-//     // 3. Evolutionary history
-//     // 4. Interesting facts
-//     // 5. Suggest a relevant image to visualize ${node.name}
-//     // 6. Provide 2-3 links to reputable sources (e.g., scientific papers, Wikipedia) for further reading
-
-//     // User query: ${query}`;
-
-//     const systemMessage: ChatCompletionMessage = {
-//       role: "assistant",
-//       content: `You are an AI assistant for a Tree of Life Explorer application.
-//     The user is asking about ${node.name}.
-//     Provide a detailed response including:
-//     1. A brief description of ${node.name}
-//     2. Key characteristics
-//     3. Evolutionary history
-//     4. Interesting facts
-//     5. Suggest a relevant image to visualize ${node.name}
-//     6. Provide 2-3 links to reputable sources (e.g., scientific papers, Wikipedia) for further reading
-
-//     User query: ${query}`,
-//     };
-
-//     const response = await openai.chat.completions.create({
-//       model: "gpt-4-1106-preview",
-//       stream: true,
-//       messages: [systemMessage, ...messages],
-//     });
-
-//     const stream = OpenAIStream(response);
-//     return new StreamingTextResponse(stream);
-//   } catch (error) {
-//     console.error(error);
-//     return Response.json({ error: "Internal server error" }, { status: 500 });
-//   }
-// }
+    return new Response(response.body, {
+      headers: {
+        "Content-Type": "text/event-stream; charset=utf-8",
+        "Cache-Control": "no-cache, no-transform",
+        Connection: "keep-alive",
+      },
+    });
+  } catch (error) {
+    return errorResponse(error);
+  }
+}
