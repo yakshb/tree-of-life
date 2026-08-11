@@ -1,6 +1,6 @@
 @tailwind base;
-  @tailwind components;
-  @tailwind utilities;
+@tailwind components;
+@tailwind utilities;
 
   
 @layer base {
@@ -51,11 +51,93 @@
 }
 
 
-  @layer base {
-    * {
-      @apply border-border;
-    }
-    body {
-      @apply bg-background text-foreground;
-    }
+@layer base {
+  * {
+    @apply border-border;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    background-image: radial-gradient(
+      circle at 50% -15%,
+      hsl(var(--primary) / 0.08),
+      transparent 35rem
+    );
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.22);
+  }
+}
+
+@layer components {
+  .explorer-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+    transition: grid-template-columns 280ms ease;
+  }
+
+  .tree-canvas {
+    touch-action: none;
+  }
+
+  .explorer-surface {
+    height: clamp(560px, calc(100dvh - 10rem), 900px);
+  }
+
+  .tree-link {
+    fill: none;
+    stroke: hsl(var(--primary) / 0.34) !important;
+    stroke-width: 1.65px !important;
+    transition:
+      stroke 180ms ease,
+      stroke-width 180ms ease;
+  }
+
+  .tree-link:hover {
+    stroke: hsl(var(--primary) / 0.72) !important;
+    stroke-width: 2.5px !important;
+  }
+
+  .dark .tree-link {
+    stroke: hsl(var(--primary) / 0.42) !important;
+  }
+
+  .tree-canvas:active {
+    cursor: grabbing;
+  }
+
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (min-width: 1100px) {
+  .explorer-workspace {
+    grid-template-columns: minmax(0, 1fr) 0;
+  }
+
+  .explorer-workspace.is-sidebar-open {
+    grid-template-columns: minmax(0, 1fr) var(--species-sidebar-width, 430px);
+  }
+
+  .explorer-workspace.is-resizing {
+    user-select: none;
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

@@ -1,463 +1,257 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import {
+  ArrowRight,
+  BookOpenText,
+  Bot,
+  CircleHelp,
+  Database,
+  Github,
+  GitBranch,
+  Layers3,
+  MousePointer2,
+  Search,
+  Sparkles,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogClose,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Leaf,
-  Brain,
-  Code,
-  Users,
-  Globe,
-  Sparkles,
-  Network,
-  Check,
-  Dna,
-  Microscope,
-  RefreshCw,
-  Search,
-  GitBranch,
-  ImageIcon,
-  Star,
-  Github,
-  Database,
-  FileText,
-} from "lucide-react";
-import Image from "next/image";
-import logo from "@/assets/GENOSPHERE.svg";
-import cover from "@/assets/about-page-cover.jpg";
+
+const steps = [
+  {
+    number: "01",
+    eyebrow: "Locate",
+    title: "Find a branch",
+    copy: "Search by organism, scientific name, or taxonomic group.",
+    icon: Search,
+  },
+  {
+    number: "02",
+    eyebrow: "Trace",
+    title: "Follow its lineage",
+    copy: "Open nodes and move between ancestors without losing the map.",
+    icon: GitBranch,
+  },
+  {
+    number: "03",
+    eyebrow: "Understand",
+    title: "Ask the field guide",
+    copy: "Explore traits, history, and relationships in the selected context.",
+    icon: Bot,
+  },
+];
+
+const states = [
+  { label: "Living", color: "bg-emerald-500" },
+  { label: "Extinct", color: "bg-rose-500" },
+  { label: "Mixed", color: "bg-amber-500" },
+  { label: "Origin", color: "bg-sky-500" },
+  { label: "Unknown", color: "bg-slate-500" },
+];
 
 export default function AboutModal() {
-  const [activeTab, setActiveTab] = useState("introduction");
-  const [isHovered, setIsHovered] = useState(false);
-
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          variant="outline"
-          size={isHovered ? "default" : "icon"}
-          className={`rounded-full transition-all duration-300 ${
-            activeTab === "about" ? "bg-primary text-primary-foreground" : ""
-          }`}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          variant="ghost"
+          size="sm"
+          className="h-8 gap-2 rounded-full px-2.5 text-xs font-bold sm:px-3"
         >
-          <Globe className="h-[1.2rem] w-[1.2rem]" />
-          {isHovered && (
-            <span className="ml-2 tracking-tight font-semibold">About</span>
-          )}
-          <span className="sr-only">About Tree of Life AI</span>
+          <BookOpenText className="h-3.5 w-3.5 text-primary" />
+          <span className="hidden sm:inline">Field guide</span>
+          <span className="sm:hidden">Guide</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[1200px] h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-4xl font-bold flex items-center gap-3">
-            <Image
-              src={logo}
-              alt="Tree of Life Explorer AI Logo"
-              width={250}
-              height={100}
-              className="w-[150px] md:w-[250px] h-auto"
-            />
-          </DialogTitle>
+
+      <DialogContent className="max-h-[90dvh] w-[calc(100%-1.25rem)] max-w-[800px] gap-0 overflow-y-auto rounded-3xl border-border/70 p-0 shadow-2xl">
+        <DialogHeader className="relative overflow-hidden border-b border-border/60 px-5 pb-6 pt-5 pr-12 text-left sm:px-7 sm:pb-7 sm:pt-6">
+          <div
+            className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full bg-primary/10 blur-3xl"
+            aria-hidden="true"
+          />
+          <div className="relative">
+            <div className="mb-5 flex items-center justify-between gap-4">
+              <Badge
+                variant="outline"
+                className="rounded-full border-primary/20 bg-primary/5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-primary"
+              >
+                <Sparkles className="mr-1.5 h-3 w-3" />
+                Expedition briefing
+              </Badge>
+              <span className="hidden text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground sm:block">
+                Field note 001
+              </span>
+            </div>
+            <DialogTitle className="max-w-xl text-3xl font-bold leading-[0.95] tracking-[-0.045em] sm:text-4xl">
+              Read the tree.
+              <span className="block text-muted-foreground">Follow the story of life.</span>
+            </DialogTitle>
+            <DialogDescription className="mt-4 max-w-2xl text-sm leading-6">
+              Genosphere is a navigable evolutionary atlas. It combines a curated
+              topology with live taxonomy and a context-aware AI field guide.
+            </DialogDescription>
+          </div>
         </DialogHeader>
-        <Tabs
-          defaultValue="introduction"
-          className="w-full"
-          onValueChange={setActiveTab}
-        >
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="introduction">Intro</TabsTrigger>
-            <TabsTrigger value="features">Features</TabsTrigger>
-            {/* <TabsTrigger value="features">Connect</TabsTrigger> */}
-            {/* <TabsTrigger value="using-ai">Using AI</TabsTrigger>
-            <TabsTrigger value="contributing">Contributing</TabsTrigger> */}
-          </TabsList>
-          <TabsContent value="introduction" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-3xl font-bold">
-                  Explore Evolution with AI
-                </CardTitle>
-                <CardDescription className="text-lg">
-                  Uncover the intricate web of life through the lens of
-                  artificial intelligence
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="relative w-full h-[400px] overflow-hidden rounded-lg">
-                  <Image
-                    src={cover}
-                    alt="Tree of Life AI Cover"
-                    layout="fill"
-                    objectFit="cover"
-                    priority
-                  />
-                </div>
 
-                <div className="grid grid-cols-1 gap-6">
-                  <div className="space-y-4">
-                    <h3 className="text-2xl font-semibold flex items-center gap-2">
-                      <Globe className="h-6 w-6 text-primary" />
-                      Welcome to the Tree of Life
-                    </h3>
-                    <p className="text-muted-foreground my-2">
-                      Sometimes it can be hard to appreciate just how long life
-                      has been on Earth and how far life has come. From the
-                      origins of life, we&apos;ve developed over billions of
-                      years, through a web of intricate connections and twists
-                      along the way.
-                    </p>
-                    <p className="text-muted-foreground">
-                      To see this web unfold, we created Genosphere! An
-                      interactive playground to explore the tree of life.
-                      We&apos;ve combined AI with biological data to create a
-                      fun, engaging way to learn about evolution.
+        <div className="space-y-6 px-5 py-6 sm:px-7 sm:py-7">
+          <section aria-labelledby="guide-route-heading">
+            <div className="mb-3 flex items-end justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary">
+                  Your route
+                </p>
+                <h2 id="guide-route-heading" className="mt-1 text-base font-bold">
+                  Start anywhere. Keep your context.
+                </h2>
+              </div>
+              <MousePointer2 className="hidden h-4 w-4 text-muted-foreground sm:block" />
+            </div>
+
+            <ol className="grid overflow-hidden rounded-2xl border border-border/70 bg-muted/20 sm:grid-cols-3">
+              {steps.map(({ number, eyebrow, title, copy, icon: Icon }, index) => (
+                <li
+                  key={number}
+                  className="group relative border-b border-border/70 p-4 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0"
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-background text-primary shadow-sm">
+                      <Icon className="h-3.5 w-3.5" />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                        {number} / {eyebrow}
+                      </p>
+                      <h3 className="mt-1 text-sm font-bold">{title}</h3>
+                      <p className="mt-1.5 text-xs leading-5 text-muted-foreground">
+                        {copy}
+                      </p>
+                    </div>
+                  </div>
+                  {index < steps.length - 1 && (
+                    <span className="absolute -right-2.5 top-5 z-10 hidden h-5 w-5 items-center justify-center rounded-full border bg-background text-muted-foreground sm:flex">
+                      <ArrowRight className="h-3 w-3" />
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          <div className="grid gap-4 md:grid-cols-[1.05fr_0.95fr]">
+            <section className="rounded-2xl border border-border/70 p-4 sm:p-5" aria-labelledby="guide-map-heading">
+              <div className="flex items-center gap-2">
+                <GitBranch className="h-4 w-4 text-primary" />
+                <h2 id="guide-map-heading" className="text-sm font-bold">
+                  How to read the map
+                </h2>
+              </div>
+              <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                Branches show curated evolutionary relationships. Node color
+                describes the status of the organisms contained within it.
+              </p>
+              <div className="mt-4 rounded-xl border border-border/60 bg-muted/30 p-3">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-9 w-16 shrink-0 items-center justify-center gap-1.5" aria-hidden="true">
+                    <span className="h-2.5 w-2.5 rounded-full bg-primary/70" />
+                    <span className="h-4 w-4 rounded-full bg-primary/80" />
+                    <span className="h-6 w-6 rounded-full bg-primary" />
+                  </span>
+                  <div>
+                    <p className="text-[11px] font-bold">Size shows map scope</p>
+                    <p className="mt-0.5 text-[10px] leading-4 text-muted-foreground">
+                      Broader taxonomic ranks appear larger; direct curated
+                      branches add a smaller size boost.
                     </p>
                   </div>
-
-                  <div className="space-y-4">
-                    <h3 className="text-2xl font-semibold flex items-center gap-2">
-                      <Microscope className="h-6 w-6 text-primary" />
-                      The Approach
-                    </h3>
-                    <p className="text-muted-foreground">
-                      We&apos;ve mixed the latest open-soruce generative AI with
-                      a treasure trove of biological data to create a unique way
-                      to learn about evolution. Whether you&apos;re simply
-                      curious, a biology buff, or just someone who thinks DNA is
-                      neat, Genosphere is your go-to for fun, research, and
-                      those &quot;wow, I didn&apos;t know that!&quot; moments
-                      about life on Earth.
-                    </p>
-                  </div>
                 </div>
+                <p className="mt-2 border-t border-border/60 pt-2 text-[10px] leading-4 text-muted-foreground">
+                  Size does not represent abundance, age, importance, or the
+                  physical size of an organism.
+                </p>
+              </div>
+              <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2">
+                {states.map(({ label, color }) => (
+                  <span key={label} className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                    <span className={`h-2 w-2 rounded-full ${color}`} />
+                    {label}
+                  </span>
+                ))}
+              </div>
+            </section>
 
-                <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-                    <Dna className="h-6 w-6 text-primary" />
-                    Why Genosphere?
-                  </h3>
-                  <ul className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {[
-                      "Explore the web of life with interactive visualizations",
-                      "Discover evolutionary connections between species",
-                      "Use AI to ask questions for deeper insights or for fun",
-                    ].map((item, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <div className="mt-1 bg-primary text-primary-foreground rounded-full p-1">
-                          <Check className="h-4 w-4" />
-                        </div>
-                        <span>{item}</span>{" "}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+            <section className="rounded-2xl border border-primary/20 bg-primary/[0.06] p-4 sm:p-5" aria-labelledby="guide-ai-heading">
+              <div className="flex items-center gap-2">
+                <Bot className="h-4 w-4 text-primary" />
+                <h2 id="guide-ai-heading" className="text-sm font-bold">
+                  What the AI adds
+                </h2>
+              </div>
+              <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                The field guide receives the selected node and its lineage, then
+                uses Groq-hosted models to explain, compare, and answer in context.
+              </p>
+              <div className="mt-4 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.12em] text-primary">
+                <Database className="h-3.5 w-3.5" />
+                Curated map + live taxonomy
+              </div>
+            </section>
+          </div>
 
-                <div className="flex flex-wrap justify-center gap-4">
-                  <Badge
-                    variant="secondary"
-                    className="text-sm py-2 px-3 flex items-center gap-2"
-                  >
-                    <Leaf className="w-4 h-4" />
-                    Biodiversity Exploration
-                  </Badge>
-                  <Badge
-                    variant="secondary"
-                    className="text-sm py-2 px-3 flex items-center gap-2"
-                  >
-                    <Brain className="w-4 h-4" />
-                    AI-Powered Analysis
-                  </Badge>
-                  <Badge
-                    variant="secondary"
-                    className="text-sm py-2 px-3 flex items-center gap-2"
-                  >
-                    <Users className="w-4 h-4" />
-                    Personalized Research
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="features" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-3xl font-bold">
-                  Key Features
-                </CardTitle>
-                {/* <CardDescription>
-                  Discover the innovative capabilities of Tree of Life AI
-                </CardDescription> */}
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <div className="bg-primary text-primary-foreground rounded-full p-2 w-10 h-10 flex items-center justify-center mb-2">
-                        <Network className="h-6 w-6" />
-                      </div>
-                      <CardTitle>Interactive Phylogenetic Trees</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">
-                        Explore the tree of life with stunning, interactive
-                        visualizations. Zoom, pan, and click through branches to
-                        discover evolutionary relationships in an intuitive
-                        interface.
-                      </p>
-                    </CardContent>
-                  </Card>
+          <nav aria-label="Project links" className="border-t border-border/60 pt-5">
+            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-primary">
+              Explore further
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <DialogClose asChild>
+                <Link
+                  href="/use-cases"
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3.5 py-2 text-xs font-bold transition-colors hover:border-primary/40 hover:text-primary"
+                >
+                  <Layers3 className="h-3.5 w-3.5" /> Use cases
+                </Link>
+              </DialogClose>
+              <DialogClose asChild>
+                <Link
+                  href="/faq"
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3.5 py-2 text-xs font-bold transition-colors hover:border-primary/40 hover:text-primary"
+                >
+                  <CircleHelp className="h-3.5 w-3.5" /> FAQ
+                </Link>
+              </DialogClose>
+              <DialogClose asChild>
+                <a
+                  href="https://github.com/yakshb/tree-of-life"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3.5 py-2 text-xs font-bold transition-colors hover:border-primary/40 hover:text-primary"
+                >
+                  <Github className="h-3.5 w-3.5" /> GitHub
+                </a>
+              </DialogClose>
+            </div>
+          </nav>
 
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <div className="bg-primary text-primary-foreground rounded-full p-2 w-10 h-10 flex items-center justify-center mb-2">
-                        <Brain className="h-6 w-6" />
-                      </div>
-                      <CardTitle>AI-Powered Exploration</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">
-                        Harness the power of AI to identify species, analyze
-                        evolutionary features, and uncover hidden patterns in
-                        biological data. Our AI assistant guides you through
-                        complex evolutionary concepts.
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <div className="bg-primary text-primary-foreground rounded-full p-2 w-10 h-10 flex items-center justify-center mb-2">
-                        <Sparkles className="h-6 w-6" />
-                      </div>
-                      <CardTitle>Multiple LLM Support</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">
-                        Leverage the latest open-source models in our beta, with
-                        planned support for OpenAI, Anthropic, and other models.
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <div className="bg-primary text-primary-foreground rounded-full p-2 w-10 h-10 flex items-center justify-center mb-2">
-                        <Users className="h-6 w-6" />
-                      </div>
-                      <CardTitle>Image Recognition</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">
-                        <span className="font-semibold text-md text-primary">
-                          Coming Soon:
-                        </span>{" "}
-                        We plan to add support for image models to help you turn
-                        your questions into a stunning visual experience.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+          <div className="flex flex-col gap-3 border-t border-border/60 pt-5 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+            <p className="max-w-xl leading-5">
+              The map is an exploration interface, not a complete scientific
+              phylogeny. Verify important claims with primary sources.
+            </p>
+            <Badge variant="secondary" className="w-fit shrink-0 rounded-full px-3 py-1">
+              124 curated nodes
+            </Badge>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
-}
-
-{
-  /* <TabsContent value="using-ai" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold flex items-center gap-2">
-                  <Brain className="h-6 w-6 text-primary" />
-                  Using AI in Tree of Life
-                </CardTitle>
-                <CardDescription className="text-lg">
-                  Discover how artificial intelligence revolutionizes
-                  biodiversity exploration
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="flex justify-center">
-                  <video
-                    className="w-full max-w-[600px] rounded-lg shadow-lg"
-                    controls
-                    poster="/placeholder.svg?height=300&width=600"
-                  >
-                    <source src="/placeholder-video.mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                </div>
-
-                <p className="text-muted-foreground text-center italic">
-                  Watch how AI enhances your Tree of Life exploration experience
-                </p>
-
-                <div className="bg-card p-6 rounded-lg border">
-                  <h3 className="text-xl font-semibold mb-4">
-                    AI-Powered Features
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {[
-                      {
-                        icon: <ImageIcon className="h-8 w-8 text-primary" />,
-                        title: "Advanced Image Recognition",
-                        description:
-                          "Identify species from uploaded images with high accuracy",
-                      },
-                      {
-                        icon: <Search className="h-8 w-8 text-primary" />,
-                        title: "Natural Language Processing",
-                        description:
-                          "Intuitive search and discovery using everyday language",
-                      },
-                      {
-                        icon: <GitBranch className="h-8 w-8 text-primary" />,
-                        title: "Evolutionary Predictions",
-                        description:
-                          "Machine learning algorithms predict evolutionary relationships",
-                      },
-                      {
-                        icon: <Dna className="h-8 w-8 text-primary" />,
-                        title: "Genetic Sequence Analysis",
-                        description:
-                          "AI-assisted comparisons of genetic sequences",
-                      },
-                    ].map((feature, index) => (
-                      <div
-                        key={index}
-                        className="flex items-start gap-3 bg-background p-4 rounded-lg shadow-sm"
-                      >
-                        {feature.icon}
-                        <div>
-                          <h4 className="font-semibold">{feature.title}</h4>
-                          <p className="text-sm text-muted-foreground">
-                            {feature.description}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-center gap-4 bg-card p-6 rounded-lg border">
-                  <RefreshCw className="h-10 w-10 text-primary animate-spin-slow" />
-                  <div>
-                    <h3 className="text-xl font-semibold">
-                      Continuous Learning
-                    </h3>
-                    <p className="text-muted-foreground">
-                      Our AI models are constantly evolving, ensuring you always
-                      have access to the most up-to-date and accurate
-                      information about the tree of life.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="contributing" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold flex items-center gap-2">
-                  <Users className="h-6 w-6 text-primary" />
-                  Contributing to Tree of Life AI
-                </CardTitle>
-                <CardDescription className="text-lg">
-                  Help shape the future of AI in biodiversity research
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="bg-card p-6 rounded-lg border">
-                  <p className="text-center text-muted-foreground italic">
-                    &quot;Alone we can do so little; together we can do so much.&quot; -
-                    Helen Keller
-                  </p>
-                </div>
-
-                <p className="text-muted-foreground">
-                  We believe in the power of collaboration and open-source
-                  development. While this started as a fun project, Tree of Life AI can grow into a community-driven project,
-                  and we welcome contributions from researchers, developers, and
-                  enthusiasts alike.
-                </p>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {[
-                    {
-                      icon: <Github className="h-8 w-8 text-primary" />,
-                      title: "GitHub Contributions",
-                      description:
-                        "Submit bug reports and feature requests on our GitHub repository",
-                    },
-                    {
-                      icon: <Code className="h-8 w-8 text-primary" />,
-                      title: "Code Improvements",
-                      description:
-                        "Contribute code improvements and new features through pull requests",
-                    },
-                    {
-                      icon: <FileText className="h-8 w-8 text-primary" />,
-                      title: "Documentation",
-                      description:
-                        "Help improve our documentation and user guides",
-                    },
-                    {
-                      icon: <Database className="h-8 w-8 text-primary" />,
-                      title: "Data Sharing",
-                      description:
-                        "Share your research findings and datasets to enhance our AI models",
-                    },
-                  ].map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex items-start gap-3 bg-muted p-4 rounded-lg"
-                    >
-                      {item.icon}
-                      <div>
-                        <h4 className="font-semibold">{item.title}</h4>
-                        <p className="text-sm text-muted-foreground">
-                          {item.description}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="flex flex-col items-center gap-4 mt-6">
-                  <h3 className="text-xl font-semibold flex items-center gap-2">
-                    <Star className="h-6 w-6 text-yellow-500" />
-                    Join Our Community
-                  </h3>
-                  <p className="text-center text-muted-foreground">
-                    Whether you&apos;re a student, a researcher or an enthusiast, we invite you to push the boundaries of AI-enabled research. 
-                  </p>
-                  <Button size="lg" className="mt-2">
-                    <Github className="mr-2 h-5 w-5" />
-                    Visit Our Public Repo
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent> */
 }

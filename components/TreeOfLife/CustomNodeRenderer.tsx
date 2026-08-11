@@ -5,32 +5,30 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { TreeNodeDatum } from "react-d3-tree";
 import { useTheme } from "next-themes";
+import type { TreeNodeData } from "@/types/treeTypes";
 
-interface TreeNodeData extends TreeNodeDatum {
-  attributes?: {
-    description?: string;
-    status?: "Living" | "Extinct" | "Living and Extinct" | "Developing";
-    taxonomicRank?: string;
-    scientificName?: string;
-  };
-  children?: TreeNodeData[];
+function truncateLabel(value: string, maximumLength: number) {
+  return value.length > maximumLength
+    ? `${value.slice(0, maximumLength - 1)}…`
+    : value;
 }
 
 interface CustomNodeProps {
   nodeDatum: TreeNodeData;
   toggleNode: () => void;
   onNodeClick: (nodeData: TreeNodeData) => void;
+  isSelected?: boolean;
 }
 
 const CustomNodeRenderer: React.FC<CustomNodeProps> = ({
   nodeDatum,
   toggleNode,
   onNodeClick,
+  isSelected = false,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
@@ -50,19 +48,19 @@ const CustomNodeRenderer: React.FC<CustomNodeProps> = ({
       Default: { light: "#6b7280", dark: "#9ca3af" },
     };
 
+    const status = nodeDatum.attributes?.status;
     const colorSet =
-      baseColors[nodeDatum.attributes?.status as keyof typeof baseColors] ||
-      baseColors.Default;
-    return theme === "dark" ? colorSet.dark : colorSet.light;
-  }, [nodeDatum.attributes?.status, theme]);
-
-  const getTextColor = useCallback(() => {
-    return theme === "dark" ? "#ffffff" : "#000000";
-  }, [theme]);
-
-  const getHoverColor = useCallback(() => {
-    return theme === "dark" ? "#ffffff" : "#000000";
-  }, [theme]);
+      status === "Living" || status === "Living (as modern birds)"
+        ? baseColors.Living
+        : status === "Extinct"
+          ? baseColors.Extinct
+          : status?.includes("Living") && status?.includes("Extinct")
+            ? baseColors["Living and Extinct"]
+            : status === "Developing" || status === "Non-biological"
+              ? baseColors.Developing
+              : baseColors.Default;
+    return resolvedTheme === "dark" ? colorSet.dark : colorSet.light;
+  }, [nodeDatum.attributes?.status, resolvedTheme]);
 
   const getNodeSize = useMemo(() => {
     const baseSize = 15;
@@ -84,11 +82,34 @@ const CustomNodeRenderer: React.FC<CustomNodeProps> = ({
   }, [nodeDatum]);
 
   const getTextOffset = useMemo(() => {
-    return getNodeSize + 5;
+    return getNodeSize + 7;
   }, [getNodeSize]);
 
+  const label = useMemo(() => {
+    const name = truncateLabel(nodeDatum.name, 27);
+    const scientificName = nodeDatum.attributes?.scientificName?.trim();
+    const showScientificName = Boolean(
+      scientificName &&
+        scientificName.toLowerCase() !== nodeDatum.name.toLowerCase() &&
+        scientificName.toLowerCase() !== "n/a",
+    );
+    const scientific = showScientificName
+      ? truncateLabel(scientificName ?? "", 29)
+      : "";
+    const width = Math.max(name.length * 7.5, scientific.length * 6.2) + 20;
+
+    return {
+      name,
+      scientific,
+      width,
+      height: showScientificName ? 39 : 27,
+    };
+  }, [nodeDatum.attributes?.scientificName, nodeDatum.name]);
+
+  const isDark = resolvedTheme === "dark";
+
   return (
-    <HoverCard>
+    <HoverCard openDelay={180} closeDelay={80}>
       <HoverCardTrigger asChild>
         <motion.g
           onClick={handleClick}
@@ -96,59 +117,108 @@ const CustomNodeRenderer: React.FC<CustomNodeProps> = ({
           onMouseLeave={() => setIsHovered(false)}
           style={{ cursor: "pointer" }}
         >
+          {isSelected && (
+            <motion.circle
+              r={getNodeSize + 11}
+              fill="none"
+              stroke={getNodeColor()}
+              strokeWidth={3}
+              initial={{ opacity: 0, scale: 0.7 }}
+              animate={{ opacity: [0.75, 0.25, 0.75], scale: [0.95, 1.12, 0.95] }}
+              transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+            />
+          )}
           <motion.circle
             r={getNodeSize}
             fill={getNodeColor()}
-            stroke={isHovered ? getHoverColor() : "transparent"}
-            strokeWidth={2}
-            initial={{ scale: 1 }}
-            whileHover={{ scale: 1.1 }}
+            stroke={isSelected ? "#ffffff" : isHovered ? getNodeColor() : "transparent"}
+            strokeWidth={isSelected ? 4 : 3}
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            whileHover={{ scale: 1.14 }}
+            transition={{ type: "spring", stiffness: 260, damping: 18 }}
+            style={{ filter: `drop-shadow(0 5px 8px ${getNodeColor()}55)` }}
+          />
+          <circle
+            r={Math.max(4, getNodeSize * 0.25)}
+            fill={isDark ? "#07110d" : "#ffffff"}
+            opacity={0.9}
+          />
+          <motion.rect
+            x={getTextOffset + 2}
+            y={-13.5}
+            width={label.width}
+            height={label.height}
+            rx={8}
+            fill={isDark ? "#07110d" : "#ffffff"}
+            fillOpacity={isDark ? 0.9 : 0.78}
+            stroke={isSelected || isHovered ? getNodeColor() : isDark ? "#334139" : "#d7ded9"}
+            strokeOpacity={isSelected || isHovered ? 0.72 : 0.55}
+            strokeWidth={1}
+            vectorEffect="non-scaling-stroke"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.18 }}
           />
           <motion.text
             dy="0.35em"
-            x={getTextOffset}
+            x={getTextOffset + 11}
             textAnchor="start"
-            fontSize={14}
-            fill={getTextColor()}
-            fontWeight={isHovered ? 600 : 500}
+            fontSize={13.5}
+            fill={isDark ? "#f4f7f5" : "#17211a"}
+            fontWeight={isHovered || isSelected ? 650 : 600}
+            letterSpacing="0.01em"
             initial={{ opacity: 1 }}
             animate={{ opacity: 1 }}
-            style={{ paintOrder: "stroke", stroke: theme === "dark" ? "#000000" : "#ffffff", strokeWidth: "3px", strokeLinecap: "butt", strokeLinejoin: "miter" }}
+            style={{ pointerEvents: "none", stroke: "none", strokeWidth: 0 }}
           >
-            {nodeDatum.name}
+            {label.name}
           </motion.text>
-          {nodeDatum.attributes?.scientificName && (
+          {label.scientific && (
             <motion.text
-              dy="1.7em"
-              x={getTextOffset}
+              dy="1.72em"
+              x={getTextOffset + 11}
               textAnchor="start"
-              fontSize={12}
-              fill={getTextColor()}
+              fontSize={11.5}
+              fill={isDark ? "#b8c4bd" : "#526057"}
+              fontWeight={450}
               fontStyle="italic"
-              opacity={0.9}
-              style={{ paintOrder: "stroke", stroke: theme === "dark" ? "#000000" : "#ffffff", strokeWidth: "2px", strokeLinecap: "butt", strokeLinejoin: "miter" }}
+              opacity={1}
+              style={{ pointerEvents: "none", stroke: "none", strokeWidth: 0 }}
             >
-              {nodeDatum.attributes.scientificName}
+              {label.scientific}
             </motion.text>
           )}
         </motion.g>
       </HoverCardTrigger>
-      <HoverCardContent className="z-50 w-80">
-        <h3 className="text-lg font-semibold">{nodeDatum.name}</h3>
-        {nodeDatum.attributes?.scientificName && (
-          <p className="text-sm italic">
-            {nodeDatum.attributes.scientificName}
-          </p>
-        )}
-        <p className="text-sm mt-2">
+      <HoverCardContent className="z-50 w-80 rounded-2xl border-border/70 p-4 shadow-xl">
+        <div className="mb-3 flex items-start justify-between gap-3">
+          <div>
+            <h3 className="text-lg font-semibold tracking-tight">{nodeDatum.name}</h3>
+            {nodeDatum.attributes?.scientificName && (
+              <p className="text-sm italic text-muted-foreground">
+                {nodeDatum.attributes.scientificName}
+              </p>
+            )}
+          </div>
+          <span
+            className="mt-1 h-3 w-3 shrink-0 rounded-full"
+            style={{ backgroundColor: getNodeColor() }}
+          />
+        </div>
+        <p className="line-clamp-4 text-sm leading-6 text-foreground/80">
           {nodeDatum.attributes?.description || "No description available"}
         </p>
-        <div className="mt-2 flex justify-between text-xs">
-          <span>Rank: {nodeDatum.attributes?.taxonomicRank || "Unknown"}</span>
-          <span>Status: {nodeDatum.attributes?.status || "Unknown"}</span>
+        <div className="mt-4 flex flex-wrap gap-2 text-xs text-muted-foreground">
+          <span className="rounded-full bg-muted px-2.5 py-1 capitalize">
+            {nodeDatum.attributes?.taxonomicRank || "Unknown rank"}
+          </span>
+          <span className="rounded-full bg-muted px-2.5 py-1">
+            {nodeDatum.children?.length || 0} direct branches
+          </span>
         </div>
-        <p className="text-xs mt-1">
-          Children: {nodeDatum.children?.length || 0}
+        <p className="mt-3 text-xs font-medium text-primary">
+          Click to open details{nodeDatum.children?.length ? " and toggle branch" : ""}
         </p>
       </HoverCardContent>
     </HoverCard>
