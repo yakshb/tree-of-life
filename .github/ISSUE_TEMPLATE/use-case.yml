@@ -1,0 +1,52 @@
+name: Idea or use case
+description: Suggest a focused improvement or describe how you would use Genosphere.
+title: "[Idea]: "
+body:
+  - type: dropdown
+    id: audience
+    attributes:
+      label: Who would this help?
+      options:
+        - Teacher or student
+        - Evolutionary biologist or taxonomist
+        - Biodiversity or field researcher
+        - Museum or science communicator
+        - Data curator or knowledge engineer
+        - Designer or software engineer
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Real workflow
+      description: What is the person trying to decide, understand, teach, review, or build?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: What would improve?
+      description: Describe the smallest useful outcome and what would make it trustworthy.
+    validations:
+      required: true
+  - type: dropdown
+    id: horizon
+    attributes:
+      label: Area
+      options:
+        - Teaching or guided exploration
+        - Scientific data or provenance
+        - Tree navigation, search, or sharing
+        - Accessibility or responsive design
+        - AI field guide
+        - Biodiversity, curation, or paleobiology extension
+        - Reusable graph framework
+        - Unsure
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Example or supporting material
+      description: Add a screenshot, lesson, source, dataset, or comparable product if useful.
